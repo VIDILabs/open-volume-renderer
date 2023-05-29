@@ -1,0 +1,419 @@
+{
+  "dataSource" : [
+    {
+      "dimensions" : {
+        "x" : 1152,
+        "y" : 320,
+        "z" : 853
+      },
+      "endian" : "LITTLE_ENDIAN",
+      // "fileName" : "/home/qadwu/Work/ascent/instant-vnr-pytorch/build/decoded_volume.raw",
+      "fileName" : "/media/storage0/qadwu/volume/ammonia_downsampled/1atm/3x/1atm.heatrelease.3x.1152.320.853f32.bin",
+      "fileUpperLeft" : false,
+      "format" : "REGULAR_GRID_RAW_BINARY",
+      "id" : 1,
+      "name" : "1atm.heatrelease.3x.1152.320.853f32.bin",
+      "offset" : 0,
+      "type" : "FLOAT"
+    }
+  ],
+  "snapshot" : [
+  ],
+  "view" : {
+    "backgroundColor" : {
+      "a" : 1,
+      "b" : 0,
+      "g" : 0,
+      "r" : 0
+    },
+    "camera" : {
+      "center" : {
+        "x" : 575.5,
+        "y" : 160,
+        "z" : 426.5
+      },
+      "eye" : {
+        "x" : 575.5,
+        "y" : -1731.676898604919,
+        "z" : 426.5
+      },
+      "fovy" : 45,
+      "projectionMode" : "PERSPECTIVE",
+      "up" : {
+        "x" : 0.0015156167109588066,
+        "y" : 0.049974609693591097,
+        "z" : 0.99874933856897186
+      },
+      "zFar" : 10000,
+      "zNear" : 11.51
+    },
+    "globalAmbient" : {
+      "a" : 0,
+      "b" : 0,
+      "g" : 0,
+      "r" : 0
+    },
+    "globalLighting" : true,
+    "lightSource" : {
+      "ambient" : {
+        "a" : 1,
+        "b" : 1,
+        "g" : 1,
+        "r" : 1
+      },
+      "diffuse" : {
+        "a" : 1,
+        "b" : 1,
+        "g" : 1,
+        "r" : 1
+      },
+      "position" : {
+        "w" : 0,
+        "x" : -0.074398323893547058,
+        "y" : -0.9083411693572998,
+        "z" : -0.41155955195426941
+      },
+      "specular" : {
+        "a" : 1,
+        "b" : 1,
+        "g" : 1,
+        "r" : 1
+      },
+      "type" : "DIRECTIONAL_LIGHT"
+    },
+    "lighting" : true,
+    "lightingSide" : "TWO_SIDE",
+    "method" : "REGULAR_GRID_VOLUME_RAY_CASTING",
+    "tfPreIntegration" : true,
+    "volume" : {
+      "boundingBox" : {
+        "maximum" : {
+          "x" : 1151,
+          "y" : 425,
+          "z" : 852
+        },
+        "minimum" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+        }
+      },
+      "boundingBoxColor" : {
+        "a" : 1,
+        "b" : 1,
+        "g" : 1,
+        "r" : 1
+      },
+      "boundingBoxVisible" : false,
+      "clippingBox" : {
+        "maximum" : {
+          "x" : 1151,
+          "y" : 425,
+          "z" : 852
+        },
+        "minimum" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+        }
+      },
+      "dataId" : 1,
+      "interpolationType" : "CUBIC_INTERPOLATION",
+      "material" : {
+        "ambient" : 0.69999998807907104,
+        "diffuse" : 0,
+        "shininess" : 40,
+        "specular" : 0.30000001192092896
+      },
+      "opacityUnitDistance" : 1,
+      "sampleDistance" : 0.25,
+      "scalarMappingRange" : {
+        "maximum" : 0,
+        "minimum" : -3290981376
+      },
+      "slice" : {
+        "x" : {
+          "position" : 1021,
+          "visible" : false
+        },
+        "y" : {
+          "position" : 360,
+          "visible" : false
+        },
+        "z" : {
+          "position" : 742,
+          "visible" : false
+        }
+      },
+      "textureBox" : {
+        "maximum" : {
+          "x" : 1151.5,
+          "y" : 425.5,
+          "z" : 852.5
+        },
+        "minimum" : {
+          "x" : -0.5,
+          "y" : -0.5,
+          "z" : -0.5
+        }
+      },
+      "transferFunction" : {
+        "alphaArray" : {
+          "data" : "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+          "encoding" : "BASE64"
+        },
+        "colorControls" : [
+          {
+            "color" : {
+              "b" : 0.65605539083480835,
+              "g" : 0.35363322496414185,
+              "r" : 0.3347943127155304
+            },
+            "position" : 0
+          },
+          {
+            "color" : {
+              "b" : 0.66851210594177246,
+              "g" : 0.37993079423904419,
+              "r" : 0.31449443101882935
+            },
+            "position" : 0.012960482388734818
+          },
+          {
+            "color" : {
+              "b" : 0.70173013210296631,
+              "g" : 0.45005765557289124,
+              "r" : 0.26036140322685242
+            },
+            "position" : 0.051397006958723068
+          },
+          {
+            "color" : {
+              "b" : 0.73494809865951538,
+              "g" : 0.52018451690673828,
+              "r" : 0.20622837543487549
+            },
+            "position" : 0.089833535254001617
+          },
+          {
+            "color" : {
+              "b" : 0.71349483728408813,
+              "g" : 0.60023069381713867,
+              "r" : 0.25605535507202148
+            },
+            "position" : 0.12827005982398987
+          },
+          {
+            "color" : {
+              "b" : 0.6839677095413208,
+              "g" : 0.67158782482147217,
+              "r" : 0.32003074884414673
+            },
+            "position" : 0.16670659184455872
+          },
+          {
+            "color" : {
+              "b" : 0.65444058179855347,
+              "g" : 0.74294501543045044,
+              "r" : 0.38400614261627197
+            },
+            "position" : 0.20514310896396637
+          },
+          {
+            "color" : {
+              "b" : 0.64613610506057739,
+              "g" : 0.7856978178024292,
+              "r" : 0.46366780996322632
+            },
+            "position" : 0.24357964098453522
+          },
+          {
+            "color" : {
+              "b" : 0.64475202560424805,
+              "g" : 0.82306802272796631,
+              "r" : 0.55916953086853027
+            },
+            "position" : 0.28201615810394287
+          },
+          {
+            "color" : {
+              "b" : 0.64352172613143921,
+              "g" : 0.85628604888916016,
+              "r" : 0.64405995607376099
+            },
+            "position" : 0.32045269012451172
+          },
+          {
+            "color" : {
+              "b" : 0.63298732042312622,
+              "g" : 0.8869665265083313,
+              "r" : 0.72049212455749512
+            },
+            "position" : 0.35888922214508057
+          },
+          {
+            "color" : {
+              "b" : 0.61822378635406494,
+              "g" : 0.91649365425109863,
+              "r" : 0.79307955503463745
+            },
+            "position" : 0.39732575416564941
+          },
+          {
+            "color" : {
+              "b" : 0.60161477327346802,
+              "g" : 0.94971162080764771,
+              "r" : 0.87474048137664795
+            },
+            "position" : 0.43576228618621826
+          },
+          {
+            "color" : {
+              "b" : 0.62606692314147949,
+              "g" : 0.96847367286682129,
+              "r" : 0.92118418216705322
+            },
+            "position" : 0.47419878840446472
+          },
+          {
+            "color" : {
+              "b" : 0.67404842376708984,
+              "g" : 0.98077660799026489,
+              "r" : 0.95194154977798462
+            },
+            "position" : 0.51263535022735596
+          },
+          {
+            "color" : {
+              "b" : 0.72202998399734497,
+              "g" : 0.99307960271835327,
+              "r" : 0.98269897699356079
+            },
+            "position" : 0.5510718822479248
+          },
+          {
+            "color" : {
+              "b" : 0.71303343772888184,
+              "g" : 0.97854673862457275,
+              "r" : 0.99930793046951294
+            },
+            "position" : 0.58950835466384888
+          },
+          {
+            "color" : {
+              "b" : 0.64905804395675659,
+              "g" : 0.94040751457214355,
+              "r" : 0.99807769060134888
+            },
+            "position" : 0.62794488668441772
+          },
+          {
+            "color" : {
+              "b" : 0.58508265018463135,
+              "g" : 0.90226835012435913,
+              "r" : 0.99684739112854004
+            },
+            "position" : 0.66638141870498657
+          },
+          {
+            "color" : {
+              "b" : 0.52572089433670044,
+              "g" : 0.85536330938339233,
+              "r" : 0.9956170916557312
+            },
+            "position" : 0.70481795072555542
+          },
+          {
+            "color" : {
+              "b" : 0.46758937835693359,
+              "g" : 0.78615915775299072,
+              "r" : 0.99423301219940186
+            },
+            "position" : 0.74325448274612427
+          },
+          {
+            "color" : {
+              "b" : 0.41591694951057434,
+              "g" : 0.72464436292648315,
+              "r" : 0.99300271272659302
+            },
+            "position" : 0.78169101476669312
+          },
+          {
+            "color" : {
+              "b" : 0.36885812878608704,
+              "g" : 0.65736258029937744,
+              "r" : 0.9886966347694397
+            },
+            "position" : 0.82012754678726196
+          },
+          {
+            "color" : {
+              "b" : 0.33194926381111145,
+              "g" : 0.5773932933807373,
+              "r" : 0.97762399911880493
+            },
+            "position" : 0.85856407880783081
+          },
+          {
+            "color" : {
+              "b" : 0.29042676091194153,
+              "g" : 0.48742792010307312,
+              "r" : 0.96516722440719604
+            },
+            "position" : 0.89700061082839966
+          },
+          {
+            "color" : {
+              "b" : 0.26643598079681396,
+              "g" : 0.41299501061439514,
+              "r" : 0.94732797145843506
+            },
+            "position" : 0.93543714284896851
+          },
+          {
+            "color" : {
+              "b" : 0.28119954466819763,
+              "g" : 0.3551710844039917,
+              "r" : 0.90918874740600586
+            },
+            "position" : 0.97387361526489258
+          },
+          {
+            "color" : {
+              "b" : 0.29227221012115479,
+              "g" : 0.31180316209793091,
+              "r" : 0.88058441877365112
+            },
+            "position" : 1
+          }
+        ],
+        "gaussianObjects" : [
+          {
+            "heightFactor" : 0.029999999329447746,
+            "mean" : 0.31410256028175354,
+            "sigma" : 0.029999999329447746
+          },
+          {
+            "heightFactor" : 0.029999999329447746,
+            "mean" : 0.6746794581413269,
+            "sigma" : 0.029999999329447746
+          },
+          {
+            "heightFactor" : 0.029999999329447746,
+            "mean" : 0.80128204822540283,
+            "sigma" : 0.029999999329447746
+          },
+          {
+            "heightFactor" : 0.056238468736410141,
+            "mean" : 0.089743591845035553,
+            "sigma" : 0.044871807098388672
+          }
+        ],
+        "resolution" : 1024
+      },
+      "transferFunctionType" : "TRANSFER_FUNCTION",
+      "visible" : true
+    }
+  }
+}

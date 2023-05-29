@@ -1,0 +1,153 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Render PM",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/renderpm",
+            "args": [
+                "--scene-vorts",
+                "${input:device-pm}",
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "environment": [
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description":  "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "(gdb) Render App",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/${command:cmake.buildType}/renderapp",
+            "args": [
+                "configs/scene_mechhand.json",
+                // "scene_setting.usda",
+                "${input:device}",
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/data",
+            "environment": [
+                {
+                    "name": "LD_LIBRARY_PATH",
+                    "value": "/home/weishen/USD/lib:/home/qadwu/Software/Intel/ospray-2.5.0.x86_64.linux/lib:/home/qadwu/Software/ospray-2.8.0.x86_64.linux/lib:${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d:${env:LD_LIBRARY_PATH}"
+                },
+                {
+                    "name": "DISPLAY",
+                    "value": ":2"
+                },
+                // {
+                //     "name": "DISPLAY",
+                //     "value": ":2"
+                // }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description":  "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {            
+            "name": "(gdb) Render PT",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/${command:cmake.buildType}/renderpt",
+            "args": [
+                // "configs/scene_mechhand.json",
+                "scene_setting.usda",
+                "${input:device}",
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/data",
+            "environment": [
+                {
+                    "name": "LD_LIBRARY_PATH",
+                    "value": "/usr/local/cuda/lib64:/home/qadwu/Software/ospray-2.8.0.x86_64.linux/lib:${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d:/home/weishen/USD/bin:/usr/bin:/home/weishen/OpenVDB_Installation/bin"
+                },
+                // {
+                //     "name": "DISPLAY",
+                //     "value": ":1"
+                // },
+                {
+                    "name": "DISPLAY",
+                    "value": ":2"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description":  "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ],
+    "inputs": [
+        {
+            "type": "pickString",
+            "id": "miniapp",
+            "description": "Which mini app do you want to run?",
+            "options": [
+                "exp_mini_ospray",
+                "exp_mini_optix7",
+                "exp_mini_torch",
+            ]
+        },
+        {
+            "type": "pickString",
+            "id": "device",
+            "description": "Which mini app do you want to run?",
+            "options": [
+                "optix7-rm",
+                "optix7-pt",
+                "ospray-rm",
+                "ospray-pt",
+                "vidi3d",
+                "cudapt",
+                "nncache",
+            ]
+        },
+        {
+            "type": "pickString",
+            "id": "device-pm",
+            "description": "Which mini app do you want to run?",
+            "options": [
+                "openvkl",
+                "cudapm",
+            ]
+        },
+    ]
+}

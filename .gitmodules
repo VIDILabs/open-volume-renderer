@@ -1,0 +1,9 @@
+[submodule "github-actions"]
+	path = github-actions
+	url = git@github.com:wilsonCernWq/github-workflow-collections.git
+[submodule "extern/glad"]
+	path = extern/glad
+	url = git@github.com:wilsonCernWq/glad.git
+[submodule "extern/glfw"]
+	path = extern/glfw
+	url = https://github.com/glfw/glfw.git

@@ -1,0 +1,316 @@
+//. ======================================================================== //
+//. Copyright 2019-2020 Qi Wu                                                //
+//.                                                                          //
+//. Licensed under the Apache License, Version 2.0 (the "License");          //
+//. you may not use this file except in compliance with the License.         //
+//. You may obtain a copy of the License at                                  //
+//.                                                                          //
+//.     http://www.apache.org/licenses/LICENSE-2.0                           //
+//.                                                                          //
+//. Unless required by applicable law or agreed to in writing, software      //
+//. distributed under the License is distributed on an "AS IS" BASIS,        //
+//. WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. //
+//. See the License for the specific language governing permissions and      //
+//. limitations under the License.                                           //
+//. ======================================================================== //
+
+//. ======================================================================== //
+//. Copyright 2018-2019 Ingo Wald                                            //
+//.                                                                          //
+//. Licensed under the Apache License, Version 2.0 (the "License");          //
+//. you may not use this file except in compliance with the License.         //
+//. You may obtain a copy of the License at                                  //
+//.                                                                          //
+//.     http://www.apache.org/licenses/LICENSE-2.0                           //
+//.                                                                          //
+//. Unless required by applicable law or agreed to in writing, software      //
+//. distributed under the License is distributed on an "AS IS" BASIS,        //
+//. WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. //
+//. See the License for the specific language governing permissions and      //
+//. limitations under the License.                                           //
+//. ======================================================================== //
+
+#pragma once
+
+#include "scene.h"
+#include "serializer/serializer.h"
+
+#include <cross_device_buffer.h>
+#include <vidi_transactional_value.h>
+
+#include <array>
+#include <cstring>
+#include <iostream>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <vector>
+
+namespace ovr {
+
+using vidi::TransactionalValue;
+
+/*! a sample OptiX-7 renderer that demonstrates how to set up
+    context, module, programs, pipeline, SBT, etc, and perform a
+    valid launch that renders some pixel (using a simple test
+    pattern, in this case */
+struct MainRenderer {
+  // ------------------------------------------------------------------
+  // publicly accessible interface
+  // ------------------------------------------------------------------
+public:
+  double render_time;
+
+  struct FrameBufferData {
+    // vec4f* rgba{};
+    // vec3f* grad{};
+    std::shared_ptr<CrossDeviceBuffer> rgba;
+    std::shared_ptr<CrossDeviceBuffer> grad;
+
+    FrameBufferData()
+    {
+      rgba = std::make_shared<CrossDeviceBuffer>();
+      grad = std::make_shared<CrossDeviceBuffer>();
+    }
+  };
+
+  struct TransferFunctionData {
+    std::vector<float> tfn_colors;
+    std::vector<float> tfn_alphas;
+    vec2f tfn_value_range = { 1, -1 };
+  };
+
+  Scene current_scene;
+
+  virtual ~MainRenderer() {}
+
+  /*! unsafe: constructor - performs all setup */
+  void init(int argc, const char** argv, Scene scene, Camera camera);
+
+  /*! unsafe: called in worker thread */
+  virtual void swap() = 0;
+  virtual void commit() = 0;
+  virtual void render() = 0;
+  virtual void mapframe(FrameBufferData*) = 0;
+
+  /*! unsafe: getters */
+  math::vec2i unsafe_get_fbsize() const
+  {
+    return params.fbsize.get();
+  }
+
+  float unsafe_get_variance() const
+  {
+    return variance;
+  }
+
+  const TransferFunctionData& unsafe_get_tfn() const
+  {
+    return params.tfn.ref();
+  }
+
+  /*! thread safe: setters */
+  void set_fbsize(const math::vec2i& fbsize)
+  {
+    params.fbsize = fbsize;
+  }
+
+  void set_camera(const Camera& camera)
+  {
+    // std::cout << "camera update" << std::endl;
+    // std::cout << "  from: " << camera.from << std::endl;
+    // std::cout << "  at:   " << camera.at << std::endl;
+    // std::cout << "  up:   " << camera.up << std::endl;
+    params.camera = camera;
+  }
+
+  void set_camera(math::vec3f from, math::vec3f at, math::vec3f up)
+  {
+    set_camera(Camera{ from, at, up });
+  }
+
+  void set_transfer_function(const std::vector<float>& c, const std::vector<float>& o, const math::vec2f& r)
+  {
+    params.tfn.assign([&](TransferFunctionData& d) {
+      d.tfn_colors = c;
+      d.tfn_alphas = o;
+      d.tfn_value_range = r;
+    });
+  }
+
+  void set_focus(const math::vec2f& center, float scale, float base_noise)
+  {
+    params.focus_center = center;
+    params.focus_scale = scale;
+    params.base_noise = base_noise;
+  }
+
+  void set_sample_per_pixel(int spp)
+  {
+    params.sample_per_pixel = spp;
+  }
+
+  void set_add_lights(bool add_lights)
+  {
+    params.add_lights = add_lights;
+  }
+
+  void set_sparse_sampling(bool sparse_sampling)
+  {
+    params.sparse_sampling = sparse_sampling;
+  }
+
+  void set_path_tracing(bool path_tracing)
+  {
+    params.path_tracing = path_tracing;
+  }
+
+  void set_photonmapping(bool photonmapping)
+  {
+    params.photonmapping = photonmapping;
+  }
+
+  void set_frame_accumulation(bool frame_accumulation)
+  {
+    params.frame_accumulation = frame_accumulation;
+  }
+
+  void set_volume_sampling_rate(float volume_sampling_rate)
+  {
+    params.volume_sampling_rate = volume_sampling_rate;
+  }
+
+  void set_mat_ambient(float ambient)
+  {
+    params.ambient = ambient;
+  }
+
+  void set_mat_diffuse(float diffuse)
+  {
+    params.diffuse = diffuse;
+  }
+
+  void set_mat_specular(float specular)
+  {
+    params.specular = specular;
+  }
+
+  void set_mat_shininess(float shininess)
+  {
+    params.shininess = shininess;
+  }
+
+  void set_light_phi(float phi)
+  {
+    params.phi = phi;
+  }
+
+  void set_light_theta(float theta)
+  {
+    params.theta = theta;
+  }
+
+  void set_light_radius(float radius)
+  {
+    params.radius = radius;
+  }
+
+  void set_light_intensity(float intensity)
+  {
+    params.intensity = intensity;
+  }
+
+protected:
+  void set_scene(Scene scene);
+  virtual void init(int argc, const char** argv) = 0;
+
+protected:
+  struct {
+    TransactionalValue<TransferFunctionData> tfn;
+    TransactionalValue<vec2i> fbsize;
+
+    TransactionalValue<int> sample_per_pixel;
+    TransactionalValue<float> volume_sampling_rate;
+
+    TransactionalValue<float> ambient;
+    TransactionalValue<float> diffuse;
+    TransactionalValue<float> specular;
+    TransactionalValue<float> shininess;
+
+    TransactionalValue<float> radius;
+    TransactionalValue<float> phi;
+    TransactionalValue<float> theta;
+    TransactionalValue<float> intensity;
+
+    TransactionalValue<vec2f> focus_center;
+    TransactionalValue<float> focus_scale;
+    TransactionalValue<float> base_noise;
+    TransactionalValue<bool> add_lights;
+    TransactionalValue<bool> sparse_sampling;
+    TransactionalValue<bool> path_tracing;
+    TransactionalValue<bool> photonmapping;
+    TransactionalValue<bool> frame_accumulation;
+
+    TransactionalValue<Camera> camera;
+  } params;
+
+  float variance{ std::numeric_limits<float>::infinity() };
+};
+
+inline void
+MainRenderer::init(int argc, const char** argv, Scene scene, Camera camera)
+{
+  render_time = 0.0;
+  set_scene(scene);
+  set_camera(camera);
+  init(argc, argv);
+}
+
+inline void
+MainRenderer::set_scene(Scene scene)
+{
+  // TODO generalize to support multiple transfer functions //
+  assert(scene.instances.size() == 1);
+  assert(scene.instances[0].models.size() == 1);
+  assert(scene.instances[0].models[0].type == scene::Model::VOLUMETRIC_MODEL);
+  assert(scene.instances[0].models[0].volume_model.volume.type == scene::Volume::STRUCTURED_REGULAR_VOLUME);
+  scene::TransferFunction scene_tfn = scene.instances[0].models[0].volume_model.transfer_function;
+
+  const float* data_o = scene_tfn.opacity->data_typed<float>();
+  const size_t size_o = scene_tfn.opacity->dims.v;
+
+  const vec4f* data_c = scene_tfn.color->data_typed<vec4f>();
+  const size_t size_c = scene_tfn.color->dims.v;
+
+  std::vector<float> tfn_colors;
+  std::vector<float> tfn_alphas;
+  vec2f tfn_value_range = { 1, -1 };
+
+  for (int i = 0; i < size_c; ++i) {
+    float p = (float)i / (size_c - 1);
+    // tfn_colors.push_back(p);
+    tfn_colors.push_back(data_c[i].x);
+    tfn_colors.push_back(data_c[i].y);
+    tfn_colors.push_back(data_c[i].z);
+  }
+
+  for (int i = 0; i < size_o; ++i) {
+    float p = (float)i / (size_o - 1);
+    tfn_alphas.push_back(p);
+    tfn_alphas.push_back(data_o[i]);
+  }
+
+  tfn_value_range = scene_tfn.value_range;
+
+  set_transfer_function(tfn_colors, tfn_alphas, tfn_value_range);
+
+  current_scene = std::move(scene); // makes sure data will not be released while the program is running
+}
+
+} // namespace ovr
+
+std::shared_ptr<ovr::MainRenderer>
+create_renderer(std::string name);
+
+ovr::Scene
+create_example_scene();

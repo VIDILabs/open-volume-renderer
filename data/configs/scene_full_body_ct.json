@@ -1,0 +1,252 @@
+{
+  "dataSource" : [
+    {
+      "dimensions" : {
+        "x" : 512,
+        "y" : 512,
+        "z" : 1299
+      },
+      "endian" : "LITTLE_ENDIAN",
+      "fileName" : "D:/datasets/fullbody_ct_pet/s203-512x512x1299-uint16.raw",
+      "fileUpperLeft" : false,
+      "format" : "REGULAR_GRID_RAW_BINARY",
+      "id" : 1,
+      "name" : "s203-512x512x1299-uint16.raw",
+      "offset" : 0,
+      "type" : "UNSIGNED_SHORT"
+    }
+  ],
+  "snapshot" : [
+  ],
+  "view" : {
+    "backgroundColor" : {
+      "a" : 1,
+      "b" : 0,
+      "g" : 0,
+      "r" : 0
+    },
+    "camera" : {
+      "center" : {
+        "x" : 293.55490112304688,
+        "y" : 262.61093139648438,
+        "z" : 228.93891906738281
+      },
+      "eye" : {
+        "x" : -307.4744157381848,
+        "y" : 249.78614272879975,
+        "z" : 216.01299769964368
+      },
+      "fovy" : 45,
+      "projectionMode" : "PERSPECTIVE",
+      "up" : {
+        "x" : 0.021402152115719181,
+        "y" : 0.004639502775453724,
+        "z" : -0.99976018269323574
+      },
+      "zFar" : 10000,
+      "zNear" : 12.98
+    },
+    "globalAmbient" : {
+      "a" : 0,
+      "b" : 0,
+      "g" : 0,
+      "r" : 0
+    },
+    "globalLighting" : false,
+    "lightSource" : {
+      "ambient" : {
+        "a" : 1,
+        "b" : 1,
+        "g" : 1,
+        "r" : 1
+      },
+      "diffuse" : {
+        "a" : 1,
+        "b" : 1,
+        "g" : 1,
+        "r" : 1
+      },
+      "position" : {
+        "w" : 0,
+        "x" : -0.92024272680282593,
+        "y" : -0.36218678951263428,
+        "z" : -0.14823633432388306
+      },
+      "specular" : {
+        "a" : 1,
+        "b" : 1,
+        "g" : 1,
+        "r" : 1
+      },
+      "type" : "DIRECTIONAL_LIGHT"
+    },
+    "lighting" : true,
+    "lightingSide" : "TWO_SIDE",
+    "method" : "REGULAR_GRID_VOLUME_RAY_CASTING",
+    "tfPreIntegration" : false,
+    "volume" : {
+      "boundingBox" : {
+        "maximum" : {
+          "x" : 511,
+          "y" : 511,
+          "z" : 1298
+        },
+        "minimum" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+        }
+      },
+      "boundingBoxColor" : {
+        "a" : 1,
+        "b" : 0.50000762939453125,
+        "g" : 0.50000762939453125,
+        "r" : 0.50000762939453125
+      },
+      "boundingBoxVisible" : true,
+      "clippingBox" : {
+        "maximum" : {
+          "x" : 511,
+          "y" : 511,
+          "z" : 1298
+        },
+        "minimum" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+        }
+      },
+      "dataId" : 1,
+      "interpolationType" : "LINEAR_INTERPOLATION",
+      "material" : {
+        "ambient" : 0.20000000298023224,
+        "diffuse" : 0.80000001192092896,
+        "shininess" : 16,
+        "specular" : 0
+      },
+      "opacityUnitDistance" : 0.99989998340606689,
+      "sampleDistance" : 0.25,
+      "scalarMappingRange" : {
+        "maximum" : 2048,
+        "minimum" : 0
+      },
+      "slice" : {
+        "x" : {
+          "position" : 255.5,
+          "visible" : false
+        },
+        "y" : {
+          "position" : 255.5,
+          "visible" : false
+        },
+        "z" : {
+          "position" : 649,
+          "visible" : false
+        }
+      },
+      "textureBox" : {
+        "maximum" : {
+          "x" : 511.5,
+          "y" : 511.5,
+          "z" : 1298.5
+        },
+        "minimum" : {
+          "x" : -0.5,
+          "y" : -0.5,
+          "z" : -0.5
+        }
+      },
+      "transferFunction" : {
+        "alphaArray" : {
+          "data" : "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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",
+          "encoding" : "BASE64"
+        },
+        "colorControls" : [
+          {
+            "color" : {
+              "b" : 1,
+              "g" : 0.364705890417099,
+              "r" : 0.023529412224888802
+            },
+            "position" : 0.041446216404438019
+          },
+          {
+            "color" : {
+              "b" : 1,
+              "g" : 0.57254904508590698,
+              "r" : 0.38823530077934265
+            },
+            "position" : 0.13763907551765442
+          },
+          {
+            "color" : {
+              "b" : 0.73333334922790527,
+              "g" : 0.73333334922790527,
+              "r" : 1
+            },
+            "position" : 0.28850573301315308
+          },
+          {
+            "color" : {
+              "b" : 0.64313727617263794,
+              "g" : 0.66666668653488159,
+              "r" : 1
+            },
+            "position" : 0.45193129777908325
+          },
+          {
+            "color" : {
+              "b" : 0.23921568691730499,
+              "g" : 0.23921568691730499,
+              "r" : 0.78039216995239258
+            },
+            "position" : 0.46620839834213257
+          },
+          {
+            "color" : {
+              "b" : 0.094117648899555206,
+              "g" : 0.094117648899555206,
+              "r" : 0.72156864404678345
+            },
+            "position" : 0.55839556455612183
+          },
+          {
+            "color" : {
+              "b" : 0.68627452850341797,
+              "g" : 0.9529411792755127,
+              "r" : 1
+            },
+            "position" : 0.56811285018920898
+          },
+          {
+            "color" : {
+              "b" : 0,
+              "g" : 0,
+              "r" : 0
+            },
+            "position" : 0
+          },
+          {
+            "color" : {
+              "b" : 0.67450982332229614,
+              "g" : 0.79607844352722168,
+              "r" : 1
+            },
+            "position" : 0.16935484111309052
+          },
+          {
+            "color" : {
+              "b" : 0.67224651575088501,
+              "g" : 0.78674226999282837,
+              "r" : 1
+            },
+            "position" : 0.24838706851005554
+          }
+        ],
+        "resolution" : 1024
+      },
+      "transferFunctionType" : "TRANSFER_FUNCTION",
+      "visible" : true
+    }
+  }
+}

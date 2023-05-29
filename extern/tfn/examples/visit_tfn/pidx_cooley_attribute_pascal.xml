@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<Object name="VolumeAttributes">
+    <Field name="legendFlag" type="bool">true</Field>
+    <Field name="lightingFlag" type="bool">false</Field>
+    <Object name="colorControlPoints">
+        <Object name="ColorControlPointList">
+            <Object name="ColorControlPoint">
+                <Field name="colors" type="unsignedCharArray" length="4">0 0 128 255 </Field>
+                <Field name="position" type="float">0</Field>
+            </Object>
+            <Object name="ColorControlPoint">
+                <Field name="colors" type="unsignedCharArray" length="4">0 0 255 255 </Field>
+                <Field name="position" type="float">0.1586608</Field>
+            </Object>
+            <Object name="ColorControlPoint">
+                <Field name="colors" type="unsignedCharArray" length="4">0 255 255 255 </Field>
+                <Field name="position" type="float">0.3391558</Field>
+            </Object>
+            <Object name="ColorControlPoint">
+                <Field name="colors" type="unsignedCharArray" length="4">0 255 0 255 </Field>
+                <Field name="position" type="float">0.5094614</Field>
+            </Object>
+            <Object name="ColorControlPoint">
+                <Field name="colors" type="unsignedCharArray" length="4">255 255 0 255 </Field>
+                <Field name="position" type="float">0.6812227</Field>
+            </Object>
+            <Object name="ColorControlPoint">
+                <Field name="colors" type="unsignedCharArray" length="4">255 0 0 255 </Field>
+                <Field name="position" type="float">1</Field>
+            </Object>
+            <Field name="smoothing" type="string">Linear</Field>
+            <Field name="equal" type="bool">false</Field>
+            <Field name="discrete" type="bool">false</Field>
+            <Field name="category" type="string"></Field>
+        </Object>
+    </Object>
+    <Field name="opacityAttenuation" type="float">0.2156863</Field>
+    <Field name="opacityMode" type="string">GaussianMode</Field>
+    <Object name="opacityControlPoints">
+        <Object name="GaussianControlPointList">
+            <Object name="GaussianControlPoint">
+                <Field name="x" type="float">0.05</Field>
+                <Field name="height" type="float">0.25</Field>
+                <Field name="width" type="float">0.05</Field>
+                <Field name="xBias" type="float">0</Field>
+                <Field name="yBias" type="float">0</Field>
+            </Object>
+            <Object name="GaussianControlPoint">
+                <Field name="x" type="float">0.15</Field>
+                <Field name="height" type="float">0.35</Field>
+                <Field name="width" type="float">0.06220929</Field>
+                <Field name="xBias" type="float">0</Field>
+                <Field name="yBias" type="float">0</Field>
+            </Object>
+            <Object name="GaussianControlPoint">
+                <Field name="x" type="float">0.25</Field>
+                <Field name="height" type="float">0.3666667</Field>
+                <Field name="width" type="float">0.05813953</Field>
+                <Field name="xBias" type="float">0</Field>
+                <Field name="yBias" type="float">0</Field>
+            </Object>
+            <Object name="GaussianControlPoint">
+                <Field name="x" type="float">0.35</Field>
+                <Field name="height" type="float">0.5166667</Field>
+                <Field name="width" type="float">0.06947675</Field>
+                <Field name="xBias" type="float">0</Field>
+                <Field name="yBias" type="float">0</Field>
+            </Object>
+            <Object name="GaussianControlPoint">
+                <Field name="x" type="float">0.45</Field>
+                <Field name="height" type="float">0.6</Field>
+                <Field name="width" type="float">0.06773257</Field>
+                <Field name="xBias" type="float">0</Field>
+                <Field name="yBias" type="float">0</Field>
+            </Object>
+            <Object name="GaussianControlPoint">
+                <Field name="x" type="float">0.55</Field>
+                <Field name="height" type="float">0.6166667</Field>
+                <Field name="width" type="float">0.06744188</Field>
+                <Field name="xBias" type="float">0</Field>
+                <Field name="yBias" type="float">0</Field>
+            </Object>
+            <Object name="GaussianControlPoint">
+                <Field name="x" type="float">0.6526163</Field>
+                <Field name="height" type="float">0.5166667</Field>
+                <Field name="width" type="float">0.07267445</Field>
+                <Field name="xBias" type="float">0</Field>
+                <Field name="yBias" type="float">0</Field>
+            </Object>
+            <Object name="GaussianControlPoint">
+                <Field name="x" type="float">0.8037791</Field>
+                <Field name="height" type="float">0.4833333</Field>
+                <Field name="width" type="float">0.1177325</Field>
+                <Field name="xBias" type="float">0</Field>
+                <Field name="yBias" type="float">0</Field>
+            </Object>
+            <Object name="GaussianControlPoint">
+                <Field name="x" type="float">0.95</Field>
+                <Field name="height" type="float">0.4</Field>
+                <Field name="width" type="float">0.06046516</Field>
+                <Field name="xBias" type="float">0</Field>
+                <Field name="yBias" type="float">0</Field>
+            </Object>
+        </Object>
+    </Object>
+    <Field name="resampleFlag" type="bool">true</Field>
+    <Field name="resampleTarget" type="int">50000</Field>
+    <Field name="opacityVariable" type="string">default</Field>
+    <Field name="compactVariable" type="string">default</Field>
+    <Field name="freeformOpacity" type="unsignedCharArray" length="256">2 4 7 12 19 29 41 56 73 90 105 118 125 127 122 112 98 81 64 48 34 23 15 9 5 3 3 5 9 15 23 34 48 64 81 98 112 122 127 125 118 105 90 73 56 41 29 19 12 7 4 2 4 7 12 19 29 41 56 73 90 105 118 125 127 122 112 98 81 64 48 34 23 15 9 5 3 3 5 9 15 23 34 48 64 81 98 112 122 127 125 118 105 90 73 56 41 29 19 12 7 4 2 4 7 12 19 29 41 56 73 90 105 118 125 127 122 112 98 81 64 48 34 23 15 9 5 3 3 5 9 15 23 34 48 64 81 98 112 122 127 125 118 105 90 73 56 41 29 19 12 7 4 2 4 7 12 19 29 41 56 73 90 105 118 125 127 122 112 98 81 64 48 34 23 15 9 5 3 3 5 9 15 23 34 48 64 81 98 112 122 127 125 118 105 90 73 56 41 29 19 12 7 4 2 4 7 12 19 29 41 56 73 90 105 118 125 127 122 112 98 81 64 48 34 23 15 9 5 3 3 5 9 15 23 34 48 64 81 98 112 122 127 125 118 105 90 73 56 41 29 19 12 7 4 2 </Field>
+    <Field name="useColorVarMin" type="bool">true</Field>
+    <Field name="colorVarMin" type="float">0</Field>
+    <Field name="useColorVarMax" type="bool">true</Field>
+    <Field name="colorVarMax" type="float">0.15</Field>
+    <Field name="useOpacityVarMin" type="bool">false</Field>
+    <Field name="opacityVarMin" type="float">0</Field>
+    <Field name="useOpacityVarMax" type="bool">false</Field>
+    <Field name="opacityVarMax" type="float">0</Field>
+    <Field name="smoothData" type="bool">false</Field>
+    <Field name="samplesPerRay" type="int">2</Field>
+    <Field name="rendererType" type="string">RayCastingSLIVR</Field>
+    <Field name="gradientType" type="string">CenteredDifferences</Field>
+    <Field name="num3DSlices" type="int">200</Field>
+    <Field name="scaling" type="string">Linear</Field>
+    <Field name="skewFactor" type="double">1</Field>
+    <Field name="limitsMode" type="string">OriginalData</Field>
+    <Field name="sampling" type="string">Rasterization</Field>
+    <Field name="rendererSamples" type="float">3</Field>
+    <Field name="transferFunctionDim" type="int">1</Field>
+    <Field name="lowGradientLightingReduction" type="string">Lower</Field>
+    <Field name="lowGradientLightingClampFlag" type="bool">false</Field>
+    <Field name="lowGradientLightingClampValue" type="double">1</Field>
+    <Field name="materialProperties" type="doubleArray" length="4">0.4 0.75 0 15 </Field>
+</Object>

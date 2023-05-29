@@ -1,0 +1,59 @@
+#usda 1.0
+
+def "scene" {
+    def "rendering" {
+        int use_dda = 2 # 0 = Not using DDA; 1 = Using Single Layer DDA; 2 = Using Multiple Layer DDA
+        bool parallel_view = False
+        bool simple_path_tracing = True
+    }
+    def "volume" {
+        # string data_path = "C:/Users/wilso/Documents/Projects/research/open-volume-renderer/data/configs/scene_mechhand.json"
+
+        # string data_path = "baseline/generated_heatrelease_1atm_camera_adjusted.json"
+        # string data_path = "baseline/generated_heatrelease_10atm_camera_adjusted.json"
+        # string data_path = "baseline/generated_temp_1atm_camera_adjusted.json"
+        # string data_path = "baseline/generated_temp_10atm_camera_adjusted.json"
+
+        # string data_path = "baseline/scene_chameleon.json"
+        # string data_path = "baseline/scene_mechhand.json"
+
+        # string data_path = "baseline/render_pigheart.json"
+        string data_path = "baseline/render_richtmyer_meshkov.json"
+
+    }
+    def "camera" {
+        # from = eye
+        float3 from = (
+            -1818.01,
+            2496.51,
+            -1875.73
+        )
+        # at = center
+        float3 at = (
+            790.71,
+            1057.9441,
+            926.1431
+        )
+        # up = up
+        float3 up = (
+            0.608985,
+            -0.313457,
+            -0.727943
+        )
+    }
+    def "light" {
+        def "ambient" {
+            def "first_light" {
+                float  intensity = 1
+                float3 color     = (1, 1, 1)
+            }
+        }
+        def "directional" {
+            def "first_light" {
+                float  intensity = 1
+                float3 direction = (0, -10, 0)
+                float3 color     = (10, 10, 10)
+            }
+        }
+    }
+}

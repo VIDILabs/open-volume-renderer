@@ -1,0 +1,231 @@
+{
+  "dataSource" : [
+    {
+      "dimensions" : {
+        "x" : 128,
+        "y" : 128,
+        "z" : 128
+      },
+      "endian" : "LITTLE_ENDIAN",
+      "fileName" : [
+        "/home/davidbau/repos/open-volume-renderer/data/volume/vorts1.data",
+        "/media/data/qadwu/volume/vortices/vorts1.data"
+      ],
+      "fileUpperLeft" : false,
+      "format" : "REGULAR_GRID_RAW_BINARY",
+      "id" : 1,
+      "name" : "vorts1.data",
+      "offset" : 0,
+      "type" : "FLOAT"
+    }
+  ],
+  "snapshot" : [
+  ],
+  "view" : {
+    "backgroundColor" : {
+      "a" : 1,
+      "b" : 0,
+      "g" : 0,
+      "r" : 0
+    },
+    "camera" : {
+      "center" : {
+        "x" : 63.5,
+        "y" : 63.5,
+        "z" : 63.5
+      },
+      "eye" : {
+        "x" : 63.5,
+        "y" : 63.5,
+        "z" : 400
+      },
+      "fovy" : 45,
+      "projectionMode" : "PERSPECTIVE",
+      "up" : {
+        "x" : 0,
+        "y" : 1,
+        "z" : 0
+      },
+      "zFar" : 1270,
+      "zNear" : 1.27
+    },
+    "globalAmbient" : {
+      "a" : 0,
+      "b" : 0,
+      "g" : 0,
+      "r" : 0
+    },
+    "globalLighting" : false,
+    "lightSource" : {
+      "ambient" : {
+        "a" : 1,
+        "b" : 1,
+        "g" : 1,
+        "r" : 1
+      },
+      "diffuse" : {
+        "a" : 1,
+        "b" : 1,
+        "g" : 1,
+        "r" : 1
+      },
+      "position" : {
+        "w" : 0,
+        "x" : 0,
+        "y" : 0,
+        "z" : 1
+      },
+      "specular" : {
+        "a" : 1,
+        "b" : 1,
+        "g" : 1,
+        "r" : 1
+      },
+      "type" : "DIRECTIONAL_LIGHT"
+    },
+    "lighting" : true,
+    "lightingSide" : "FRONT_SIDE",
+    "method" : "REGULAR_GRID_VOLUME_RAY_CASTING",
+    "tfPreIntegration" : false,
+    "volume" : {
+      "boundingBox" : {
+        "maximum" : {
+          "x" : 127,
+          "y" : 127,
+          "z" : 127
+        },
+        "minimum" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+        }
+      },
+      "boundingBoxColor" : {
+        "a" : 1,
+        "b" : 0.50000762939453125,
+        "g" : 0.50000762939453125,
+        "r" : 0.50000762939453125
+      },
+      "boundingBoxVisible" : true,
+      "clippingBox" : {
+        "maximum" : {
+          "x" : 127,
+          "y" : 127,
+          "z" : 127
+        },
+        "minimum" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+        }
+      },
+      "dataId" : 1,
+      "interpolationType" : "LINEAR_INTERPOLATION",
+      "material" : {
+        "ambient" : 0.20000000298023224,
+        "diffuse" : 0.80000001192092896,
+        "shininess" : 16,
+        "specular" : 0
+      },
+      "opacityUnitDistance" : 1,
+      "sampleDistance" : 0.25,
+      "scalarMappingRange" : {
+        "maximum" : 12.139389038085938,
+        "minimum" : 0.0070086014457046986
+      },
+      "slice" : {
+        "x" : {
+          "position" : 63.5,
+          "visible" : false
+        },
+        "y" : {
+          "position" : 63.5,
+          "visible" : false
+        },
+        "z" : {
+          "position" : 63.5,
+          "visible" : false
+        }
+      },
+      "textureBox" : {
+        "maximum" : {
+          "x" : 127.5,
+          "y" : 127.5,
+          "z" : 127.5
+        },
+        "minimum" : {
+          "x" : -0.5,
+          "y" : -0.5,
+          "z" : -0.5
+        }
+      },
+      "transferFunction" : {
+        "alphaArray" : {
+          "data" : "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",
+          "encoding" : "BASE64"
+        },
+        "colorControls" : [
+          {
+            "color" : {
+              "b" : 1,
+              "g" : 0.36470600962638855,
+              "r" : 0
+            },
+            "position" : 0
+          },
+          {
+            "color" : {
+              "b" : 0.97647100687026978,
+              "g" : 1,
+              "r" : 0
+            },
+            "position" : 0.1666666716337204
+          },
+          {
+            "color" : {
+              "b" : 0.10588199645280838,
+              "g" : 1,
+              "r" : 0
+            },
+            "position" : 0.3333333432674408
+          },
+          {
+            "color" : {
+              "b" : 0,
+              "g" : 1,
+              "r" : 0.96862697601318359
+            },
+            "position" : 0.5
+          },
+          {
+            "color" : {
+              "b" : 0,
+              "g" : 0.49019598960876465,
+              "r" : 1
+            },
+            "position" : 0.66666668653488159
+          },
+          {
+            "color" : {
+              "b" : 0,
+              "g" : 0,
+              "r" : 1
+            },
+            "position" : 0.83333331346511841
+          },
+          {
+            "color" : {
+              "b" : 1,
+              "g" : 0,
+              "r" : 0.66274499893188477
+            },
+            "position" : 1
+          }
+        ],
+        "resolution" : 1024
+      },
+      "transferFunctionType" : "TRANSFER_FUNCTION",
+      "visible" : true
+    }
+  }
+}
