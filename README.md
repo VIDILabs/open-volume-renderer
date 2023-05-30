@@ -6,17 +6,10 @@
 
 ## TODO List
 
-* Cleanup repeated packages in `common/vidi3d` using cmake superbuild
-* Remove Qt dependencies asked by `common/vidi3d`
-* Cleanup scene file features
-* embed noise file into the code
-* add neural representation renderer (with API for NN and Libtorch)
-
-## Known Bugs
-* ospray renderer has wired color
-* integrate light information in scene files
-* wrong image when rendering ammonia datasets (looks like wrong value range)
-* cannot control logging with cmd line
+- [ ] Complete & correct documentations
+- [ ] Cleanup scene file features
+- [ ] embed noise file into the code
+- [ ] add neural representation renderer (with API for NN and Libtorch)
 
 ## Building the Code
 
@@ -49,8 +42,6 @@ useful for embeded rendering implementation.
     from https://github.com/ospray/ospray/releases and TBB from https://github.com/oneapi-src/oneTBB/releases.
   - if you are building this code in other configuration, you need to compile and install OSPRay manually. 
     You also do not need to download TBB separately because OSPRay's superbuild will provide a version of TBB. 
-- LibTorch
-  - you will also need libtorch for machine learning support
 
 Detailed steps below:
 
@@ -97,5 +88,5 @@ Detailed steps below:
 
 - On Linux:
 ```
-./renderapp /home/qadwu/Work/ovr/data/configs/scene_mechhand.json nncache
+TODO
 ```
