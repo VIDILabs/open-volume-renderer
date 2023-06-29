@@ -31,6 +31,7 @@
 #include <memory>
 #include <string>
 #include <set>
+#include <stdexcept>
 
 namespace ovr {
 namespace dynamic {
