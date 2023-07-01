@@ -7,7 +7,7 @@
         "z" : 128
       },
       "endian" : "LITTLE_ENDIAN",
-      "fileName" : "D:/datasets/simple/engine.raw",
+      "fileName" : "F:/simple/engine.raw",
       "fileUpperLeft" : false,
       "format" : "REGULAR_GRID_RAW_BINARY",
       "id" : 1,
