@@ -16,15 +16,20 @@
 
 #pragma once
 
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+
 #include "gdt/math/vec.h"
 #ifdef __CUDA_ARCH__
 #include <math_constants.h>
 #endif
 #include <limits>
 
-#ifndef M_PI
-#define M_PI 3.141593f
-#endif
+// #ifndef M_PI
+// #define M_PI 3.141593f
+// #endif
+#include <cmath>
 
 namespace gdt {
 

@@ -42,7 +42,7 @@ struct HistoryFPSCounter : public FPSCounter {
 
   HistoryFPSCounter() : frame(0), size(50) {
     for (int i = 0; i < size*counter_interval; i+=counter_interval) {
-      indices.push_back(i);
+      indices.push_back((float)i);
     }
   }
 
@@ -52,7 +52,7 @@ struct HistoryFPSCounter : public FPSCounter {
   }
 
   void update_history(float frame_time, float render_time, float inference_time) {
-    fps_history.push_back(fps);
+    fps_history.push_back((float)fps);
     frame_time_history.push_back(frame_time);
     render_time_history.push_back(render_time);
     inference_time_history.push_back(inference_time);

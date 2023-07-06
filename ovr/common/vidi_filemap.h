@@ -723,7 +723,7 @@ inline future_buffer_t FileRef_Native::randomRead(size_t offset, size_t bytes, v
   ol.Offset = large.LowPart;
   ol.OffsetHigh = large.HighPart;
   DWORD br;
-  if (!ReadFile(this->fd, data, bytes, &br, &ol))
+  if (!ReadFile(this->fd, data, (DWORD)bytes, &br, &ol))
     ThrowLastError("failed to load streaming buffer");
 #else
   const ssize_t br = pread(this->fd, data, bytes, offset);
@@ -792,7 +792,7 @@ inline future_buffer_t FileRef_Async::readData(void *data, size_t bytes, size_t 
 #endif
 
   DWORD numOfBytesRead = 0;
-  if (!ReadFile(this->fd, data, bytes, &numOfBytesRead, ret->overlapped_structure)) {
+  if (!ReadFile(this->fd, data, (DWORD)bytes, &numOfBytesRead, ret->overlapped_structure)) {
     if (GetLastError() != ERROR_IO_PENDING) {
       // Some other error occurred while reading the file.
       ThrowLastError("failed to start async read");
@@ -817,7 +817,7 @@ inline future_buffer_t FileRef_Async::writeData(const void *data, size_t bytes, 
   auto ret = std::make_shared<AsyncFutureBuffer>(this->fd, offset, bytes, data);
 
   DWORD numOfBytesRead = 0;
-  if (!WriteFile(this->fd, data, bytes, &numOfBytesRead, ret->overlapped_structure)) {
+  if (!WriteFile(this->fd, data, (DWORD)bytes, &numOfBytesRead, ret->overlapped_structure)) {
     if (GetLastError() != ERROR_IO_PENDING) {
       // Some other error occurred while reading the file.
       ThrowLastError("failed to start async write");

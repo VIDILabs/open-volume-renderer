@@ -614,7 +614,7 @@ DeviceOSPRay::Impl::render()
 
     // TODO throw if launch_size is too large.
 
-    OSPFrameBuffer fb = ospNewFrameBuffer(launch_size, 1, OSP_FB_RGBA32F, OSP_FB_COLOR);
+    OSPFrameBuffer fb = ospNewFrameBuffer((int)launch_size, 1, OSP_FB_RGBA32F, OSP_FB_COLOR);
 
     parent->variance = ospRenderFrameBlocking(fb, ospray.renderer, ospray.camera, ospray.world);
 

@@ -128,7 +128,7 @@ DeviceOptix7::Impl::commit()
 
     /* the factor '2.f' here might be unnecessary, but I want to match ospray's implementation */
     const float fovy = camera.perspective.fovy;
-    const float t = 2.f /* (note above) */ * tan(fovy * 0.5f * M_PI / 180.f);
+    const float t = 2.f /* (note above) */ * tan(fovy * 0.5f * (float)M_PI / 180.f);
     const float aspect = params.frame.size.x / float(params.frame.size.y);
     params.last_camera = params.camera;
     params.camera.position = camera.from;

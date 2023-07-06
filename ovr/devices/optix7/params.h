@@ -49,8 +49,8 @@ namespace optix7 {
 //
 // ------------------------------------------------------------------
 
-#define VISIBILITY_VOLUME   1 << 0
-#define VISIBILITY_GEOMETRY 1 << 1
+#define VISIBILITY_VOLUME   (1ULL << 0)
+#define VISIBILITY_GEOMETRY (1ULL << 1)
 
 struct LaunchParams { // shared global data
   struct DeviceFrameBuffer {

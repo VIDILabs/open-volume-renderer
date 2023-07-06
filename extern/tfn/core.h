@@ -662,7 +662,7 @@ inline void TransferFunctionCore::updateFromAlphaControls()
   for (int i = 0; i < resolution(); ++i) {
     // double value = (double(i) + 0.5f) / double(resolution());
     double value = double(i) / double(resolution() - 1);
-    upperBound = std::upper_bound(upperBound, opcControls.end(), AlphaControl(vec2f(value, 0.0)), compFunc);
+    upperBound = std::upper_bound(upperBound, opcControls.end(), AlphaControl(vec2f((float)value, 0.0f)), compFunc);
     int ubIndex = int(upperBound - opcControls.begin());
     double alpha;
     // less than the leftmost control
@@ -678,7 +678,7 @@ inline void TransferFunctionCore::updateFromAlphaControls()
       auto &left = opcControls[ubIndex - 1];
       auto &right = opcControls[ubIndex];
       double w = std::abs(value - left.pos.x) / std::abs(right.pos.x - left.pos.x);
-      alpha = mix(left.pos.y, right.pos.y, w);
+      alpha = mix(left.pos.y, right.pos.y, (float)w);
     }
     m_rgbaTable[i].w = std::max(m_rgbaTable[i].w, float(alpha));
   }
@@ -729,7 +729,7 @@ inline void loadTransferFunction(const json& jstfn, TransferFunctionCore& tfn)
 
   tf.clearColorControls();
   if (jstfn.contains("colorControls")) {
-    int count = jstfn["colorControls"].size();
+    int count = (int)jstfn["colorControls"].size();
     for (int i = 0; i < count; ++i) {
       const json &js_cc = jstfn["colorControls"][i];
       if (!js_cc.contains("position") || !js_cc.contains("color")) continue;
@@ -742,7 +742,7 @@ inline void loadTransferFunction(const json& jstfn, TransferFunctionCore& tfn)
 
   tf.clearAlphaControls();
   if (jstfn.contains("opacityControl")) {
-    int count = jstfn["opacityControl"].size();
+    int count = (int)jstfn["opacityControl"].size();
     for (int i = 0; i < count; ++i) {
       const json &js_oc = jstfn["opacityControl"][i];
       if (!js_oc.contains("position")) continue;
@@ -753,7 +753,7 @@ inline void loadTransferFunction(const json& jstfn, TransferFunctionCore& tfn)
 
   tf.clearGaussianObjects();
   if (jstfn.contains("gaussianObjects")) {
-    int count = jstfn["gaussianObjects"].size();
+    int count = (int)jstfn["gaussianObjects"].size();
     for (int i = 0; i < count; ++i) {
       const json &json_go = jstfn["gaussianObjects"][i];
       if (!json_go.contains("mean") || !json_go.contains("sigma") || !json_go.contains("heightFactor")) continue;
