@@ -5,6 +5,50 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "(Windows) vnr_cmd_train",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/${command:cmake.buildType}/${command:cmake.buildType}/vnr_cmd_train",
+            "args": [
+                // "--volume=configs/scene_heatrelease_1atm.json",
+                "--volume=configs/scene_engine.json",
+                "--network=${workspaceFolder}/projects/instantvnr/example-model.json",
+                "--max-num-steps=20000"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/data",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "C:/Users/wilso/Documents/Softwares/win/oneapi-tbb-2021.1.1-win/oneapi-tbb-2021.1.1/redist/intel64/vc14;C:/Users/wilso/Documents/Softwares/win/ospray-2.5.0.x86_64.windows/bin;${env:PATH}"
+                }
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "(Windows) vnr_cmd_render",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/${command:cmake.buildType}/${command:cmake.buildType}/vnr_cmd_render",
+            "args": [
+                // "--neural-volume=params.json",
+                "--simple-volume=configs/scene_mechhand.json",
+                // "--tfn=configs/scene_heatrelease_1atm.json",
+                "--tfn=configs/scene_mechhand.json",
+                "--num-frames=16",
+                "--rendering-mode=15"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/data",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "C:/Users/wilso/Documents/Softwares/win/oneapi-tbb-2021.1.1-win/oneapi-tbb-2021.1.1/redist/intel64/vc14;C:/Users/wilso/Documents/Softwares/win/ospray-2.5.0.x86_64.windows/bin;${env:PATH}"
+                }
+            ],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "(Windows) Mini App",
             "type": "cppvsdbg",
             "request": "launch",
@@ -64,8 +108,8 @@
             "program": "${workspaceFolder}/build/${command:cmake.buildType}/${command:cmake.buildType}/renderapp.exe",
             "args": [
                 // "${workspaceFolder}/data/configs/scene_mechhand.json",
-                // "${workspaceFolder}/data/configs/scene_heatrelease_1atm.json",
-                "${workspaceFolder}/data/scene_setting.usda",
+                "${workspaceFolder}/data/configs/scene_heatrelease_1atm.json",
+                // "${workspaceFolder}/data/scene_setting.usda",
                 "${input:device}"
             ],
             "stopAtEntry": false,
@@ -74,7 +118,7 @@
                 {
                     "name": "PATH",
                     // "value": "C:/Users/wilso/Documents/Softwares/win/oneapi-tbb-2021.1.1-win/oneapi-tbb-2021.1.1/redist/intel64/vc14;C:/Users/wilso/Documents/Softwares/win/ospray-2.5.0.x86_64.windows/bin;C:/Users/wilso/Documents/Softwares/win/USDInstall/bin;C:/Users/wilso/Documents/Softwares/win/USDInstall/lib;${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d/${command:cmake.buildType};${env:PATH}"
-                    "value": "C:/Users/wilso/Documents/Projects/research/ospray/build/Release/install/lib/intel64/vc14;C:/Users/wilso/Documents/Projects/research/ospray/build/Release/install/bin;C:/Users/wilso/Documents/Softwares/win/USDInstall/bin;C:/Users/wilso/Documents/Softwares/win/USDInstall/lib;${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d/${command:cmake.buildType};${env:PATH}"
+                    "value": "E:/Projects/research/ospray/build/Release/install/lib/intel64/vc14;E:/Projects/research/ospray/build/Release/install/bin;C:/Users/wilso/Documents/Softwares/win/USDInstall/bin;C:/Users/wilso/Documents/Softwares/win/USDInstall/lib;${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d/${command:cmake.buildType};${env:PATH}"
                 }
             ],
             "console": "integratedTerminal"
@@ -95,50 +139,12 @@
                 {
                     "name": "PATH",
                     // "value": "C:/Users/wilso/Documents/Softwares/win/TensorRT-8.2.3.0.Windows10.x86_64.cuda-11.4.cudnn8.2/TensorRT-8.2.3.0/lib;C:/Users/wilso/Documents/Softwares/win/TorchTensorRT-v1.1.0/lib;C:/Users/wilso/Documents/Softwares/win/libtorch-win-shared-with-deps-1.11.0+cu113/libtorch-${command:cmake.buildType}/lib;C:/Users/wilso/Documents/Softwares/win/oneapi-tbb-2021.1.1-win/oneapi-tbb-2021.1.1/redist/intel64/vc14;C:/Users/wilso/Documents/Softwares/win/ospray-2.5.0.x86_64.windows/bin;C:/Users/wilso/Documents/Softwares/win/USDInstall/bin;C:/Users/wilso/Documents/Softwares/win/USDInstall/lib;${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d/${command:cmake.buildType};${env:PATH}"
-                    "value": "C:/Users/wilso/Documents/Softwares/win/TensorRT-8.2.3.0.Windows10.x86_64.cuda-11.4.cudnn8.2/TensorRT-8.2.3.0/lib;C:/Users/wilso/Documents/Softwares/win/TorchTensorRT-v1.1.0/lib;C:/Users/wilso/Documents/Softwares/win/libtorch-win-shared-with-deps-1.11.0+cu113/libtorch-${command:cmake.buildType}/lib;C:/Users/wilso/Documents/Projects/research/ospray/build/Release/install/lib/intel64/vc14;C:/Users/wilso/Documents/Projects/research/ospray/build/Release/install/bin;C:/Users/wilso/Documents/Softwares/win/USDInstall/bin;C:/Users/wilso/Documents/Softwares/win/USDInstall/lib;${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d/${command:cmake.buildType};${env:PATH}"
+                    "value": "C:/Users/wilso/Documents/Softwares/win/TensorRT-8.2.3.0.Windows10.x86_64.cuda-11.4.cudnn8.2/TensorRT-8.2.3.0/lib;C:/Users/wilso/Documents/Softwares/win/TorchTensorRT-v1.1.0/lib;C:/Users/wilso/Documents/Softwares/win/libtorch-win-shared-with-deps-1.11.0+cu113/libtorch-${command:cmake.buildType}/lib;E:/Projects/research/ospray/build/Release/install/lib/intel64/vc14;E:/Projects/research/ospray/build/Release/install/bin;C:/Users/wilso/Documents/Softwares/win/USDInstall/bin;C:/Users/wilso/Documents/Softwares/win/USDInstall/lib;${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d/${command:cmake.buildType};${env:PATH}"
                 }
             ],
             "console": "integratedTerminal"
         },
-        {
-            "name": "(Windows) CUDA Pt",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/${command:cmake.buildType}/${command:cmake.buildType}/renderpt.exe",
-            "args": [
-                "heatrelease_1atm.json"
-            ],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/data",
-            "environment": [
-                {
-                    "name": "PATH",
-                    "value": "C:/Users/wilso/Documents/Softwares/win/oneapi-tbb-2021.1.1-win/oneapi-tbb-2021.1.1/redist/intel64/vc14;${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d/${command:cmake.buildType};${env:PATH}"
-                }
-            ],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "(Windows) OpenVKL PM",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/${command:cmake.buildType}/${command:cmake.buildType}/renderpm.exe",
-            "args": [
-                "--device", "${input:device}",
-                "--scene-vidi3d",
-                "${workspaceFolder}\\data\\configs\\scene_mechhand.json",
-                "--max-num-frames 120"
-            ],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/data",
-            "environment": [
-                {
-                    "name": "PATH",
-                    "value": "C:/Users/wilso/Documents/Projects/research/ospray/build/Release/install/lib/intel64/vc14;C:/Users/wilso/Documents/Projects/research/ospray/build/Release/install/bin;C:/Users/wilso/Documents/Softwares/win/USDInstall/bin;C:/Users/wilso/Documents/Softwares/win/USDInstall/lib;${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d/${command:cmake.buildType};${env:PATH}"
-                }
-            ],
-            "console": "integratedTerminal"
-        }
+
     ],
     "inputs": [
         {
@@ -156,12 +162,8 @@
             "id": "device",
             "description": "Which mini app do you want to run?",
             "options": [
-                "optix7-rm",
-                "optix7-pt",
-                "ospray-rm",
-                "ospray-pt",
-                "vidi3d",
-                "cudapt",
+                "optix7",
+                "ospray",
             ]
         },
         {
