@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - master
+      - main
+      - public
   pull_request:
     branches:
       - master
+      - main
+      - public
 
 jobs:
   
