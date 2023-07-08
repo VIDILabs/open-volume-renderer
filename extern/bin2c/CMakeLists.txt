@@ -5,7 +5,7 @@ project(bin2c-test)
 
 # Compile bin2c obviously
 add_executable(bin2c bin2c.c)
-
+target_compile_definitions(bin2c PRIVATE _CRT_SECURE_NO_WARNINGS)
 # # Create our testing program
 # add_executable(test test/main.cpp)
 

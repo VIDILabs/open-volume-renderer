@@ -80,8 +80,8 @@ struct DDAIter
     // assert(cell.z != stop.z);
 
     const float& ray_t0=t_min;
-    const float& ray_t1=t_max;
-    assert(ray_t0 < ray_t1);
+    // const float& ray_t1=t_max;
+    assert(ray_t0 < t_max);
     // if (dbg) printf("t range for volume %f %f\n",ray_t0,ray_t1); 
 
     const vec3f t_step = abs(rcp(dir));

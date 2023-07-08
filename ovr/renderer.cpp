@@ -65,7 +65,7 @@ create_example_scene()
 {
   static std::random_device rng;        // Will be used to obtain a seed for the random number engine
   static std::mt19937 generator(rng()); // Standard mersenne_twister_engine seeded with rng()
-  static std::uniform_int_distribution<> index(0, colormap::name.size() - 1ULL);
+  static std::uniform_int_distribution<> index(0, (int)(colormap::name.size() - 1ULL));
 
   scene::TransferFunction tfn;
 

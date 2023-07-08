@@ -75,9 +75,10 @@ protected:
   {
     return s;
   }
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-security"
+#if !defined(_MSC_VER)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wformat-security"
+#endif
   template<typename... Ts>
   static std::string stringf(const std::string& format, Ts... rest)
   {
@@ -88,7 +89,9 @@ protected:
     free(bf);
     return ret;
   }
-#pragma GCC diagnostic pop
+#if !defined(_MSC_VER)
+# pragma GCC diagnostic pop
+#endif
 };
 
 class LibraryRepository;

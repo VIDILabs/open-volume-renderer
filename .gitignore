@@ -37,3 +37,4 @@ shadowmap.json
 params.json
 
 projects/
+*.obj
