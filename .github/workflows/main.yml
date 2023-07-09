@@ -103,6 +103,7 @@ jobs:
             visual_studio: "Visual Studio 16 2019"
             cuda: "11.5.1"
             optix: "7.3.0"
+            ospray: "2.5.0"
             arch: 75
 
     env:
