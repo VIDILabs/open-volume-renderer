@@ -125,16 +125,18 @@ jobs:
 
       - name: Install OSPRay
         shell: powershell
+        working-directory: github-actions
         run: .\ospray-cmake-github-actions\install_ospray_windows.ps1
         env:
           ospray: ${{ matrix.ospray }}
 
       - name: Install CUDA
         shell: powershell
+        working-directory: github-actions
+        run: .\cuda-cmake-github-actions\scripts\actions\install_cuda_windows.ps1
         env:
           cuda: ${{ matrix.cuda }}
           visual_studio: ${{ matrix.visual_studio }}
-        run: .\cuda-cmake-github-actions\scripts\actions\install_cuda_windows.ps1
 
       - name: CMake
         env: 
