@@ -27,7 +27,6 @@ jobs:
             cuda: "11.3"
             optix: "7.3.0"
             ospray: "2.5.0"
-
           - os: ubuntu-20.04
             arch: 75
             cuda: "11.3"
@@ -100,11 +99,12 @@ jobs:
             optix: "7.3.0"
             ospray: "2.5.0"
             arch: 86
-          # - os: windows-2019
-          #   visual_studio: "Visual Studio 16 2019"
-          #   cuda: "11.5.1"
-          #   optix: "7.3.0"
-          #   arch: 75
+          - os: windows-2019
+            visual_studio: "Visual Studio 16 2019"
+            cuda: "11.5.1"
+            optix: "7.3.0"
+            ospray: "2.5.0"
+            arch: 75
 
     env:
       build_dir: "build"
