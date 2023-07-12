@@ -49,7 +49,7 @@ namespace glfwapp
 
   GLFWindow::~GLFWindow()
   {
-    #ifndef GLFWAPP_USE_OPENGL2
+#ifndef GLFWAPP_USE_OPENGL2
     ImGui_ImplOpenGL3_Shutdown();
 #else
     ImGui_ImplOpenGL2_Shutdown();
