@@ -217,8 +217,8 @@ createCudaTexture(const cudaArray_t& dataArr,
   tex_desc.readMode = readMode;
   tex_desc.normalizedCoords = normalizedCoords ? 1 : 0;
   tex_desc.maxAnisotropy = maxAnisotropy;
-  tex_desc.maxMipmapLevelClamp = maxMipmapLevelClamp;
-  tex_desc.minMipmapLevelClamp = minMipmapLevelClamp;
+  tex_desc.maxMipmapLevelClamp = (float)maxMipmapLevelClamp;
+  tex_desc.minMipmapLevelClamp = (float)minMipmapLevelClamp;
   tex_desc.mipmapFilterMode = mipmapFilterMode;
   tex_desc.sRGB = sRGB ? 1 : 0;
 

@@ -4,6 +4,9 @@
 // ======================================================================== //
 #pragma once
 
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
 #include <cmath>
 #include <limits>
 
@@ -37,7 +40,7 @@ inline std::pair<int, int> find_interval(std::vector<T> *array, float p)
     it_lower = it_upper - 1;
   }
 
-  return std::make_pair(std::distance(array->begin(), it_lower), std::distance(array->begin(), it_upper));
+  return std::make_pair((int)std::distance(array->begin(), it_lower), (int)std::distance(array->begin(), it_upper));
 }
 
 inline float lerp(const float &l, const float &r, const float &pl, const float &pr, const float &p)

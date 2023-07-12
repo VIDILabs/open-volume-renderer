@@ -25,8 +25,10 @@ private:
   }
 
 public:
+#if !defined(_MSC_VER)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-security"
+#endif
   template<typename... Ts>
   static std::string stringf(const std::string& format, Ts... rest)
   {
@@ -37,7 +39,9 @@ public:
     free(bf);
     return ret;
   }
+#if !defined(_MSC_VER)
 #pragma GCC diagnostic pop
+#endif
 
 private:
 #if defined(_WIN32)

@@ -4,17 +4,21 @@ on:
   push:
     branches:
       - master
+      - main
+      - public
   pull_request:
     branches:
       - master
+      - main
+      - public
 
 jobs:
-  
+
   build_linux:
     name: Build on Linux Systems
-    
+
     runs-on: ${{ matrix.os }}
-    
+
     strategy:
       matrix:
         include:
@@ -23,7 +27,6 @@ jobs:
             cuda: "11.3"
             optix: "7.3.0"
             ospray: "2.5.0"
-
           - os: ubuntu-20.04
             arch: 75
             cuda: "11.3"
@@ -34,38 +37,41 @@ jobs:
       build_dir: "build"
       config: "Release"
       GDT_CUDA_ARCHITECTURES: ${{ matrix.arch }}
-    
+
     steps:
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install cmake gcc g++ libtbb-dev libglfw3-dev xorg-dev
-      
-      - name: Add gitlab.com into known_hosts
-        run: mkdir -p ~/.ssh && ssh-keyscan -H gitlab.com > ~/.ssh/known_hosts
-        shell: bash
+
+      # - name: Add gitlab.com into known_hosts
+      #   run: mkdir -p ~/.ssh && ssh-keyscan -H gitlab.com > ~/.ssh/known_hosts
+      #   shell: bash
 
       - uses: actions/checkout@v2
         with:
-          ssh-key: ${{ secrets.SUBMODULE_CONTENT_PULL_KEY }}
+          # ssh-key: ${{ secrets.SUBMODULE_CONTENT_PULL_KEY }}
           submodules: 'recursive'
-          ssh-known-hosts: ''
-
-      - name: Install CUDA
-        env:
-          cuda: ${{ matrix.cuda }}
-        run: cd github-actions && bash ./cuda-cmake-github-actions/scripts/actions/install_cuda_ubuntu.sh && cd -
-        shell: bash
+          # ssh-known-hosts: ''
 
       - name: Install OptiX
+        shell: bash
+        working-directory: github-actions
         env:
           optix: ${{ matrix.optix }}
-        run: cd github-actions && bash ./optix-cmake-github-actions/install_optix.sh && cd -
-        shell: bash
+        run: bash ./optix-cmake-github-actions/install_optix.sh
 
       - name: Install OSPRay
+        shell: bash
+        working-directory: github-actions
         env:
           ospray: ${{ matrix.ospray }}
-        run: cd github-actions && bash ./ospray-cmake-github-actions/install_ospray_ubuntu.sh && cd -
+        run: bash ./ospray-cmake-github-actions/install_ospray_ubuntu.sh
+
+      - name: Install CUDA
         shell: bash
+        working-directory: github-actions
+        run: bash ./cuda-cmake-github-actions/scripts/actions/install_cuda_ubuntu.sh
+        env:
+          cuda: ${{ matrix.cuda }}
 
       - name: CMake
         env: 
@@ -76,7 +82,74 @@ jobs:
           -DOVR_BUILD_DEVICE_OSPRAY=ON 
           -Dospray_DIR=${{ env.OSPRAY_CMAKE_DIR }}
           -DGDT_CUDA_ARCHITECTURES=${{ matrix.arch }}
-      
+
       - name: Build
         working-directory: ${{ env.build_dir }}
         run: cmake --build . --target all --verbose -j `nproc`
+
+  build_windows:
+    name: Build on Windows
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-2019
+            visual_studio: "Visual Studio 16 2019"
+            cuda: "11.5.1"
+            optix: "7.3.0"
+            ospray: "2.5.0"
+            arch: 86
+          - os: windows-2019
+            visual_studio: "Visual Studio 16 2019"
+            cuda: "11.5.1"
+            optix: "7.3.0"
+            ospray: "2.5.0"
+            arch: 75
+
+    env:
+      build_dir: "build"
+      config: "Release"
+      GDT_CUDA_ARCHITECTURES: ${{ matrix.arch }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Install OptiX
+        shell: powershell
+        working-directory: github-actions
+        run: .\optix-cmake-github-actions\install_optix.ps1
+        env:
+          optix: ${{ matrix.optix }}
+
+      - name: Install OSPRay
+        shell: powershell
+        working-directory: github-actions
+        run: .\ospray-cmake-github-actions\install_ospray_windows.ps1
+        env:
+          ospray: ${{ matrix.ospray }}
+
+      - name: Install CUDA
+        shell: powershell
+        working-directory: github-actions
+        run: .\cuda-cmake-github-actions\scripts\actions\install_cuda_windows.ps1
+        env:
+          cuda: ${{ matrix.cuda }}
+          visual_studio: ${{ matrix.visual_studio }}
+
+      - name: CMake
+        env: 
+          OptiX_INSTALL_DIR: ${{ env.OptiX_INSTALL_DIR }}
+        run: cmake . -B ${{ env.build_dir }} 
+          -G "${{ matrix.visual_studio }}" -A x64 
+          -DCMAKE_BUILD_TYPE=${{ env.config }} 
+          -DOVR_BUILD_DEVICE_OPTIX7=ON 
+          -DOVR_BUILD_DEVICE_OSPRAY=ON 
+          -Dospray_DIR=${{ env.OSPRAY_CMAKE_DIR }}
+          -DTBB_DIR=${{ env.TBB_CMAKE_DIR }}
+          -DGDT_CUDA_ARCHITECTURES=${{ matrix.arch }}
+
+      - name: Build
+        working-directory: ${{ env.build_dir }}
+        run: cmake --build . --config ${{ env.config }} --target ALL_BUILD --verbose

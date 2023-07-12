@@ -71,7 +71,7 @@ struct DeviceSpacePartiton_SingleMC {
     {
       const float density_scale = 1.f;
       const float sigma_t = 1.f;
-      const float sigma_s = 1.f;
+      // const float sigma_s = 1.f;
 
       const auto& dims = sp.dims;
       const vec3f m_org = ray_org * sp.spac_rcp;
@@ -104,7 +104,7 @@ struct DeviceSpacePartiton_SingleMC {
     __device__ bool hashit(const DeviceSpacePartiton_SingleMC& sp, const vec3f& ray_org, const vec3f& ray_dir, const float ray_tnear, const float ray_tfar, RandomTEA& rng, float& rayt, float& majorant, float& tau)
     {   
       const float sigma_t = 1.f;
-      const float sigma_s = 1.f;
+      // const float sigma_s = 1.f;
       majorant = 1.f;
 
       t += -logf(1.f - rng.get_floats().x) / (majorant * sigma_t);

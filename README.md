@@ -1,6 +1,6 @@
 # Open Volume Renderer (OVR)
 
-[![CI](https://github.com/wilsonCernWq/open-volume-renderer/actions/workflows/main.yml/badge.svg?branch=master&event=push)](https://github.com/wilsonCernWq/open-volume-renderer/actions/workflows/main.yml)
+[![CI](https://github.com/wilsonCernWq/open-volume-renderer/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/wilsonCernWq/open-volume-renderer/actions/workflows/main.yml)
 
 ![Expected Rendering Result](./data/example.png)
 

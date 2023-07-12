@@ -36,8 +36,8 @@ struct DDAIter
   void __device__ init(vec3f org, vec3f dir, float t_min, float t_max, vec3i grid_size) 
   {
     const float& ray_t0=t_min;
-    const float& ray_t1=t_max;
-    assert(ray_t0 < ray_t1);
+    // const float& ray_t1=t_max;
+    assert(t_min < t_max);
 
     const vec3f org_in_volume = org + ray_t0 * dir;
     const vec3f f_cell = max(vec3f(0.f), min(vec3f(grid_size) - 1.f, floor(org_in_volume)));
@@ -80,8 +80,8 @@ struct DDAIter
     // assert(cell.z != stop.z);
 
     const float& ray_t0=t_min;
-    const float& ray_t1=t_max;
-    assert(ray_t0 < ray_t1);
+    // const float& ray_t1=t_max;
+    assert(ray_t0 < t_max);
     // if (dbg) printf("t range for volume %f %f\n",ray_t0,ray_t1); 
 
     const vec3f t_step = abs(rcp(dir));

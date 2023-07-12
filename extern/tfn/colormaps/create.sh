@@ -6,7 +6,7 @@ BASE=colormap
 
 # Generate one source for each map
 for f in ${FILES}; do
-    DATA=$(sed -e 's/)/},/g' -e 's/(/{/g' ${f}) # replace '(' and ')'
+    DATA=$(sed -e 's/,/f,/g' -e 's/)/f},/g' -e 's/(/{/g' ${f}) # replace '(' and ')'
     NAME=${f%.*}                                # sequence/hot
     NVAR=$(echo ${NAME} | sed -e 's/\//\_/g')   # sequence/hot -> sequence_hot
     cat > ${PWD}/${NAME}.cpp << EOF

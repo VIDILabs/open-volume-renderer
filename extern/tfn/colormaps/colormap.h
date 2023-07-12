@@ -22,57 +22,59 @@
 // available colormap keys:
 //
 // diverging/BrBG
+// diverging/RdYlGn
+// diverging/RdBu
+// diverging/RdYlBu
 // diverging/bwr
+// diverging/Spectral
+// diverging/RdGy
+// diverging/seismic
 // diverging/coolwarm
-// diverging/PiYG
 // diverging/PRGn
 // diverging/PuOr
-// diverging/RdBu
-// diverging/RdGy
-// diverging/RdYlBu
-// diverging/RdYlGn
-// diverging/seismic
-// diverging/Spectral
-// perceptual/inferno
+// diverging/PiYG
 // perceptual/magma
-// perceptual/plasma
+// perceptual/inferno
 // perceptual/viridis
+// perceptual/plasma
+// sequential/Purples
+// sequential/PuBuGn
+// sequential/Oranges
 // sequential/Blues
-// sequential/BuGn
-// sequential/BuPu
+// sequential/YlGn
+// sequential/PuBu
 // sequential/GnBu
 // sequential/Greens
-// sequential/Greys
-// sequential/Oranges
-// sequential/OrRd
-// sequential/PuBu
-// sequential/PuBuGn
 // sequential/PuRd
-// sequential/Purples
-// sequential/RdPu
-// sequential/Reds
-// sequential/YlGn
-// sequential/YlGnBu
+// sequential/BuPu
+// sequential/Greys
 // sequential/YlOrBr
+// sequential/RdPu
 // sequential/YlOrRd
-// sequential2/afmhot
-// sequential2/autumn
-// sequential2/binary
-// sequential2/bone
-// sequential2/cool
-// sequential2/copper
-// sequential2/gist_gray
-// sequential2/gist_heat
-// sequential2/gist_yarg
-// sequential2/gray
+// sequential/Reds
+// sequential/YlGnBu
+// sequential/BuGn
+// sequential/OrRd
 // sequential2/hot
-// sequential2/pink
-// sequential2/spring
-// sequential2/summer
-// sequential2/winter
 // sequential2/Wistia
+// sequential2/gist_gray
+// sequential2/bone
+// sequential2/winter
+// sequential2/pink
+// sequential2/binary
+// sequential2/autumn
+// sequential2/spring
+// sequential2/gist_yarg
+// sequential2/copper
+// sequential2/gray
+// sequential2/afmhot
+// sequential2/cool
+// sequential2/gist_heat
+// sequential2/summer
+
 #ifndef TFN_COLORMAP_H
 #define TFN_COLORMAP_H
+
 #include <vector>
 #include <array>
 #include <string>
@@ -82,4 +84,5 @@ struct color_t { float r, g, b, a; };
 extern const std::unordered_map<std::string, const std::vector<color_t>*> data;
 extern const std::vector<std::string> name;
 }
+
 #endif // TFN_COLORMAP_H

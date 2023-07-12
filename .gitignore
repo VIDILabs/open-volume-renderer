@@ -30,6 +30,7 @@ data/vortices/
 # Trained models
 *.pt
 .vscode/
+vscode/
 ShadowMapData/
 photonmap.bin
 shadowmap.bin
@@ -37,3 +38,4 @@ shadowmap.json
 params.json
 
 projects/
+*.obj

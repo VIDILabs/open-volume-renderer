@@ -14,7 +14,7 @@ class ProgressBar {
       std::cout << "[";
     else
       std::cout << msg << " [";
-    const int pos = barWidth * progress;
+    const int pos = (int)(barWidth * progress);
     for (int i = 0; i < barWidth; ++i) {
       if (i < pos)
         std::cout << "=";
@@ -28,7 +28,7 @@ class ProgressBar {
   }
 
 public:
-  ProgressBar(std::string prompt = "", int width = 80) : msg(prompt), barWidth(width - prompt.length()) {}
+  ProgressBar(std::string prompt = "", int width = 80) : msg(prompt), barWidth(width - (int)prompt.length()) {}
 
   void update(float p, std::string prompt = "")
   {

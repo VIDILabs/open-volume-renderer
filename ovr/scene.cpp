@@ -109,7 +109,7 @@ CreateArray1DScalar(const std::vector<T>& input, bool shared)
   array_1d_scalar_t output = std::make_shared<Array<1>>();
 
   output->type = value_type<T>();
-  output->dims = input.size();
+  output->dims = (int)input.size();
   if (shared)
     output->set_data((void*)input.data());
   else
@@ -134,7 +134,7 @@ CreateArray1DScalar(const T* input, size_t len, bool shared)
   array_1d_scalar_t output = std::make_shared<Array<1>>();
 
   output->type = value_type<T>();
-  output->dims = len;
+  output->dims = (int)len;
   if (shared)
     output->set_data((void*)input);
   else

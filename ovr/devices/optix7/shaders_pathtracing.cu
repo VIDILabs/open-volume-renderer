@@ -283,7 +283,7 @@ delta_tracking(const DeviceStructuredRegularVolume& self,
   const auto max_opacity = 1.f;
   const auto mu_max = density_scale * max_opacity;
 
-  const float sigma_t = 1.f;
+  // const float sigma_t = 1.f;
 
   float t = t_min;
   vec3f albedo(0);
@@ -670,7 +670,7 @@ __raygen__render_frame()
                               (screen.y - 0.5f) * camera.vertical);   /* y shift */
 
     /* the values we store the PRD pointer in: */
-    uint32_t u0, u1;
+    // uint32_t u0, u1;
 
     /* our per-ray data for this example. initialization matters! */
     render_pathtracing(camera.position, ray_dir, &rng_state, //

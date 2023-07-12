@@ -93,7 +93,7 @@ public:
     Logger::initialize(prefix);
 
     this->delim = delim;
-    this->num_columns = header.size();
+    this->num_columns = (int)header.size();
 
     log_entry(header);
   }

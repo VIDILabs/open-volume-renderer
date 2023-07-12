@@ -296,9 +296,9 @@ main(int ac, char** av)
   float t = 0;
   for (int idx = 0; idx < args.num_frames(); ++idx) {
     const vec3f poi = camera_frame.get_poi();
-    float theta = sin(13.f * t) * M_PI;
-    float phi = cos(5.f * t) * M_PI;
-    float r = R * (0.6 + 0.1f * sin(6.f * t));
+    float theta = sin(13.f * t) * (float)M_PI;
+    float phi = cos(5.f * t) * (float)M_PI;
+    float r = R * (0.6f + 0.1f * sin(6.f * t));
     float x = r * cos(phi) * sin(theta);
     float y = r * sin(phi) * sin(theta);
     float z = r * cos(theta);
@@ -307,7 +307,7 @@ main(int ac, char** av)
     printf("camera pos (%f,%f,%f) polar (%f,%f,%f)\n", c.x, c.y, c.z, phi, theta, r);
 
     camera_frame.setOrientation(c + poi, poi, camera_frame.get_accurate_up());
-    t += (args.camera_speed() * M_PI) / args.num_frames();
+    t += (args.camera_speed() * (float)M_PI) / args.num_frames();
 
     render_a_frame(ren, args.fbsize(), idx, camera_frame, args.expname());
   }

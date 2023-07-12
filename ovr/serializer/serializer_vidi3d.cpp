@@ -378,7 +378,7 @@ create_json_scene_vidi3d(json root, std::string workdir)
   std::cout << "scene.lights = " << scene.lights.size() << std::endl;
 
   scene.camera = vidi3d::create_scene_camera(root[VIEW]);
-  scene.volume_sampling_rate = 1.f / scalar_from_json<double>(root[VIEW][VOLUME][SAMPLING_DISTANCE]);
+  scene.volume_sampling_rate = 1.f / (float)scalar_from_json<double>(root[VIEW][VOLUME][SAMPLING_DISTANCE]);
   if (scene.volume_sampling_rate > 1) {
     std::cout << "scene.volume_sampling_rate = " << scene.volume_sampling_rate << std::endl;
   }

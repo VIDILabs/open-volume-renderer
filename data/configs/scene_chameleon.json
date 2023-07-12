@@ -8,6 +8,7 @@
       },
       "endian" : "LITTLE_ENDIAN",
       "fileName" : [
+        "/instantvnr/data/chameleon_1024x1024x1080_uint16.raw",
         "/media/data/qadwu/volume/openscivis/chameleon_1024x1024x1080_uint16.raw",
         "/home/qwu/Work/datasets/chameleon_1024x1024x1080_uint16.raw",
         "/home/qadwu/Data/chameleon/chameleon_1024x1024x1080_uint16.raw",

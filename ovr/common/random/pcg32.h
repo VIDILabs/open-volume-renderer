@@ -30,6 +30,10 @@
 #ifndef OVR_OPTIX7_RANDOM_PCG32_H
 #define OVR_OPTIX7_RANDOM_PCG32_H
 
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+
 #include <cuda_misc.h>
 
 #define PCG32_DEFAULT_STATE  0x853c49e6748fea9bULL

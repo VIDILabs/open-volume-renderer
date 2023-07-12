@@ -214,7 +214,7 @@ struct GDT_INTERFACE vec_t<T, 3> {
   inline __both__ vec_t(const float3& v) : x(v.x), y(v.y), z(v.z) {}
   inline __both__ operator float3() const
   {
-    return make_float3(x, y, z);
+    return make_float3((float)x, (float)y, (float)z);
   }
   inline __both__ operator int3() const
   {

@@ -4,6 +4,10 @@
 // ======================================================================== //
 #pragma once
 
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
@@ -243,9 +247,12 @@ inline tfn::vec4f TransferFunctionWidget::draw_tfn_editor__color_control_points(
   auto draw_list = (ImDrawList *)_draw_list;
   // draw circle background
   draw_list->AddRectFilled(
-      ImVec2(cursor.x + margin.x, cursor.y - margin.z), ImVec2(cursor.x + margin.x + size.x, cursor.y - margin.x + 2.5 * color_len), 0xFF474646);
+      ImVec2(cursor.x + margin.x, cursor.y - margin.z), 
+      ImVec2(cursor.x + margin.x + size.x, cursor.y - margin.x + 2.5f * color_len),
+      0xFF474646
+  );
   // draw circles
-  for (int i = current_colorpoints->size() - 1; i >= 0; --i) {
+  for (int i = (int)current_colorpoints->size() - 1; i >= 0; --i) {
     const ImVec2 pos(cursor.x + size.x * (*current_colorpoints)[i].position + margin.x, cursor.y);
     ImGui::SetCursorScreenPos(ImVec2(cursor.x, cursor.y));
     // white background
@@ -652,7 +659,7 @@ inline void TransferFunctionWidget::load(const std::string &filename)
 
   tfns.push_back(std::move(tfn));
   tfns_names.push_back(filename);
-  select_tfn(tfns.size() - 1);
+  select_tfn((int)tfns.size() - 1);
 }
 
 inline void tfn::TransferFunctionWidget::save(const std::string &filename) const

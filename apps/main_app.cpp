@@ -271,7 +271,7 @@ public:
 #ifdef OVR_LOGGING
       logger.log_entry<double>({(double)background_fps.frame, background_fps.fps, frame_time / 10, render_time / 10, 0.0});
 #endif
-      background_fps.update_history(frame_time / 10, render_time / 10, 0.0);
+      background_fps.update_history((float)frame_time / 10.f, (float)render_time / 10.f, 0.0f);
       renderer->render_time = 0.0;
       frame_time = 0.0;
     }
@@ -464,7 +464,7 @@ public:
         }
 
         static float sr = config.volume_sampling_rate;
-        if (ImGui::SliderFloat("Sample Rate", &sr, 0.01, 10.f, "%.3f")) {
+        if (ImGui::SliderFloat("Sample Rate", &sr, 0.01f, 10.f, "%.3f")) {
           config.volume_sampling_rate = sr;
           renderer->set_volume_sampling_rate(config.volume_sampling_rate);
         }
@@ -483,7 +483,7 @@ public:
       if (ImGui::Begin("Performance", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration)) {
         if (ImPlot::BeginPlot("##Performance Plot", ImVec2(500,150), ImPlotFlags_AntiAliased | ImPlotFlags_NoFrame)) {
           ImPlot::SetupAxes("frame history", "time [ms]", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
-          ImPlot::PlotLine("frame time", background_fps.indices.data(), background_fps.frame_time_history.data(), background_fps.frame_time_history.size());
+          ImPlot::PlotLine("frame time", background_fps.indices.data(), background_fps.frame_time_history.data(), (int)background_fps.frame_time_history.size());
           ImPlot::EndPlot();
         }
         ImGui::End();

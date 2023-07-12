@@ -362,7 +362,7 @@ __raygen__render_frame()
                               (screen.y - 0.5f) * camera.vertical);   /* y shift */
 
     /* the values we store the PRD pointer in: */
-    uint32_t u0, u1;
+    // uint32_t u0, u1;
 
     /* our per-ray data for this example. initialization matters! */
     render_raymarching(camera.position, ray_dir, &rng_state, //

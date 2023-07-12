@@ -30,11 +30,15 @@ function(target_add_embeded_shaders target)
     get_filename_component(in_OUTPUT_NAME ${in_OUTPUT_NAME} NAME)
   endif()
   string(REGEX REPLACE "[^A-Za-z0-9_]" "_" output_identifier ${in_OUTPUT_NAME})
-  # string(RANDOM output_identifier)
-  add_custom_target(_shdr_${target}_${output_identifier}
+  set(output_target _shdr_${target}_${output_identifier})
+  # create dependencies
+  add_custom_command(OUTPUT ${in_OUTPUT_NAME}
     COMMAND ${the_command}
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+    DEPENDS ${all_shaders}
     COMMENT "generate embeded shaders for ${target}"
-    SOURCES ${all_shaders})
-  add_dependencies(${target} _shdr_${target}_${output_identifier})
+    VERBATIM
+  )
+  add_custom_target(${output_target} DEPENDS ${in_OUTPUT_NAME})
+  add_dependencies(${target} ${output_target})
 endfunction()
