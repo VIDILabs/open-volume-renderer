@@ -143,12 +143,14 @@ create_ospray_array3d_scalar(array_3d_scalar_t input)
 OSPVolume
 DeviceOSPRay::Impl::create_ospray_volume(scene::Volume::VolumeStructuredRegular handler)
 {
+  auto data = create_ospray_array3d_scalar(handler.data);
   OSPVolume volume = ospNewVolume("structuredRegular");
   ospSetParam(volume, "gridOrigin", OSP_VEC3F, &handler.grid_origin);
   ospSetParam(volume, "gridSpacing", OSP_VEC3F, &handler.grid_spacing);
-  ospSetObject(volume, "data", create_ospray_array3d_scalar(handler.data));
+  ospSetObject(volume, "data", data);
   ospSetInt(volume, "cellCentered", false);
   ospCommit(volume);
+  ospRelease(data);
   return volume;
 }
 
@@ -177,7 +179,25 @@ DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometryTriangles ha
 {
   OSPGeometry mesh = ospNewGeometry("mesh");
   // TODO finish the implementation //
+
+  auto position = ospNewSharedData1D(
+    handler.position->data(), 
+    OSP_VEC3F, 
+    handler.position->dims.v
+  );
+  auto index = ospNewSharedData1D(
+    handler.index->data(), 
+    OSP_VEC3UI, 
+    handler.index->dims.v / 3
+  );
+  ospSetObject(mesh, "vertex.position", position);
+  ospSetObject(mesh, "index", index);
+
   ospCommit(mesh);
+
+  ospRelease(position);
+  ospRelease(index);
+
   return mesh;
 }
 

@@ -58,8 +58,7 @@ static void
 general_log_cb(const char* log, size_t sizeof_log)
 {
 #ifndef NDEBUG
-  if (sizeof_log > 1)
-    fprintf(stdout, log);
+  if (sizeof_log > 1) fprintf(stdout, "%s\n", log);
 #endif
 }
 
