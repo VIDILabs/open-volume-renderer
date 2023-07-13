@@ -152,17 +152,14 @@ instantiate_create_array1dscalar_pointer(float);
 instantiate_create_array1dscalar_pointer(double);
 #undef instantiate_create_array1dscalar_pointer
 
-array_1d_float4_t
-CreateArray1DFloat4(const std::vector<vec4f>& input, bool shared)
-{
-  return CreateArray1DScalar(input, shared);
-}
+array_1d_float2_t CreateArray1DFloat2(const std::vector<vec2f>& input, bool shared) { return CreateArray1DScalar(input, shared); }
+array_1d_float2_t CreateArray1DFloat2(const vec2f* input, size_t len,  bool shared) { return CreateArray1DScalar(input, len, shared); }
 
-array_1d_float4_t
-CreateArray1DFloat4(const vec4f* input, size_t len, bool shared)
-{
-  return CreateArray1DScalar(input, len, shared);
-}
+array_1d_float3_t CreateArray1DFloat3(const std::vector<vec3f>& input, bool shared) { return CreateArray1DScalar(input, shared); }
+array_1d_float3_t CreateArray1DFloat3(const vec3f* input, size_t len,  bool shared) { return CreateArray1DScalar(input, len, shared); }
+
+array_1d_float4_t CreateArray1DFloat4(const std::vector<vec4f>& input, bool shared) { return CreateArray1DScalar(input, shared); }
+array_1d_float4_t CreateArray1DFloat4(const vec4f* input, size_t len,  bool shared) { return CreateArray1DScalar(input, len, shared); }
 
 array_1d_float4_t
 CreateColorMap(const std::string& name)

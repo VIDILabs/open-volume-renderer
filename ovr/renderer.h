@@ -271,38 +271,39 @@ MainRenderer::set_scene(Scene scene)
 {
   // TODO generalize to support multiple transfer functions //
   assert(scene.instances.size() == 1);
-  assert(scene.instances[0].models.size() == 1);
-  assert(scene.instances[0].models[0].type == scene::Model::VOLUMETRIC_MODEL);
-  assert(scene.instances[0].models[0].volume_model.volume.type == scene::Volume::STRUCTURED_REGULAR_VOLUME);
-  scene::TransferFunction scene_tfn = scene.instances[0].models[0].volume_model.transfer_function;
+  if (scene.instances[0].models.size() == 1 && scene.instances[0].models[0].type == scene::Model::VOLUMETRIC_MODEL) 
+  {
+    assert(scene.instances[0].models[0].volume_model.volume.type == scene::Volume::STRUCTURED_REGULAR_VOLUME);
+    scene::TransferFunction scene_tfn = scene.instances[0].models[0].volume_model.transfer_function;
 
-  const float* data_o = scene_tfn.opacity->data_typed<float>();
-  const size_t size_o = scene_tfn.opacity->dims.v;
+    const float* data_o = scene_tfn.opacity->data_typed<float>();
+    const size_t size_o = scene_tfn.opacity->dims.v;
 
-  const vec4f* data_c = scene_tfn.color->data_typed<vec4f>();
-  const size_t size_c = scene_tfn.color->dims.v;
+    const vec4f* data_c = scene_tfn.color->data_typed<vec4f>();
+    const size_t size_c = scene_tfn.color->dims.v;
 
-  std::vector<float> tfn_colors;
-  std::vector<float> tfn_alphas;
-  vec2f tfn_value_range = { 1, -1 };
+    std::vector<float> tfn_colors;
+    std::vector<float> tfn_alphas;
+    vec2f tfn_value_range = { 1, -1 };
 
-  for (int i = 0; i < size_c; ++i) {
-    float p = (float)i / (size_c - 1);
-    // tfn_colors.push_back(p);
-    tfn_colors.push_back(data_c[i].x);
-    tfn_colors.push_back(data_c[i].y);
-    tfn_colors.push_back(data_c[i].z);
+    for (int i = 0; i < size_c; ++i) {
+      float p = (float)i / (size_c - 1);
+      // tfn_colors.push_back(p);
+      tfn_colors.push_back(data_c[i].x);
+      tfn_colors.push_back(data_c[i].y);
+      tfn_colors.push_back(data_c[i].z);
+    }
+
+    for (int i = 0; i < size_o; ++i) {
+      float p = (float)i / (size_o - 1);
+      tfn_alphas.push_back(p);
+      tfn_alphas.push_back(data_o[i]);
+    }
+
+    tfn_value_range = scene_tfn.value_range;
+
+    set_transfer_function(tfn_colors, tfn_alphas, tfn_value_range);
   }
-
-  for (int i = 0; i < size_o; ++i) {
-    float p = (float)i / (size_o - 1);
-    tfn_alphas.push_back(p);
-    tfn_alphas.push_back(data_o[i]);
-  }
-
-  tfn_value_range = scene_tfn.value_range;
-
-  set_transfer_function(tfn_colors, tfn_alphas, tfn_value_range);
 
   current_scene = std::move(scene); // makes sure data will not be released while the program is running
 }

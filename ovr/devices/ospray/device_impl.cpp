@@ -143,12 +143,14 @@ create_ospray_array3d_scalar(array_3d_scalar_t input)
 OSPVolume
 DeviceOSPRay::Impl::create_ospray_volume(scene::Volume::VolumeStructuredRegular handler)
 {
+  auto data = create_ospray_array3d_scalar(handler.data);
   OSPVolume volume = ospNewVolume("structuredRegular");
   ospSetParam(volume, "gridOrigin", OSP_VEC3F, &handler.grid_origin);
   ospSetParam(volume, "gridSpacing", OSP_VEC3F, &handler.grid_spacing);
-  ospSetObject(volume, "data", create_ospray_array3d_scalar(handler.data));
+  ospSetObject(volume, "data", data);
   ospSetInt(volume, "cellCentered", false);
   ospCommit(volume);
+  ospRelease(data);
   return volume;
 }
 
@@ -176,8 +178,90 @@ OSPGeometry
 DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometryTriangles handler)
 {
   OSPGeometry mesh = ospNewGeometry("mesh");
+
   // TODO finish the implementation //
+
+  assert(handler.position->type == ovr::VALUE_TYPE_FLOAT3);
+  auto position = ospNewSharedData1D(handler.position->data(), OSP_VEC3F, handler.position->dims.v);
+  ospSetObject(mesh, "vertex.position", position);
+
+  assert(handler.index->type == ovr::VALUE_TYPE_UINT32);
+  OSPData index = ospNewSharedData1D(handler.index->data(), OSP_VEC3UI, handler.index->dims.v / 3);
+  ospSetObject(mesh, "index", index);
+
+  // ---------------------------- //
+
+  OSPData faces_texcoord = NULL;
+  if (handler.faces.texcoord) {
+    assert(handler.faces.texcoord->type == ovr::VALUE_TYPE_FLOAT2);
+    faces_texcoord = ospNewSharedData1D(handler.faces.texcoord->data(), OSP_VEC2F, handler.index->dims.v);
+    ospSetObject(mesh, "texcoord", faces_texcoord);
+  }
+
+  OSPData faces_normal = NULL;
+  if (handler.faces.normal) {
+    assert(handler.faces.normal->type == ovr::VALUE_TYPE_FLOAT3);
+    faces_normal = ospNewSharedData1D(handler.faces.normal->data(), OSP_VEC3F, handler.index->dims.v);
+    ospSetObject(mesh, "normal", faces_normal);
+  }
+
+  OSPData faces_color = NULL;
+  if (handler.faces.color) {
+    if (handler.faces.color->type == ovr::VALUE_TYPE_FLOAT3) {
+      faces_color = ospNewSharedData1D(handler.faces.color->data(), OSP_VEC3F, handler.index->dims.v);
+    }
+    else if (handler.faces.color->type == ovr::VALUE_TYPE_FLOAT4) {
+      faces_color = ospNewSharedData1D(handler.faces.color->data(), OSP_VEC4F, handler.index->dims.v);
+    }
+    else {
+      throw std::runtime_error("[osp] unsupported face color type.");
+    }
+    ospSetObject(mesh, "color", faces_color);
+  }
+
+  // ---------------------------- //
+
+  OSPData verts_texcoord = NULL;
+  if (handler.verts.texcoord) {
+    assert(handler.verts.texcoord->type == ovr::VALUE_TYPE_FLOAT2);
+    verts_texcoord = ospNewSharedData1D(handler.verts.texcoord->data(), OSP_VEC2F, handler.index->dims.v);
+    ospSetObject(mesh, "vertex.texcoord", verts_texcoord);
+  }
+
+  OSPData verts_normal = NULL;
+  if (handler.verts.normal) {
+    assert(handler.verts.normal->type == ovr::VALUE_TYPE_FLOAT3);
+    verts_normal = ospNewSharedData1D(handler.verts.normal->data(), OSP_VEC3F, handler.index->dims.v);
+    ospSetObject(mesh, "vertex.normal", verts_normal);
+  }
+
+  OSPData verts_color = NULL;
+  if (handler.verts.color) {
+    if (handler.verts.color->type == ovr::VALUE_TYPE_FLOAT3) {
+      verts_color = ospNewSharedData1D(handler.verts.color->data(), OSP_VEC3F, handler.index->dims.v);
+    }
+    else if (handler.verts.color->type == ovr::VALUE_TYPE_FLOAT4) {
+      verts_color = ospNewSharedData1D(handler.verts.color->data(), OSP_VEC4F, handler.index->dims.v);
+    }
+    else {
+      throw std::runtime_error("[osp] unsupported vertex color type.");
+    }
+    ospSetObject(mesh, "vertex.color", verts_color);
+  }
+
   ospCommit(mesh);
+
+  ospRelease(position);
+  ospRelease(index);
+
+  if (faces_texcoord) ospRelease(faces_texcoord);
+  if (faces_normal) ospRelease(faces_normal);
+  if (faces_color) ospRelease(faces_color);
+
+  if (verts_texcoord) ospRelease(verts_texcoord);
+  if (verts_normal) ospRelease(verts_normal);
+  if (verts_color) ospRelease(verts_color);
+
   return mesh;
 }
 
@@ -211,8 +295,9 @@ OSPGeometricModel
 DeviceOSPRay::Impl::create_ospray_geometric_model(scene::Model::GeometricModel handler)
 {
   auto geometry = create_ospray_geometry(handler.geometry);
-
   OSPGeometricModel model = ospNewGeometricModel(geometry);
+  OSPMaterial mtl = ospNewMaterial(NULL, "obj");
+  ospSetObject(model, "material", mtl);
   ospCommit(model);
   ospRelease(geometry);
   return model;
@@ -524,7 +609,7 @@ DeviceOSPRay::Impl::build_scene()
 
   // create some default lights if there is no scene light
   auto sun1 = ospNewLight("sunSky");  
-  ospSetFloat(sun1, "intensity", 2.0f);
+  ospSetFloat(sun1, "intensity", 0.9f);
   ospSetVec3f(sun1, "color", 2.6f, 2.5f, 2.3f);
   ospSetVec3f(sun1, "direction", 0, -1, 0);
   ospCommit(sun1);
@@ -533,7 +618,7 @@ DeviceOSPRay::Impl::build_scene()
   }
 
   auto sun2 = ospNewLight("sunSky");  
-  ospSetFloat(sun2, "intensity", 2.0f);
+  ospSetFloat(sun2, "intensity", 0.9f);
   ospSetVec3f(sun2, "color", 2.6f, 2.5f, 2.3f);
   ospSetVec3f(sun2, "direction", 0, 1, 0);
   ospCommit(sun2);
@@ -542,7 +627,7 @@ DeviceOSPRay::Impl::build_scene()
   }
 
   auto ambLight = ospNewLight("ambient");
-  ospSetFloat(ambLight, "intensity", 1.0f);
+  ospSetFloat(ambLight, "intensity", 0.2f);
   ospSetVec3f(ambLight, "color", 1.f, 1.f, 1.f);
   ospCommit(ambLight);
   {

@@ -176,9 +176,13 @@ private:
 };
 
 using Array1DScalar = Array<1>;
+using Array1DFloat2 = Array<1>;
+using Array1DFloat3 = Array<1>;
 using Array1DFloat4 = Array<1>;
 using Array3DScalar = Array<3>;
 using array_1d_scalar_t = std::shared_ptr<Array1DScalar>;
+using array_1d_float2_t = std::shared_ptr<Array1DFloat2>;
+using array_1d_float3_t = std::shared_ptr<Array1DFloat3>;
 using array_1d_float4_t = std::shared_ptr<Array1DFloat4>;
 using array_3d_scalar_t = std::shared_ptr<Array3DScalar>;
 
@@ -244,7 +248,15 @@ struct Geometry {
     TRIANGLES_GEOMETRY,
   } type;
 
-  struct GeometryTriangles { /* TODO */ } triangles;
+  struct GeometryTriangles { /* TODO */ 
+    array_1d_float3_t position;
+    array_1d_scalar_t index;
+    struct { /* data */
+      array_1d_float2_t texcoord;
+      array_1d_float3_t normal;
+      array_1d_float4_t color;
+    } verts, faces;
+  } triangles;
 };
 
 struct Model {
@@ -324,10 +336,21 @@ template<typename T>
 array_1d_scalar_t
 CreateArray1DScalar(const T* input, size_t len, bool shared = false);
 
+array_1d_float2_t
+CreateArray1DFloat2(const std::vector<vec2f>& input, bool shared = false);
+array_1d_float2_t
+CreateArray1DFloat2(const vec2f* input, size_t len, bool shared = false);
+
+array_1d_float3_t
+CreateArray1DFloat3(const std::vector<vec3f>& input, bool shared = false);
+array_1d_float3_t
+CreateArray1DFloat3(const vec3f* input, size_t len, bool shared = false);
+
 array_1d_float4_t
 CreateArray1DFloat4(const std::vector<vec4f>& input, bool shared = false);
 array_1d_float4_t
 CreateArray1DFloat4(const vec4f* input, size_t len, bool shared = false);
+
 array_1d_float4_t
 CreateColorMap(const std::string& name);
 

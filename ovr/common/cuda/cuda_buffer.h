@@ -181,6 +181,65 @@ public:
   }
 };
 
+
+template<typename T>
+struct CUDABufferTyped : private CUDABuffer {
+public:
+  using CUDABuffer::memset;
+  // using CUDABuffer::nullify;
+
+  size_t size() const {
+    return sizeInBytes / sizeof(T);
+  }
+
+  T* release() {
+    sizeInBytes = 0;
+    owned_data = false;
+    return d_pointer();
+  }
+
+  void set_external(CUDABufferTyped<T>& other) {
+    CUDABuffer::set_external(other);
+  }
+
+  inline const T* d_pointer() const { return (const T*)CUDABuffer::d_pointer(); }
+  inline       T* d_pointer()       { return (      T*)CUDABuffer::d_pointer(); }
+
+  void resize(size_t count, cudaStream_t stream = 0) {
+    CUDABuffer::resize(count * sizeof(T), stream);
+  }
+
+  void alloc(size_t count, cudaStream_t stream = 0) {
+    CUDABuffer::alloc(count * sizeof(T), stream);
+  }
+
+  void free(cudaStream_t stream = 0) {
+    CUDABuffer::free(stream);
+  }
+
+  void alloc_and_upload(const std::vector<T>& vt, cudaStream_t stream = 0) {
+    CUDABuffer::alloc_and_upload_async(vt, stream);
+  }
+
+  void alloc_and_upload(const T* ptr, size_t count, cudaStream_t stream = 0) {
+    CUDABuffer::alloc_and_upload_async(ptr, count, stream);
+  }
+
+  void upload(const T* ptr, size_t count, cudaStream_t stream = 0) {
+    CUDABuffer::upload_async(ptr, count, stream);
+  }
+  
+  void download(T* ptr, size_t count, cudaStream_t stream = 0) {
+    CUDABuffer::download_async(ptr, count, stream);
+  }
+
+  void download(std::vector<T>& vec, cudaStream_t stream = 0) {
+    vec.resize(size());
+    CUDABuffer::download_async(vec.data(), vec.size(), stream);
+  }
+};
+
+
 // ------------------------------------------------------------------
 // CUDA Texture Setup
 // ------------------------------------------------------------------
