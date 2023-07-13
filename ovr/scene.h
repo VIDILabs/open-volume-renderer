@@ -251,15 +251,11 @@ struct Geometry {
   struct GeometryTriangles { /* TODO */ 
     array_1d_float3_t position;
     array_1d_scalar_t index;
-
-    // struct 
-    // {
-    //   /* data */
-    //   array_1d_float3_t normal;
-    //   array_1d_float3_t color;
-    //   array_1d_float3_t texcoord;
-    // } vertex;
-
+    struct { /* data */
+      array_1d_float2_t texcoord;
+      array_1d_float3_t normal;
+      array_1d_float4_t color;
+    } verts, faces;
   } triangles;
 };
 
