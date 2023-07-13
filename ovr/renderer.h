@@ -271,9 +271,7 @@ MainRenderer::set_scene(Scene scene)
 {
   // TODO generalize to support multiple transfer functions //
   assert(scene.instances.size() == 1);
-  assert(scene.instances[0].models.size() == 1);
-
-  if (scene.instances[0].models[0].type == scene::Model::VOLUMETRIC_MODEL) 
+  if (scene.instances[0].models.size() == 1 && scene.instances[0].models[0].type == scene::Model::VOLUMETRIC_MODEL) 
   {
     assert(scene.instances[0].models[0].volume_model.volume.type == scene::Volume::STRUCTURED_REGULAR_VOLUME);
     scene::TransferFunction scene_tfn = scene.instances[0].models[0].volume_model.transfer_function;

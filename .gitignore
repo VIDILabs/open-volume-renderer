@@ -25,6 +25,7 @@ imgui.ini
 Preferences.json
 .vscode/
 /data/*.csv
+/data/*params.json
 data/vortices/
 
 # Trained models
