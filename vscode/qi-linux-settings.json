@@ -2,29 +2,25 @@
     "cmake.configureSettings": {
         /* redbull */
         "CMAKE_PREFIX_PATH": [
-            "/home/qadwu/Software/libtorch-shared-with-deps-1.12.1-cu116/libtorch"
+            "/home/qadwu/Software/libtorch-shared-with-deps-1.12.1-cu116/libtorch",
+            "/home/qadwu/Work/ospray/deps"
         ],
         "TensorRT_INSTALL_DIR": "/home/davbauer/software/TensorRT-8.2.3.0",
         "TorchTensorRT_INSTALL_DIR": "/home/davbauer/software/torch_tensorrt",
-        "ospray_DIR": "/home/qadwu/Software/ospray-2.6.0.x86_64.linux/lib/cmake/ospray-2.6.0",
-	    "pxr_DIR": "/home/qadwu/Software/USD-builds/redbull",
+        "ospray_DIR": "/home/qadwu/Software/ospray-2.11.0.x86_64.linux_sparse_sampling/lib/cmake/ospray-2.11.0",
+        // "ospray_DIR": "/home/qadwu/Work/ospray/build/${command:cmake.buildType}/install/lib/cmake/ospray-2.11.0",
+	    "pxr_DIR": "/home/weishen/USD",
         "GDT_CUDA_ARCHITECTURES": 75,
         "TORCH_CUDA_ARCH_LIST": "Turing",
-        /* leaf */
-        // "CMAKE_PREFIX_PATH": [
-        //     // "C:\\Users\\wilson\\Work\\project\\ospray\\build-deps\\install",
-        //     // "/home/qadwu/Software/LibTorch/libtorch-cu113-cxx11"
-        // ],
-        // "ospray_DIR": "/home/qadwu/Software/Intel/ospray-2.5.0.x86_64.linux/lib/cmake/ospray-2.5.0",
-        // "ospray_DIR": "/home/qadwu/Software/Intel/ospray-2.5.0.x86_64.linux/lib/cmake/ospray-2.5.0",
-	    // "pxr_DIR": "/home/qadwu/Software/USD-Install",
+        "OVR_BUILD_SCENE_USD": false,
         "OVR_BUILD_OPENGL": true,
         "OVR_BUILD_DEVICE_OPTIX7": true,
         "OVR_BUILD_DEVICE_OSPRAY": true,
-        "OVR_BUILD_DEVICE_VIDI3D": true,
-        "OVR_BUILD_NETWORK_FOVOLNET": false,
-        "OVR_BUILD_SCENE_USD": true,
-        "OVR_BUILD_MODULE_NNVOLUME": true
+        // projects
+        "OVR_BUILD_MODULE_VIDI3D":   false,
+        "OVR_BUILD_MODULE_NNVOLUME": false,
+        "OVR_BUILD_MODULE_NNCACHE":  false,
+        "OVR_BUILD_MODULE_FOVOLNET": false,
     },
     "cmake.buildDirectory": "${workspaceFolder}/build/${command:cmake.buildType}",
     "cmake.configureOnEdit": false,
@@ -114,6 +110,11 @@
         "stack": "cpp",
         "__hash_table": "cpp",
         "__split_buffer": "cpp",
-        "__tree": "cpp"
+        "__tree": "cpp",
+        "__bit_reference": "cpp",
+        "__functional_03": "cpp",
+        "__mutex_base": "cpp",
+        "__node_handle": "cpp",
+        "__functional_base": "cpp"
     }
 }

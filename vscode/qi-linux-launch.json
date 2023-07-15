@@ -5,17 +5,26 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(gdb) Render PM",
+            "name": "(gdb) vnr_int_isosurface",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/renderpm",
+            "program": "${workspaceFolder}/build/${command:cmake.buildType}/vnr_int_isosurface",
             "args": [
-                "--scene-vorts",
-                "${input:device-pm}",
+                "--simple-volume", "configs/scene_bonsai.json", 
+                // "--neural-volume=params.json", 
+                "--isovalue", "0.5"
             ],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/build",
+            "cwd": "${workspaceFolder}/data",
             "environment": [
+                {
+                    "name": "DISPLAY",
+                    "value": ":2"
+                },
+                {
+                    "name": "LD_LIBRARY_PATH",
+                    "value": "/home/qadwu/Software/ospray-2.11.0.x86_64.linux_sparse_sampling/lib:${env:LD_LIBRARY_PATH}"
+                }
             ],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -26,7 +35,78 @@
                     "ignoreFailures": true
                 },
                 {
-                    "description":  "Set Disassembly Flavor to Intel",
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "(gdb) vnr_int_dual",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/${command:cmake.buildType}/vnr_int_dual",
+            "args": [
+                "--rendering-mode", "14",
+                "--pause-reference",
+                "--pause-inference",
+                "--pause-training",
+                "--volume", 
+                "configs/scene_chameleon.json",
+                "--network",
+                "${workspaceFolder}/projects/instantvnr/example-model.json"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/data",
+            "environment": [
+                {
+                    "name": "DISPLAY",
+                    "value": ":2"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "(gdb) Batch Rendering",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/${command:cmake.buildType}/renderbatch",
+            "args": [
+                "--scene", "configs/scene_mechhand_closeup.json",
+                "--num-frames", "16", "--pt", "--spp", "512"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/data",
+            "environment": [
+                {
+                    "name": "LD_LIBRARY_PATH",
+                    "value": "/home/weishen/USD/lib:/home/qadwu/Software/ospray-2.11.0.x86_64.linux_sparse_sampling/lib:${env:LD_LIBRARY_PATH}:${workspaceFolder}/build/${command:cmake.buildType}:${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d"
+                    // "value": "/home/weishen/USD/lib:/home/qadwu/Work/ospray/build/${command:cmake.buildType}/install/lib:/home/qadwu/Work/ospray/deps/lib:/home/qadwu/Work/ospray/deps/lib/intel64/gcc4.8:${env:LD_LIBRARY_PATH}:${workspaceFolder}/build/${command:cmake.buildType}:${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
                     "text": "-gdb-set disassembly-flavor intel",
                     "ignoreFailures": true
                 }
@@ -39,7 +119,6 @@
             "program": "${workspaceFolder}/build/${command:cmake.buildType}/renderapp",
             "args": [
                 "configs/scene_mechhand.json",
-                // "scene_setting.usda",
                 "${input:device}",
             ],
             "stopAtEntry": false,
@@ -47,16 +126,13 @@
             "environment": [
                 {
                     "name": "LD_LIBRARY_PATH",
-                    "value": "/home/weishen/USD/lib:/home/qadwu/Software/Intel/ospray-2.5.0.x86_64.linux/lib:/home/qadwu/Software/ospray-2.8.0.x86_64.linux/lib:${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d:${env:LD_LIBRARY_PATH}"
+                    "value": "/home/weishen/USD/lib:/home/qadwu/Software/ospray-2.11.0.x86_64.linux_sparse_sampling/lib:${env:LD_LIBRARY_PATH}:${workspaceFolder}/build/${command:cmake.buildType}:${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d"
+                    // "value": "/home/weishen/USD/lib:/home/qadwu/Work/ospray/build/${command:cmake.buildType}/install/lib:/home/qadwu/Work/ospray/deps/lib:/home/qadwu/Work/ospray/deps/lib/intel64/gcc4.8:${env:LD_LIBRARY_PATH}:${workspaceFolder}/build/${command:cmake.buildType}:${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d"
                 },
                 {
                     "name": "DISPLAY",
                     "value": ":2"
-                },
-                // {
-                //     "name": "DISPLAY",
-                //     "value": ":2"
-                // }
+                }
             ],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -74,26 +150,64 @@
             ]
         },
         {            
-            "name": "(gdb) Render PT",
+            "name": "(gdb) Render Shadow",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/${command:cmake.buildType}/renderpt",
+            "program": "${workspaceFolder}/build/${command:cmake.buildType}/generate_shadow_map",
             "args": [
-                // "configs/scene_mechhand.json",
-                "scene_setting.usda",
-                "${input:device}",
+                "configs/scene_mechhand.json",
+                // "configs/scene_chameleon.json",
+                // "shadowmap.usda",
+                "--random-lights", "5",
+                // "--random-tfn"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/data",
             "environment": [
                 {
                     "name": "LD_LIBRARY_PATH",
-                    "value": "/usr/local/cuda/lib64:/home/qadwu/Software/ospray-2.8.0.x86_64.linux/lib:${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d:/home/weishen/USD/bin:/usr/bin:/home/weishen/OpenVDB_Installation/bin"
+                    "value": "/home/weishen/USD/lib:/home/qadwu/Software/ospray-2.11.0.x86_64.linux_sparse_sampling/lib:${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d:${env:LD_LIBRARY_PATH}"
                 },
+                {
+                    "name": "DISPLAY",
+                    "value": ":2"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description":  "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "(gdb) FolVolNet",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build_folvolnet/${command:cmake.buildType}/renderfolvolnet",
+            "args": [
+                "configs/scene_mechhand.json",
+                "../projects/fovolnet/ovrmodule/models/rt_stbn_of40_int8fp16.trt"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/data",
+            "environment": [
                 // {
-                //     "name": "DISPLAY",
-                //     "value": ":1"
+                //     "name": "LD_LIBRARY_PATH",
+                //     "value": "/home/weishen/USD/lib:/home/qadwu/Work/ospray/build/${command:cmake.buildType}/install/lib:/home/qadwu/Work/ospray/deps/lib:/home/qadwu/Work/ospray/deps/lib/intel64/gcc4.8:${env:LD_LIBRARY_PATH}:${workspaceFolder}/build/${command:cmake.buildType}:${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d"
                 // },
+                {
+                    "name": "LD_LIBRARY_PATH",
+                    "value": "/home/qadwu/Software/ospray-2.11.0.x86_64.linux_sparse_sampling/lib:${env:LD_LIBRARY_PATH}:${workspaceFolder}/build_folvolnet/${command:cmake.buildType}"
+                },
                 {
                     "name": "DISPLAY",
                     "value": ":2"
@@ -131,23 +245,13 @@
             "id": "device",
             "description": "Which mini app do you want to run?",
             "options": [
-                "optix7-rm",
-                "optix7-pt",
-                "ospray-rm",
-                "ospray-pt",
+                "optix7",
+                "ospray",
                 "vidi3d",
                 "cudapt",
                 "nncache",
+                "nnvolume",
             ]
-        },
-        {
-            "type": "pickString",
-            "id": "device-pm",
-            "description": "Which mini app do you want to run?",
-            "options": [
-                "openvkl",
-                "cudapm",
-            ]
-        },
+        }
     ]
 }
