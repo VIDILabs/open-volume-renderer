@@ -71,7 +71,7 @@ template<typename T>
 T
 findmax(const T* array, size_t size)
 {
-  std::atomic<T> mv(-std::numeric_limits<T>::max());
+  std::atomic<T> mv(std::numeric_limits<T>::lowest());
 
   tbb::parallel_for((size_t)0, size, [&](const size_t& i) {
     T v = array[i];
