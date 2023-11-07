@@ -402,3 +402,13 @@ create_json_scene_vidi3d(json root, std::string workdir)
 }
 
 } // namespace ovr::scene
+
+ovr::scene::TransferFunction
+create_scene_tfn_vidi3d(std::string filename)
+{
+  std::ifstream file(filename);
+  std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+  json root = json::parse(text, nullptr, true, true);
+
+  return ovr::vidi3d::create_scene_tfn(root[VIEW], ovr::ValueType::VALUE_TYPE_DOUBLE);
+}
