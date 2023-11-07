@@ -412,14 +412,16 @@ public:
         updated_light |= ImGui::SliderFloat("Light: Theta", &config.theta, 0.f, 360.f, "%.2f");
         updated_light |= ImGui::SliderFloat("Light: Intensity", &config.intensity, 0.f, 2.f, "%.3f");
 
-        // bool updated = false;
-        // updated |= ImGui::SliderFloat("Focus Center X", &config.focus.x, 0.f, 1.f, "%.3f");
-        // updated |= ImGui::SliderFloat("Focus Center Y", &config.focus.y, 0.f, 1.f, "%.3f");
-        // updated |= ImGui::SliderFloat("Focus Scale", &config.focus_scale, 0.01f, 1.f, "%.3f");
-        // updated |= ImGui::SliderFloat("Base Noise", &config.base_noise, 0.01f, 1.0f, "%.3f", ImGuiSliderFlags_Logarithmic);
+        bool updated = false;
+        updated |= ImGui::SliderFloat("Focus Center X", &config.focus.x, 0.f, 1.f, "%.3f");
+        updated |= ImGui::SliderFloat("Focus Center Y", &config.focus.y, 0.f, 1.f, "%.3f");
+        updated |= ImGui::SliderFloat("Focus Scale", &config.focus_scale, 0.01f, 1.f, "%.3f");
+        updated |= ImGui::SliderFloat("Base Noise", &config.base_noise, 0.01f, 1.0f, "%.3f", ImGuiSliderFlags_Logarithmic);
+        if (updated) {
+          renderer->set_focus(config.focus, config.focus_scale, config.base_noise);
+        }
 
         if (updated_mat) {
-          // renderer->set_focus(config.focus, config.focus_scale, config.base_noise);
           renderer->set_mat_ambient(config.ambient);
           renderer->set_mat_diffuse(config.diffuse);
           renderer->set_mat_specular(config.specular);

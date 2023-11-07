@@ -71,7 +71,7 @@ template<typename T>
 T
 findmax(const T* array, size_t size)
 {
-  std::atomic<T> mv(-std::numeric_limits<T>::max());
+  std::atomic<T> mv(std::numeric_limits<T>::lowest());
 
   tbb::parallel_for((size_t)0, size, [&](const size_t& i) {
     T v = array[i];
@@ -113,7 +113,7 @@ compute_scalar_minmax(const void* _array, size_t count, size_t stride)
 
   T init;
 
-  init = std::numeric_limits<T>::min();
+  init = std::numeric_limits<T>::lowest();
   T actual_max = tbb::parallel_reduce(
     tbb::blocked_range<size_t>(0, count), init,
     [value](const tbb::blocked_range<size_t>& r, T v) -> T {
