@@ -16,6 +16,7 @@ cmake-build-*/
 /data/images/
 /data/outputs/
 /data/vortices/
+/data/
 *.png
 *.jpg
 *.ppm
