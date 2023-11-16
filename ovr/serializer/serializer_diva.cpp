@@ -1,6 +1,6 @@
 #include "serializer.h"
 
-#include <filesystem> // C++17 is required by this project
+// #include <filesystem> // C++17 is required by this project
 
 namespace ovr::scene {
 
@@ -17,8 +17,12 @@ create_json_scene(std::string filename)
   std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
   json root = json::parse(text, nullptr, true, true);
 
-  std::filesystem::path p = filename;
-  std::string workdir = p.remove_filename().string();
+  // std::filesystem::path p = filename;
+  // std::string workdir = p.remove_filename().string();
+  // workdir = workdir.empty() ? "." : workdir; // make sure workdir is never empty
+
+  // find the base path from filename using pure c++ 11
+  std::string workdir = filename.substr(0, filename.find_last_of("/\\"));
   workdir = workdir.empty() ? "." : workdir; // make sure workdir is never empty
 
   assert(root.is_object());

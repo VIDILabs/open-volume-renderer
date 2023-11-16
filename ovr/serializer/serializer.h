@@ -43,3 +43,6 @@ create_scene(std::string filename);
 } 
 }
 // namespace ovr::scene
+
+ovr::scene::TransferFunction
+create_scene_tfn_vidi3d(std::string filename);

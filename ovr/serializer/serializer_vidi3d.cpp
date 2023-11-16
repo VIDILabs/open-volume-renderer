@@ -20,7 +20,7 @@ typedef ovr::math::vec4i vec4i;
 #include "tfn/json.h"
 using json = nlohmann::json;
 
-#include <filesystem> // C++17 (or Microsoft-specific implementation in C++14)
+// #include <filesystem> // C++17 (or Microsoft-specific implementation in C++14)
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -150,13 +150,28 @@ range_from_json(json jsrange)
 // using namespace ovr::scene;
 
 static bool
+file_exists_test(std::string name)
+{
+  std::ifstream f(name.c_str());
+  return f.good();
+}
+
+static bool
 file_exists_test(std::string name, const std::string& dir, std::string& out)
 {
-  std::filesystem::path path(name);
-  if (path.is_relative()) path = dir / path;
-  std::ifstream f(path.c_str());
-  out = path.string();
-  return f.good();
+  if (file_exists_test(name)) {
+    out = name;
+    return true;
+  }
+  else if (file_exists_test(dir + "/" + name)) {
+    out = name;
+    return true;
+  }
+  else if (file_exists_test(dir + "\\" + name)) {
+    out = name;
+    return true;
+  }
+  return false;
 }
 
 static std::string
@@ -387,3 +402,13 @@ create_json_scene_vidi3d(json root, std::string workdir)
 }
 
 } // namespace ovr::scene
+
+ovr::scene::TransferFunction
+create_scene_tfn_vidi3d(std::string filename)
+{
+  std::ifstream file(filename);
+  std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+  json root = json::parse(text, nullptr, true, true);
+
+  return ovr::vidi3d::create_scene_tfn(root[VIEW], ovr::ValueType::VALUE_TYPE_DOUBLE);
+}

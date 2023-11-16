@@ -27,3 +27,6 @@ add_library(gdt OBJECT
   gdt/gdt.cpp)
 
 target_include_directories(gdt PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+set_target_properties(gdt PROPERTIES 
+  POSITION_INDEPENDENT_CODE ON
+)
