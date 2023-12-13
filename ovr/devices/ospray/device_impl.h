@@ -51,11 +51,15 @@ protected:
   void build_scene();
 
   // scene building functions
+  OSPTransferFunction create_ospray_transfer_function(scene::TransferFunction handler);
+  
   OSPVolume create_ospray_volume(scene::Volume::VolumeStructuredRegular handler);
   OSPVolume create_ospray_volume(scene::Volume handler);
-  OSPTransferFunction create_ospray_transfer_function(scene::TransferFunction handler);
+
   OSPGeometry create_ospray_geometry(scene::Geometry::GeometryTriangles handler);
+  OSPGeometry create_ospray_geometry(scene::Geometry::GeometryIsosurfaces handler);
   OSPGeometry create_ospray_geometry(scene::Geometry handler);
+
   OSPVolumetricModel create_ospray_volumetric_model(scene::Model::VolumetricModel handler);
   OSPGeometricModel create_ospray_geometric_model(scene::Model::GeometricModel handler);
   OSPInstance create_ospray_instance(scene::Instance handler);

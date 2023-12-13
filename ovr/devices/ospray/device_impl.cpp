@@ -70,8 +70,7 @@ namespace {
 
 template<typename Type>
 void
-ospSetVectorAsData(OSPObject o, const char* n, OSPDataType type, const std::vector<Type>& array)
-{
+ospSetVectorAsData(OSPObject o, const char* n, OSPDataType type, const std::vector<Type>& array) {
   if (!array.empty()) {
     OSPData shared = ospNewSharedData(array.data(), type, array.size());
     OSPData data = ospNewData(type, array.size());
@@ -84,8 +83,7 @@ ospSetVectorAsData(OSPObject o, const char* n, OSPDataType type, const std::vect
 
 template<typename Type>
 OSPData
-ospNewData2D(OSPDataType type, const std::vector<Type>& array)
-{
+ospNewData2D(OSPDataType type, const std::vector<Type>& array) {
   OSPData shared = ospNewSharedData(array.data(), type, array.size());
   OSPData data = ospNewData(type, array.size());
   ospCopyData(shared, data);
@@ -93,8 +91,7 @@ ospNewData2D(OSPDataType type, const std::vector<Type>& array)
 }
 
 inline OSPDataType
-to_ospray_data_type(ValueType type)
-{
+to_ospray_data_type(ValueType type) {
   switch (type) {
   case VALUE_TYPE_UINT8: return OSP_UCHAR;
   case VALUE_TYPE_INT8: return OSP_CHAR;
@@ -104,33 +101,26 @@ to_ospray_data_type(ValueType type)
   case VALUE_TYPE_INT32: return OSP_INT;
   case VALUE_TYPE_FLOAT: return OSP_FLOAT;
   case VALUE_TYPE_DOUBLE: return OSP_DOUBLE;
-
   case VALUE_TYPE_FLOAT2: return OSP_VEC2F;
   case VALUE_TYPE_FLOAT3: return OSP_VEC3F;
   case VALUE_TYPE_FLOAT4: return OSP_VEC4F;
-
   default: throw std::runtime_error("unknown type encountered");
   }
 }
 
 inline OSPData
-create_ospray_array1d_scalar(array_1d_scalar_t input)
-{
+create_ospray_array1d_scalar(array_1d_scalar_t input) {
   return ospNewSharedData1D(input->data(), to_ospray_data_type(input->type), input->dims.v);
 }
 
 inline OSPData
-create_ospray_array1d_float3(array_1d_float4_t input)
-{
-  if (input->type != value_type<vec4f>())
-    throw std::runtime_error("type mismatch");
-
+create_ospray_array1d_float3(array_1d_float4_t input) {
+  if (input->type != value_type<vec4f>()) throw std::runtime_error("type mismatch");
   return ospNewSharedData1DStride(input->data(), OSP_VEC3F, input->dims.v, sizeof(vec4f));
 }
 
 inline OSPData
-create_ospray_array3d_scalar(array_3d_scalar_t input)
-{
+create_ospray_array3d_scalar(array_3d_scalar_t input) {
   return ospNewSharedData3D(input->data(), to_ospray_data_type(input->type), /**/
                             input->dims.x, input->dims.y, input->dims.z);
 }
@@ -141,8 +131,7 @@ create_ospray_array3d_scalar(array_3d_scalar_t input)
 // ------------------------------------------------------------------
 
 OSPVolume
-DeviceOSPRay::Impl::create_ospray_volume(scene::Volume::VolumeStructuredRegular handler)
-{
+DeviceOSPRay::Impl::create_ospray_volume(scene::Volume::VolumeStructuredRegular handler) {
   auto data = create_ospray_array3d_scalar(handler.data);
   OSPVolume volume = ospNewVolume("structuredRegular");
   ospSetParam(volume, "gridOrigin", OSP_VEC3F, &handler.grid_origin);
@@ -155,8 +144,7 @@ DeviceOSPRay::Impl::create_ospray_volume(scene::Volume::VolumeStructuredRegular 
 }
 
 OSPVolume
-DeviceOSPRay::Impl::create_ospray_volume(scene::Volume handler)
-{
+DeviceOSPRay::Impl::create_ospray_volume(scene::Volume handler) {
   switch (handler.type) {
   case scene::Volume::STRUCTURED_REGULAR_VOLUME: return create_ospray_volume(handler.structured_regular);
   default: throw std::runtime_error("unknown volume type");
@@ -164,8 +152,7 @@ DeviceOSPRay::Impl::create_ospray_volume(scene::Volume handler)
 }
 
 OSPTransferFunction
-DeviceOSPRay::Impl::create_ospray_transfer_function(scene::TransferFunction handler)
-{
+DeviceOSPRay::Impl::create_ospray_transfer_function(scene::TransferFunction handler) {
   OSPTransferFunction tfn = ospNewTransferFunction("piecewiseLinear");
   ospSetParam(tfn, "valueRange", OSP_VEC2F, &handler.value_range);
   ospSetObject(tfn, "color", create_ospray_array1d_float3(handler.color));
@@ -175,11 +162,10 @@ DeviceOSPRay::Impl::create_ospray_transfer_function(scene::TransferFunction hand
 }
 
 OSPGeometry
-DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometryTriangles handler)
-{
-  OSPGeometry mesh = ospNewGeometry("mesh");
+DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometryTriangles handler) {
 
   // TODO finish the implementation //
+  OSPGeometry mesh = ospNewGeometry("mesh");
 
   assert(handler.position->type == ovr::VALUE_TYPE_FLOAT3);
   auto position = ospNewSharedData1D(handler.position->data(), OSP_VEC3F, handler.position->dims.v);
@@ -250,50 +236,61 @@ DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometryTriangles ha
   }
 
   ospCommit(mesh);
-
   ospRelease(position);
   ospRelease(index);
-
   if (faces_texcoord) ospRelease(faces_texcoord);
-  if (faces_normal) ospRelease(faces_normal);
-  if (faces_color) ospRelease(faces_color);
-
+  if (faces_normal)   ospRelease(faces_normal);
+  if (faces_color)    ospRelease(faces_color);
   if (verts_texcoord) ospRelease(verts_texcoord);
-  if (verts_normal) ospRelease(verts_normal);
-  if (verts_color) ospRelease(verts_color);
-
+  if (verts_normal)   ospRelease(verts_normal);
+  if (verts_color)    ospRelease(verts_color);
   return mesh;
 }
 
 OSPGeometry
-DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry handler)
-{
+DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometryIsosurfaces handler) {
+  OSPGeometry geom = ospNewGeometry("isosurface");
+  OSPVolume volume = create_ospray_volume(handler.volume);
+  OSPData isovalues = ospNewData1D(OSP_FLOAT, handler.isovalues.size());
+  {
+    OSPData data = ospNewSharedData1D(handler.isovalues.data(), OSP_FLOAT, handler.isovalues.size());
+    ospCopyData(data, isovalues, 0);
+    ospCommit(data);
+    ospRelease(data);
+  }
+  ospCommit(isovalues);
+  ospSetObject(geom, "volume", volume);
+  ospSetObject(geom, "isovalue", isovalues);
+  ospCommit(geom);
+  ospRelease(volume);
+  ospRelease(isovalues);
+  return geom;
+}
+
+OSPGeometry
+DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry handler) {
   switch (handler.type) {
-  case scene::Geometry::TRIANGLES_GEOMETRY: return create_ospray_geometry(handler.triangles);
+  case scene::Geometry::TRIANGLES_GEOMETRY:  return create_ospray_geometry(handler.triangles);
+  case scene::Geometry::ISOSURFACE_GEOMETRY: return create_ospray_geometry(handler.isosurfaces);
   default: throw std::runtime_error("unknown geometry type");
   }
 }
 
 OSPVolumetricModel
-DeviceOSPRay::Impl::create_ospray_volumetric_model(scene::Model::VolumetricModel handler)
-{
+DeviceOSPRay::Impl::create_ospray_volumetric_model(scene::Model::VolumetricModel handler) {
   auto volume = create_ospray_volume(handler.volume);
   auto tfn = create_ospray_transfer_function(handler.transfer_function);
-
   OSPVolumetricModel model = ospNewVolumetricModel(volume);
   ospSetObject(model, "transferFunction", tfn);
   ospSetFloat(model, "gradientShadingScale", 1.f);
   ospCommit(model);
   ospRelease(volume);
-
   ospray.tfns.push_back(tfn);
-
   return model;
 }
 
 OSPGeometricModel
-DeviceOSPRay::Impl::create_ospray_geometric_model(scene::Model::GeometricModel handler)
-{
+DeviceOSPRay::Impl::create_ospray_geometric_model(scene::Model::GeometricModel handler) {
   auto geometry = create_ospray_geometry(handler.geometry);
   OSPGeometricModel model = ospNewGeometricModel(geometry);
   OSPMaterial mtl = ospNewMaterial(NULL, "obj");
@@ -304,8 +301,7 @@ DeviceOSPRay::Impl::create_ospray_geometric_model(scene::Model::GeometricModel h
 }
 
 OSPInstance
-DeviceOSPRay::Impl::create_ospray_instance(scene::Instance handler)
-{
+DeviceOSPRay::Impl::create_ospray_instance(scene::Instance handler) {
   std::vector<OSPVolumetricModel> volume_group;
   std::vector<OSPGeometricModel> geometry_group;
   for (auto m : handler.models) {
@@ -325,12 +321,8 @@ DeviceOSPRay::Impl::create_ospray_instance(scene::Instance handler)
   ospSetVectorAsData(group, "volume", OSP_VOLUMETRIC_MODEL, volume_group);
   ospCommit(group);
 
-  for (auto m : geometry_group) {
-    ospRelease(m);
-  }
-  for (auto m : volume_group) {
-    ospRelease(m);
-  }
+  for (auto m : geometry_group) { ospRelease(m); }
+  for (auto m : volume_group)   { ospRelease(m); }
 
   // put the group into an instance (give the group a world transform)
   OSPInstance instance = ospNewInstance(group);
@@ -342,8 +334,7 @@ DeviceOSPRay::Impl::create_ospray_instance(scene::Instance handler)
   return instance;
 }
 
-DeviceOSPRay::Impl::~Impl()
-{
+DeviceOSPRay::Impl::~Impl() {
   for (auto tfn : ospray.tfns) {
     ospRelease(tfn);
   }
@@ -361,8 +352,7 @@ DeviceOSPRay::Impl::~Impl()
 }
 
 void
-DeviceOSPRay::Impl::init(int argc, const char** argv, DeviceOSPRay* p)
-{
+DeviceOSPRay::Impl::init(int argc, const char** argv, DeviceOSPRay* p) {
   if (parent) { 
     if (parent != p) throw std::runtime_error("[ospray] a different parent is provided");
   } 
@@ -408,8 +398,7 @@ DeviceOSPRay::Impl::init(int argc, const char** argv, DeviceOSPRay* p)
 }
 
 void
-DeviceOSPRay::Impl::commit_renderer()
-{
+DeviceOSPRay::Impl::commit_renderer() {
   auto& scene = parent->current_scene;
 
   if (parent->params.path_tracing.update() || !ospray.renderer) {
@@ -455,8 +444,7 @@ DeviceOSPRay::Impl::commit_renderer()
 }
 
 void
-DeviceOSPRay::Impl::commit_framebuffer()
-{
+DeviceOSPRay::Impl::commit_framebuffer() {
   bool recreate = !ospray.framebuffer;
 
   if (parent->params.fbsize.update()) {
@@ -494,8 +482,7 @@ DeviceOSPRay::Impl::commit_framebuffer()
 }
 
 void
-DeviceOSPRay::Impl::commit_camera()
-{
+DeviceOSPRay::Impl::commit_camera() {
   if (parent->params.camera.update() || !ospray.camera) {
 
     const Camera& camera = parent->params.camera.ref();
@@ -536,8 +523,7 @@ DeviceOSPRay::Impl::commit_camera()
 }
 
 void
-DeviceOSPRay::Impl::commit_transfer_function()
-{
+DeviceOSPRay::Impl::commit_transfer_function() {
   if (parent->params.tfn.update()) {
     framebuffer_should_reset_accum = true;
 
@@ -562,6 +548,7 @@ DeviceOSPRay::Impl::commit_transfer_function()
     OSPData color_data = ospNewData2D(OSP_VEC3F, tfn_color);
     OSPData opacity_data = ospNewData2D(OSP_FLOAT, tfn_opacity);
 
+    // TODO: can only support one transfer function for now, limited by the framework
     for (auto& tfn : ospray.tfns) {
       ospSetParam(tfn, "valueRange", OSP_VEC2F, &tfn_range);
       ospSetObject(tfn, "color", color_data);
@@ -572,8 +559,7 @@ DeviceOSPRay::Impl::commit_transfer_function()
 }
 
 void
-DeviceOSPRay::Impl::build_scene()
-{
+DeviceOSPRay::Impl::build_scene() {
   // put the instance in the world
   const auto& scene = parent->current_scene;
 
@@ -594,7 +580,11 @@ DeviceOSPRay::Impl::build_scene()
     } 
     else if (l.type == scene::Light::DIRECTIONAL) {
       light = ospNewLight("distant");
-      ospSetVec3f(light, "direction", l.directional.direction.x, l.directional.direction.y, l.directional.direction.z);
+      ospSetVec3f(light, "direction", 
+        l.directional.direction.x, 
+        l.directional.direction.y, 
+        l.directional.direction.z
+      );
     }
     else {
       throw std::runtime_error("OSPray: unknown light type");
@@ -644,14 +634,12 @@ DeviceOSPRay::Impl::build_scene()
 }
 
 void
-DeviceOSPRay::Impl::swap()
-{
+DeviceOSPRay::Impl::swap() {
   framebuffer_index = (framebuffer_index + 1) % 2;
 }
 
 void
-DeviceOSPRay::Impl::commit()
-{
+DeviceOSPRay::Impl::commit() {
   if (parent->params.focus_center.update()) {
     framebuffer_should_reset_accum = true;
   }
@@ -684,8 +672,7 @@ DeviceOSPRay::Impl::commit()
 }
 
 void
-DeviceOSPRay::Impl::render()
-{
+DeviceOSPRay::Impl::render() {
   frame_index++;
 
   if (parent->params.sparse_sampling.ref()) {
@@ -721,8 +708,7 @@ DeviceOSPRay::Impl::render()
 }
 
 void
-DeviceOSPRay::Impl::mapframe(FrameBufferData* fb)
-{
+DeviceOSPRay::Impl::mapframe(FrameBufferData* fb) {
   const size_t num_bytes = framebuffer_size_latest.long_product();
   fb->rgba->set_data((void*)framebuffer_rgba_ptr, num_bytes * sizeof(vec4f), CrossDeviceBuffer::DEVICE_CPU);
 }

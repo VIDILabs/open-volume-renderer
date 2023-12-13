@@ -50,6 +50,31 @@ namespace ovr {
 
 using vidi::TransactionalValue;
 
+inline const scene::Volume::VolumeStructuredRegular&
+parse_single_volume_scene(const Scene& scene) 
+{
+  assert(scene.instances.size() == 1);
+  assert(scene.instances[0].models.size() == 1);
+  assert(scene.instances[0].models[0].type == scene::Model::VOLUMETRIC_MODEL);
+  assert(scene.instances[0].models[0].volume_model.volume.type == scene::Volume::STRUCTURED_REGULAR_VOLUME);
+  return scene.instances[0].models[0].volume_model.volume.structured_regular;
+}
+
+inline bool
+is_single_tfn(const Scene& scene, scene::TransferFunction& scene_tfn) 
+{
+  int count = 0;
+  for (const auto& instance : scene.instances) {
+    for (const auto& model : instance.models) {
+      if (model.type == scene::Model::VOLUMETRIC_MODEL) {
+        scene_tfn = model.volume_model.transfer_function;
+        count++;
+      }
+    }
+  }
+  return count == 1;
+}
+
 /*! a sample OptiX-7 renderer that demonstrates how to set up
     context, module, programs, pipeline, SBT, etc, and perform a
     valid launch that renders some pixel (using a simple test
@@ -62,8 +87,6 @@ public:
   double render_time;
 
   struct FrameBufferData {
-    // vec4f* rgba{};
-    // vec3f* grad{};
     std::shared_ptr<CrossDeviceBuffer> rgba;
     std::shared_ptr<CrossDeviceBuffer> grad;
 
@@ -221,7 +244,7 @@ public:
   }
 
 protected:
-  void set_scene(Scene scene);
+  void set_scene(const Scene& scene);
   virtual void init(int argc, const char** argv) = 0;
 
 protected:
@@ -267,14 +290,11 @@ MainRenderer::init(int argc, const char** argv, Scene scene, Camera camera)
 }
 
 inline void
-MainRenderer::set_scene(Scene scene)
+MainRenderer::set_scene(const Scene& scene)
 {
   // TODO generalize to support multiple transfer functions //
-  assert(scene.instances.size() == 1);
-  if (scene.instances[0].models.size() == 1 && scene.instances[0].models[0].type == scene::Model::VOLUMETRIC_MODEL) 
-  {
-    assert(scene.instances[0].models[0].volume_model.volume.type == scene::Volume::STRUCTURED_REGULAR_VOLUME);
-    scene::TransferFunction scene_tfn = scene.instances[0].models[0].volume_model.transfer_function;
+  scene::TransferFunction scene_tfn;
+  if (is_single_tfn(scene, scene_tfn)) {
 
     const float* data_o = scene_tfn.opacity->data_typed<float>();
     const size_t size_o = scene_tfn.opacity->dims.v;

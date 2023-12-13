@@ -539,6 +539,14 @@ main(int ac, const char** av)
   }
   else {
     scene = ovr::scene::create_scene(std::string(av[1]));
+
+    // TODO hack for testing isosurface rendering
+    ovr::scene::Model model;
+    model.type = ovr::scene::Model::GEOMETRIC_MODEL;
+    model.geometry_model.geometry.type = ovr::scene::Geometry::ISOSURFACE_GEOMETRY;
+    model.geometry_model.geometry.isosurfaces.volume = scene.instances[0].models[0].volume_model.volume;
+    model.geometry_model.geometry.isosurfaces.isovalues = { 0.5f };
+    scene.instances[0].models[0] = model;
   }
 
   MainWindow::FrameLayer layer;  

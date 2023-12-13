@@ -246,6 +246,7 @@ struct Volume {
 struct Geometry {
   enum {
     TRIANGLES_GEOMETRY,
+    ISOSURFACE_GEOMETRY,
   } type;
 
   struct GeometryTriangles { /* TODO */ 
@@ -257,6 +258,11 @@ struct Geometry {
       array_1d_float4_t color;
     } verts, faces;
   } triangles;
+
+  struct GeometryIsosurfaces {
+    Volume volume;
+    std::vector<float> isovalues;
+  } isosurfaces;
 };
 
 struct Model {
