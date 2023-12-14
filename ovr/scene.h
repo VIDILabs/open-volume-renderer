@@ -186,6 +186,10 @@ using array_1d_float3_t = std::shared_ptr<Array1DFloat3>;
 using array_1d_float4_t = std::shared_ptr<Array1DFloat4>;
 using array_3d_scalar_t = std::shared_ptr<Array3DScalar>;
 
+using array_1d_t = std::shared_ptr<Array<1>>;
+using array_2d_t = std::shared_ptr<Array<2>>;
+using array_3d_t = std::shared_ptr<Array<3>>;
+
 #if defined(__cplusplus)
 
 // ------------------------------------------------------------------
@@ -243,6 +247,40 @@ struct Volume {
   } structured_regular;
 };
 
+struct Texture {
+  enum {
+    VOLUME_TEXTURE,
+    TRANSFER_FUNCTION_TEXTURE,
+  } type;
+
+  struct VolumeTexture {
+    Volume volume;
+  } volume;
+
+  struct TransferFunctionTexture {
+    TransferFunction transfer_function;
+    int32_t volume_texture = -1;
+    // Volume volume; // optional
+  } transfer_function;
+};
+
+struct Material {
+  enum {
+    OBJ_MATERIAL,
+  } type;
+
+  struct ObjMaterial {
+    vec3f kd = vec3f(0.8f); // diffuse reflectivity
+    vec3f ks = vec3f(0.0f); // specular reflectivity
+    float ns = 10.f; // specular exponent
+    float d = 1.f; // opacity
+    vec3f tf = vec3f(1.f); // transparency filter
+    // Texture maps
+    int32_t map_kd = -1;
+    int32_t map_bump = -1;
+  } obj;
+};
+
 struct Geometry {
   enum {
     TRIANGLES_GEOMETRY,
@@ -260,8 +298,9 @@ struct Geometry {
   } triangles;
 
   struct GeometryIsosurfaces {
-    Volume volume;
+    int32_t volume_texture;
     std::vector<float> isovalues;
+    // TransferFunction transfer_function; // TODO optional
   } isosurfaces;
 };
 
@@ -278,6 +317,7 @@ struct Model {
 
   struct GeometricModel {
     Geometry geometry;
+    int32_t mtl = -1;
   } geometry_model;
 };
 
@@ -310,6 +350,9 @@ struct Light {
 };
 
 struct Scene {
+  std::vector<Texture> textures;
+  std::vector<Material> materials;
+
   std::vector<scene::Instance> instances;
   std::vector<scene::Light> lights;
   Camera camera;

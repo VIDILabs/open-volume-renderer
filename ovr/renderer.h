@@ -72,6 +72,12 @@ is_single_tfn(const Scene& scene, scene::TransferFunction& scene_tfn)
       }
     }
   }
+  for (const auto& texture : scene.textures) {
+    if (texture.type == scene::Texture::TRANSFER_FUNCTION_TEXTURE) {
+      scene_tfn = texture.transfer_function.transfer_function;
+      count++;
+    }
+  }
   return count == 1;
 }
 
@@ -294,8 +300,12 @@ MainRenderer::set_scene(const Scene& scene)
 {
   // TODO generalize to support multiple transfer functions //
   scene::TransferFunction scene_tfn;
-  if (is_single_tfn(scene, scene_tfn)) {
+  if (!is_single_tfn(scene, scene_tfn)) {
+    std::cerr << "ERROR: found multiple transfer functions, they will be treated as one" << std::endl;
+  }
 
+  // TODO: find a better way to set transfer function //
+  {
     const float* data_o = scene_tfn.opacity->data_typed<float>();
     const size_t size_o = scene_tfn.opacity->dims.v;
 

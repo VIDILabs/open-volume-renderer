@@ -158,6 +158,7 @@ DeviceOSPRay::Impl::create_ospray_transfer_function(scene::TransferFunction hand
   ospSetObject(tfn, "color", create_ospray_array1d_float3(handler.color));
   ospSetObject(tfn, "opacity", create_ospray_array1d_scalar(handler.opacity));
   ospCommit(tfn);
+  ospray.tfns.push_back(tfn);
   return tfn;
 }
 
@@ -250,20 +251,10 @@ DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometryTriangles ha
 OSPGeometry
 DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometryIsosurfaces handler) {
   OSPGeometry geom = ospNewGeometry("isosurface");
-  OSPVolume volume = create_ospray_volume(handler.volume);
-  OSPData isovalues = ospNewData1D(OSP_FLOAT, handler.isovalues.size());
-  {
-    OSPData data = ospNewSharedData1D(handler.isovalues.data(), OSP_FLOAT, handler.isovalues.size());
-    ospCopyData(data, isovalues, 0);
-    ospCommit(data);
-    ospRelease(data);
-  }
-  ospCommit(isovalues);
+  OSPVolume volume = ospray.get_volume(handler.volume_texture);
+  ospSetVectorAsData(geom, "isovalue", OSP_FLOAT, handler.isovalues);
   ospSetObject(geom, "volume", volume);
-  ospSetObject(geom, "isovalue", isovalues);
   ospCommit(geom);
-  ospRelease(volume);
-  ospRelease(isovalues);
   return geom;
 }
 
@@ -276,6 +267,68 @@ DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry handler) {
   }
 }
 
+// ------------------------------------------------------------------
+//
+// ------------------------------------------------------------------
+
+OSPTexture
+DeviceOSPRay::Impl::create_ospray_texture(scene::Texture::TransferFunctionTexture handler) {
+  OSPTexture texture = ospNewTexture("volume");
+  OSPTransferFunction tfn = create_ospray_transfer_function(handler.transfer_function);
+  OSPVolume volume =  ospray.get_volume(handler.volume_texture);
+  ospSetObject(texture, "transferFunction", tfn);
+  ospSetObject(texture, "volume", volume);
+  ospCommit(texture);
+  return texture;
+}
+
+OSPTexOrVol
+DeviceOSPRay::Impl::create_ospray_texture(scene::Texture handler) {
+  using namespace scene;
+  OSPTexOrVol ret;
+  switch (handler.type) {
+  case Texture::VOLUME_TEXTURE:            ret.vol = create_ospray_volume(handler.volume.volume);      break;
+  case Texture::TRANSFER_FUNCTION_TEXTURE: ret.tex = create_ospray_texture(handler.transfer_function); break;
+  default: throw std::runtime_error("unknown texture type: " + std::to_string(handler.type));
+  }
+  return ret;
+}
+
+// ------------------------------------------------------------------
+//
+// ------------------------------------------------------------------
+
+OSPMaterial
+DeviceOSPRay::Impl::create_ospray_material(scene::Material::ObjMaterial handler) {
+  OSPMaterial mtl = ospNewMaterial(NULL, "obj");
+  ospSetVec3f(mtl, "kd", handler.kd.x, handler.kd.y, handler.kd.z);
+  ospSetVec3f(mtl, "ks", handler.ks.x, handler.ks.y, handler.ks.z);
+  ospSetFloat(mtl, "ns", handler.ns);
+  ospSetFloat(mtl, "d", handler.d);
+  ospSetVec3f(mtl, "tf", handler.tf.x, handler.tf.y, handler.tf.z);
+  if (handler.map_kd != -1) {
+    ospSetObject(mtl, "map_kd", ospray.get_texture(handler.map_kd));
+  }
+  if (handler.map_bump != -1) {
+    ospSetObject(mtl, "map_bump", ospray.get_texture(handler.map_bump));
+  }
+  ospCommit(mtl);
+  return mtl;
+}
+
+OSPMaterial
+DeviceOSPRay::Impl::create_ospray_material(scene::Material handler) {
+  using namespace scene;
+  switch (handler.type) {
+  case Material::OBJ_MATERIAL: return create_ospray_material(handler.obj);
+  default: throw std::runtime_error("unknown material type");
+  }
+}
+
+// ------------------------------------------------------------------
+//
+// ------------------------------------------------------------------
+
 OSPVolumetricModel
 DeviceOSPRay::Impl::create_ospray_volumetric_model(scene::Model::VolumetricModel handler) {
   auto volume = create_ospray_volume(handler.volume);
@@ -285,7 +338,6 @@ DeviceOSPRay::Impl::create_ospray_volumetric_model(scene::Model::VolumetricModel
   ospSetFloat(model, "gradientShadingScale", 1.f);
   ospCommit(model);
   ospRelease(volume);
-  ospray.tfns.push_back(tfn);
   return model;
 }
 
@@ -293,8 +345,13 @@ OSPGeometricModel
 DeviceOSPRay::Impl::create_ospray_geometric_model(scene::Model::GeometricModel handler) {
   auto geometry = create_ospray_geometry(handler.geometry);
   OSPGeometricModel model = ospNewGeometricModel(geometry);
-  OSPMaterial mtl = ospNewMaterial(NULL, "obj");
-  ospSetObject(model, "material", mtl);
+  if (handler.mtl == -1) {
+    OSPMaterial mtl = ospNewMaterial(NULL, "obj");
+    ospSetObject(model, "material", mtl);
+  }
+  else {
+    ospSetObject(model, "material", ospray.materials[handler.mtl]);
+  }
   ospCommit(model);
   ospRelease(geometry);
   return model;
@@ -563,6 +620,18 @@ DeviceOSPRay::Impl::build_scene() {
   // put the instance in the world
   const auto& scene = parent->current_scene;
 
+  // create all standalone volumes & textures
+  ospray.texorvols.reserve(scene.textures.size());
+  for (auto t : scene.textures) {
+    ospray.texorvols.push_back(create_ospray_texture(t));
+  }
+
+  // create all materials
+  ospray.materials.reserve(scene.materials.size());
+  for (auto m : scene.materials) {
+    ospray.materials.push_back(create_ospray_material(m));
+  }
+
   // create all ospray instances
   std::vector<OSPInstance> instances;
   for (auto i : scene.instances) {
@@ -654,6 +723,10 @@ DeviceOSPRay::Impl::commit() {
 
   const auto& scene = parent->current_scene;
   commit_transfer_function();
+
+  for (auto& m : ospray.materials) {
+    ospCommit(m);
+  }
 
   commit_framebuffer();
 
