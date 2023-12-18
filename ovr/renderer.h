@@ -49,6 +49,31 @@
 namespace ovr {
 
 using vidi::TransactionalValue;
+using scene::Camera;
+
+inline int
+count_tfn(const scene::Scene& scene, scene::TransferFunction& scene_tfn) 
+{
+  int count = 0;
+  // There are two places transfer function can be stored:
+  // 1) in a volume model
+  for (const auto& instance : scene.instances) {
+    for (const auto& model : instance.models) {
+      if (model.type == scene::Model::VOLUMETRIC_MODEL) {
+        scene_tfn = model.volume_model.transfer_function;
+        count++;
+      }
+    }
+  }
+  // 2) in a texture
+  for (const auto& texture : scene.textures) {
+    if (texture.type == scene::Texture::TRANSFER_FUNCTION_TEXTURE) {
+      scene_tfn = texture.transfer_function.transfer_function;
+      count++;
+    }
+  }
+  return count;
+}
 
 /*! a sample OptiX-7 renderer that demonstrates how to set up
     context, module, programs, pipeline, SBT, etc, and perform a
@@ -62,13 +87,10 @@ public:
   double render_time;
 
   struct FrameBufferData {
-    // vec4f* rgba{};
-    // vec3f* grad{};
     std::shared_ptr<CrossDeviceBuffer> rgba;
     std::shared_ptr<CrossDeviceBuffer> grad;
 
-    FrameBufferData()
-    {
+    FrameBufferData() {
       rgba = std::make_shared<CrossDeviceBuffer>();
       grad = std::make_shared<CrossDeviceBuffer>();
     }
@@ -180,6 +202,11 @@ public:
     params.volume_sampling_rate = volume_sampling_rate;
   }
 
+  void set_volume_density_scale(float volume_density_scale)
+  {
+    params.volume_density_scale = volume_density_scale;
+  }
+
   void set_mat_ambient(float ambient)
   {
     params.ambient = ambient;
@@ -221,7 +248,7 @@ public:
   }
 
 protected:
-  void set_scene(Scene scene);
+  void set_scene(const Scene& scene);
   virtual void init(int argc, const char** argv) = 0;
 
 protected:
@@ -231,6 +258,7 @@ protected:
 
     TransactionalValue<int> sample_per_pixel;
     TransactionalValue<float> volume_sampling_rate;
+    TransactionalValue<float> volume_density_scale;
 
     TransactionalValue<float> ambient;
     TransactionalValue<float> diffuse;
@@ -246,9 +274,11 @@ protected:
     TransactionalValue<float> focus_scale;
     TransactionalValue<float> base_noise;
     TransactionalValue<bool> add_lights;
+
     TransactionalValue<bool> sparse_sampling;
     TransactionalValue<bool> path_tracing;
     TransactionalValue<bool> photonmapping;
+
     TransactionalValue<bool> frame_accumulation;
 
     TransactionalValue<Camera> camera;
@@ -267,15 +297,17 @@ MainRenderer::init(int argc, const char** argv, Scene scene, Camera camera)
 }
 
 inline void
-MainRenderer::set_scene(Scene scene)
+MainRenderer::set_scene(const Scene& scene)
 {
   // TODO generalize to support multiple transfer functions //
-  assert(scene.instances.size() == 1);
-  if (scene.instances[0].models.size() == 1 && scene.instances[0].models[0].type == scene::Model::VOLUMETRIC_MODEL) 
-  {
-    assert(scene.instances[0].models[0].volume_model.volume.type == scene::Volume::STRUCTURED_REGULAR_VOLUME);
-    scene::TransferFunction scene_tfn = scene.instances[0].models[0].volume_model.transfer_function;
+  scene::TransferFunction scene_tfn;
+  int count = count_tfn(scene, scene_tfn);
+  if (count > 1) {
+    std::cerr << "ERROR: found multiple transfer functions, they will be treated as one" << std::endl;
+  }
 
+  // TODO: find a better way to set transfer function //
+  if (count > 0) {
     const float* data_o = scene_tfn.opacity->data_typed<float>();
     const size_t size_o = scene_tfn.opacity->dims.v;
 
@@ -312,6 +344,3 @@ MainRenderer::set_scene(Scene scene)
 
 std::shared_ptr<ovr::MainRenderer>
 create_renderer(std::string name);
-
-ovr::Scene
-create_example_scene();

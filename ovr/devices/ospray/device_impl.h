@@ -27,6 +27,12 @@
 
 namespace ovr::ospray {
 
+// In OVR, we consider volumes as special textures
+struct OSPTexOrVol {
+  OSPVolume vol = nullptr;
+  OSPTexture tex = nullptr;
+};
+
 struct DeviceOSPRay::Impl {
   DeviceOSPRay* parent{ nullptr };
 
@@ -53,12 +59,23 @@ protected:
   // scene building functions
   OSPVolume create_ospray_volume(scene::Volume::VolumeStructuredRegular handler);
   OSPVolume create_ospray_volume(scene::Volume handler);
-  OSPTransferFunction create_ospray_transfer_function(scene::TransferFunction handler);
+
   OSPGeometry create_ospray_geometry(scene::Geometry::GeometryTriangles handler);
+  OSPGeometry create_ospray_geometry(scene::Geometry::GeometryIsosurfaces handler);
   OSPGeometry create_ospray_geometry(scene::Geometry handler);
+  
+  OSPTexture create_ospray_texture(scene::Texture::TransferFunctionTexture handler);
+  
+  OSPMaterial create_ospray_material(scene::Material::ObjMaterial handler);
+  OSPMaterial create_ospray_material(scene::Material handler);
+
+  OSPTransferFunction create_ospray_transfer_function(scene::TransferFunction handler);
   OSPVolumetricModel create_ospray_volumetric_model(scene::Model::VolumetricModel handler);
   OSPGeometricModel create_ospray_geometric_model(scene::Model::GeometricModel handler);
   OSPInstance create_ospray_instance(scene::Instance handler);
+
+  // our extension
+  OSPTexOrVol create_ospray_texture(scene::Texture handler);
 
 protected:
   struct {
@@ -67,7 +84,31 @@ protected:
     OSPWorld world{ 0 };
     OSPRenderer renderer{ 0 };
     std::vector<OSPTransferFunction> tfns;
+    std::vector<OSPTexOrVol> texorvols;
+    std::vector<OSPMaterial> materials;
     OSPData sparse_samples;
+
+    OSPVolume get_volume(int32_t idx) { 
+      if (idx < 0 || idx >= texorvols.size()) {
+        throw std::runtime_error("invalid texture index: " + std::to_string(idx) + " / " + std::to_string(texorvols.size()));
+      }
+      auto ret = texorvols[idx];
+      if (ret.vol == nullptr) {
+        throw std::runtime_error("texture " + std::to_string(idx) + " is not a volume texture");
+      }
+      return ret.vol;
+    }
+
+    OSPTexture get_texture(int32_t idx) { 
+      if (idx < 0 || idx >= texorvols.size()) {
+        throw std::runtime_error("invalid texture index: " + std::to_string(idx) + " / " + std::to_string(texorvols.size()));
+      }
+      auto ret = texorvols[idx];
+      if (ret.tex == nullptr) {
+        throw std::runtime_error("texture " + std::to_string(idx) + " is not a texture");
+      }
+      return ret.tex;
+    }
   } ospray;
 
   uint32_t framebuffer_channels = OSP_FB_COLOR | OSP_FB_VARIANCE /*| OSP_FB_NORMAL*/ /*| OSP_FB_ACCUM*/;

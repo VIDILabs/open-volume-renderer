@@ -93,6 +93,9 @@
 #define OPTIX_CHECK_NOEXCEPT(call) \
   do {                             \
     OptixResult res = call;        \
+    if (res != OPTIX_SUCCESS) {                                                                \
+      fprintf(stderr, "OptiX call (%s) failed with %d (line %d)\n", #call, res, __LINE__);     \
+    }                                                                                          \
   } while (0)
 
 
@@ -400,13 +403,100 @@ static void getUsedGPUMemory(unsigned long long* out)
   *out = total-free;
 }
 
-inline std::atomic<size_t>& total_n_bytes_allocated() 
+inline std::atomic<size_t>& tot_nbytes_allocated() noexcept { static std::atomic<size_t> s{0}; return s; }
+inline std::atomic<size_t>& max_nbytes_allocated() noexcept { static std::atomic<size_t> s{0}; return s; }
+inline void update_max_nbytes_allocated(const size_t& value) noexcept
 {
-	static std::atomic<size_t> s_total_n_bytes_allocated{0};
-	return s_total_n_bytes_allocated;
+  auto& maximum_value = max_nbytes_allocated();
+  size_t prev_value = maximum_value;
+  while(prev_value < value && !maximum_value.compare_exchange_weak(prev_value, value)) {}
 }
 
 }
+
+inline cudaError_t cudaTrackedFree(void *devPtr, size_t size) {
+  size_t tot = ::util::tot_nbytes_allocated().fetch_sub(size);
+#ifdef VNR_VERBOSE_MEMORY_ALLOCS
+  printf("[mem] Linear -%s\n", util::prettyBytes(size).c_str());
+#endif
+  ::util::update_max_nbytes_allocated(tot);
+  return cudaFree(devPtr);
+}
+
+template<typename T>
+inline cudaError_t cudaTrackedMalloc(T **devPtr, size_t size) {
+  size_t tot = ::util::tot_nbytes_allocated().fetch_add(size);
+#ifdef VNR_VERBOSE_MEMORY_ALLOCS
+  printf("[mem] Linear +%s\n", util::prettyBytes(size).c_str());
+#endif
+  ::util::update_max_nbytes_allocated(tot);
+  return cudaMalloc(devPtr, size);
+}
+
+inline cudaError_t cudaTrackedFreeAsync(void *devPtr, size_t size, cudaStream_t stream) {
+  size_t tot = ::util::tot_nbytes_allocated().fetch_sub(size);
+#ifdef VNR_VERBOSE_MEMORY_ALLOCS
+  printf("[mem] Linear -%s\n", util::prettyBytes(size).c_str());
+#endif
+  ::util::update_max_nbytes_allocated(tot);
+  return cudaFreeAsync(devPtr, stream);
+}
+
+template<typename T>
+inline cudaError_t cudaTrackedMallocAsync(T **devPtr, size_t size, cudaStream_t stream) {
+  size_t tot = ::util::tot_nbytes_allocated().fetch_add(size);
+#ifdef VNR_VERBOSE_MEMORY_ALLOCS
+  printf("[mem] Linear +%s\n", util::prettyBytes(size).c_str());
+#endif
+  ::util::update_max_nbytes_allocated(tot);
+  return cudaMallocAsync(devPtr, size, stream);
+}
+
+inline cudaError_t CUDARTAPI cudaTrackedFreeArray(cudaArray_t array) {
+  // Gets info about the specified cudaArray.
+  cudaChannelFormatDesc desc;
+  cudaExtent extent;
+  unsigned int flags;
+  CUDA_CHECK(cudaArrayGetInfo(&desc, &extent, &flags, array));
+  // Computes the size of the array
+  size_t size = (desc.x+desc.y+desc.z+desc.w);
+  if (extent.width == 0 && extent.height == 0 && extent.depth == 0) {
+    size = 0;
+  }
+  else {
+    if (extent.width)  size *= (size_t)extent.width;
+    if (extent.height) size *= (size_t)extent.height;
+    if (extent.depth)  size *= (size_t)extent.depth;
+  }
+  size_t tot = ::util::tot_nbytes_allocated().fetch_sub(size);
+#ifdef VNR_VERBOSE_MEMORY_ALLOCS
+  printf("[mem] Array -%s\n", util::prettyBytes(size).c_str());
+#endif
+  ::util::update_max_nbytes_allocated(tot);
+  return cudaFreeArray(array);
+}
+
+inline cudaError_t cudaTrackedMallocArray(cudaArray_t *array, const struct cudaChannelFormatDesc *desc, size_t width, size_t height = 0, unsigned int flags = 0) {
+  size_t size = (size_t)width * (desc->x+desc->y+desc->z+desc->w);
+  if (height) size *= (size_t)height;
+  size_t tot = ::util::tot_nbytes_allocated().fetch_add(size);
+#ifdef VNR_VERBOSE_MEMORY_ALLOCS
+  printf("[mem] Array +%s\n", util::prettyBytes(size).c_str());
+#endif
+  ::util::update_max_nbytes_allocated(tot);
+  return cudaMallocArray(array, desc, width, height, flags);
+}
+
+inline cudaError_t cudaTrackedMalloc3DArray(cudaArray_t *array, const struct cudaChannelFormatDesc* desc, struct cudaExtent extent, unsigned int flags = 0) {
+  size_t size = (size_t)extent.width * (size_t)extent.height * (size_t)extent.depth * (desc->x+desc->y+desc->z+desc->w);
+  size_t tot = ::util::tot_nbytes_allocated().fetch_add(size);
+#ifdef VNR_VERBOSE_MEMORY_ALLOCS
+  printf("[mem] 3D Array +%s\n", util::prettyBytes(size).c_str());
+#endif
+  ::util::update_max_nbytes_allocated(tot);
+  return cudaMalloc3DArray(array, desc, extent, flags);
+}
+
 
 namespace ovr {
 namespace misc = ::util;

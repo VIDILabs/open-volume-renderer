@@ -50,7 +50,7 @@ private:
   void buildSBT();
 
   /*! constructs the scene data */
-  void buildScene(Scene& scene);
+  void buildScene(const Scene& scene);
 
   /*! build the instance acceleration structure */
   OptixTraversableHandle buildTLAS();

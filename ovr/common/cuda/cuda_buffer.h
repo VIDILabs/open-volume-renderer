@@ -94,7 +94,7 @@ public:
     
     CUDA_CHECK(cudaMallocAsync((void**)&d_ptr, sizeInBytes, stream));
 
-    util::total_n_bytes_allocated() += sizeInBytes;
+    util::tot_nbytes_allocated() += sizeInBytes;
 
 #ifdef CUDA_BUFFER_VERBOSE_MEMORY_ALLOCS
 		printf("[mem] CUDABuffer alloc %s\n", util::prettyBytes(sizeInBytes).c_str());
@@ -108,7 +108,7 @@ public:
   {
     if (owned_data && d_ptr) {
       CUDA_CHECK(cudaFreeAsync(d_ptr, stream));
-      util::total_n_bytes_allocated() -= sizeInBytes;
+      util::tot_nbytes_allocated() -= sizeInBytes;
 #ifdef CUDA_BUFFER_VERBOSE_MEMORY_ALLOCS
       printf("[mem] CUDABuffer free %s\n", util::prettyBytes(sizeInBytes).c_str());
 #endif
@@ -312,7 +312,7 @@ createCudaArray3D(void* dataPtr, const int3& dims)
   // allocate 3D CUDA array
   cudaChannelFormatDesc channel_desc = cudaCreateChannelDesc<Type>();
   CUDA_CHECK(cudaMalloc3DArray(&dataArr, &channel_desc, make_cudaExtent(dims.x, dims.y, dims.z)));
-  util::total_n_bytes_allocated() += (size_t)dims.x * dims.y * dims.z * sizeof(Type);
+  util::tot_nbytes_allocated() += (size_t)dims.x * dims.y * dims.z * sizeof(Type);
 #ifdef CUDA_BUFFER_VERBOSE_MEMORY_ALLOCS
   printf("[mem] 3DTex %s\n", util::prettyBytes((size_t)dims.x * dims.y * dims.z * sizeof(Type)).c_str());
 #endif
@@ -339,7 +339,7 @@ createCudaArray1D(const void* dataPtr, const size_t& size)
   // Allocate actually a 2D CUDA array of shape N x 1
   cudaChannelFormatDesc channel_desc = cudaCreateChannelDesc<Type>();
   CUDA_CHECK(cudaMallocArray(&dataArr, &channel_desc, size, 1));
-  util::total_n_bytes_allocated() += size * sizeof(Type);
+  util::tot_nbytes_allocated() += size * sizeof(Type);
 #ifdef CUDA_BUFFER_VERBOSE_MEMORY_ALLOCS
   printf("[mem] 3DTex %s\n", util::prettyBytes(size * sizeof(Type)).c_str());
 #endif
@@ -370,7 +370,7 @@ allocateCudaArray1D(const void* dataPtr, const size_t& size)
   // Allocate a 1D CUDA array of size N
   cudaChannelFormatDesc channel_desc = cudaCreateChannelDesc<Type>();
   CUDA_CHECK(cudaMallocArray(&dataArr, &channel_desc, size));
-  util::total_n_bytes_allocated() += size * sizeof(Type);
+  util::tot_nbytes_allocated() += size * sizeof(Type);
 #ifdef CUDA_BUFFER_VERBOSE_MEMORY_ALLOCS
   printf("[mem] Array1D %s\n", util::prettyBytes(size * sizeof(Type)).c_str());
 #endif

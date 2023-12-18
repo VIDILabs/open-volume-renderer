@@ -281,34 +281,24 @@ DeviceOptix7::Impl::mapframe(FrameBufferData* fb)
 }
 
 void
-DeviceOptix7::Impl::buildScene(Scene& scene)
+DeviceOptix7::Impl::buildScene(const Scene& scene)
 {
-  assert(scene.instances.size() == 1);
-  assert(scene.instances[0].models.size() == 1);
-  assert(scene.instances[0].models[0].type == scene::Model::VOLUMETRIC_MODEL);
-  assert(scene.instances[0].models[0].volume_model.volume.type == scene::Volume::STRUCTURED_REGULAR_VOLUME);
-
-  // if (!scene.lights.empty())
-  //   params.light_directional_pos = scene.lights[0].position;
-
-  auto& scene_tfn = scene.instances[0].models[0].volume_model.transfer_function;
-  auto& scene_volume = scene.instances[0].models[0].volume_model.volume.structured_regular;
+  auto& scene_volume = parse_single_volume_scene(scene, scene::Volume::STRUCTURED_REGULAR_VOLUME).structured_regular;
 
   vec3f scale = scene_volume.grid_spacing * vec3f(scene_volume.data->dims);
   vec3f translate = scene_volume.grid_origin;
   
-  std::cout << "scale " << scale.x << " " << scale.y << " " << scale.z << std::endl;
-  std::cout << "translate " << translate.x << " " << translate.y << " " << translate.z << std::endl;
+  // std::cout << "scale " << scale.x << " " << scale.y << " " << scale.z << std::endl;
+  // std::cout << "translate " << translate.x << " " << translate.y << " " << translate.z << std::endl;
 
   // TODO support other parameters //
   auto v = StructuredRegularVolume();
   v.matrix = affine3f::translate(translate) * affine3f::scale(scale);
-
   v.load_from_array3d_scalar(scene_volume.data);
-  v.set_transfer_function(scene_tfn.color, scene_tfn.opacity, scene_tfn.value_range);
   v.set_sampling_rate(scene.volume_sampling_rate);
-
   volumes.emplace_back(std::move(v));
+
+  commit();
 }
 
 vec3i
