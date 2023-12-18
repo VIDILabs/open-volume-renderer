@@ -331,8 +331,8 @@ DeviceOSPRay::Impl::create_ospray_material(scene::Material handler) {
 
 OSPVolumetricModel
 DeviceOSPRay::Impl::create_ospray_volumetric_model(scene::Model::VolumetricModel handler) {
-  auto volume = create_ospray_volume(handler.volume);
-  auto tfn = create_ospray_transfer_function(handler.transfer_function);
+  OSPTransferFunction tfn = create_ospray_transfer_function(handler.transfer_function);
+  OSPVolume volume = ospray.get_volume(handler.volume_texture);
   OSPVolumetricModel model = ospNewVolumetricModel(volume);
   ospSetObject(model, "transferFunction", tfn);
   ospSetFloat(model, "gradientShadingScale", 1.f);

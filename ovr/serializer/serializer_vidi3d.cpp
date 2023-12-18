@@ -279,7 +279,7 @@ create_scene_tfn(const json& jsview, ValueType type)
 ovr::scene::Volume
 create_scene_volume(const json& jsdata, std::string workdir)
 {
-  scene::Volume volume{};
+  ovr::scene::Volume volume{};
 
   const auto format = jsdata[FORMAT].get<std::string>();
 
@@ -307,12 +307,12 @@ create_scene_volume(const json& jsdata, std::string workdir)
   return volume;
 }
 
-Camera
+ovr::scene::Camera
 create_scene_camera(const json& jsview)
 {
   const auto& jscamera = jsview[CAMERA];
 
-  Camera camera;
+  ovr::scene::Camera camera;
 
   camera.from = scalar_from_json<vec3f>(jscamera[EYE]);
   camera.at = scalar_from_json<vec3f>(jscamera[CENTER]);
@@ -334,6 +334,8 @@ using namespace ovr::vidi3d;
 Scene
 create_json_scene_vidi3d(json root, std::string workdir)
 {
+  Scene scene;
+
   Instance instance;
   instance.transform = affine3f::translate(vec3f(0));
 
@@ -351,15 +353,19 @@ create_json_scene_vidi3d(json root, std::string workdir)
       }
     }
 
+    Texture texture;
+    texture.type = Texture::VOLUME_TEXTURE;
+    texture.volume.volume = volume;
+    scene.textures.push_back(texture);
+
     Model model;
     model.type = Model::VOLUMETRIC_MODEL;
-    model.volume_model.volume = volume;
+    model.volume_model.volume_texture = scene.textures.size() - 1;
     model.volume_model.transfer_function = tfn;
 
     instance.models.push_back(model);
   }
 
-  Scene scene;
   scene.instances.push_back(instance);
 
   if (root[VIEW].contains(LIGHT_SOURCE)) {

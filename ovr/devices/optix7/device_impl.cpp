@@ -283,7 +283,7 @@ DeviceOptix7::Impl::mapframe(FrameBufferData* fb)
 void
 DeviceOptix7::Impl::buildScene(const Scene& scene)
 {
-  auto& scene_volume = parse_single_volume_scene(scene);
+  auto& scene_volume = parse_single_volume_scene(scene, scene::Volume::STRUCTURED_REGULAR_VOLUME).structured_regular;
 
   vec3f scale = scene_volume.grid_spacing * vec3f(scene_volume.data->dims);
   vec3f translate = scene_volume.grid_origin;

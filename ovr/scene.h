@@ -195,6 +195,9 @@ using array_3d_t = std::shared_ptr<Array<3>>;
 // ------------------------------------------------------------------
 // Scene Definitions
 // ------------------------------------------------------------------
+
+namespace scene {
+
 struct Camera {
   // camera position - *from* where we are looking
   vec3f from;
@@ -206,7 +209,7 @@ struct Camera {
     ORTHOGRAPHIC,
   } type = PERSPECTIVE;
 
-  // TODO:
+  // TODO: implement missing features
   // affine3f	transform: additional world-space transform, overridden by motion.* arrays
   // float nearClip: 10-6 near clipping distance
   // vec2f imageStart: (0,0) start of image region (lower left corner)
@@ -214,7 +217,7 @@ struct Camera {
 
   struct PerspectiveCamera {
     float fovy = 60.f;
-    // TODO:
+    // TODO: implement missing features
     // float aspect;
     // float apertureRadius;
     // float focusDistance;
@@ -227,8 +230,6 @@ struct Camera {
   } orthographic;
 };
 
-namespace scene {
-
 struct TransferFunction {
   array_1d_float4_t color;
   array_1d_scalar_t opacity;
@@ -236,7 +237,7 @@ struct TransferFunction {
 };
 
 struct Volume {
-  enum {
+  enum VolumeType {
     STRUCTURED_REGULAR_VOLUME,
   } type;
 
@@ -260,7 +261,6 @@ struct Texture {
   struct TransferFunctionTexture {
     TransferFunction transfer_function;
     int32_t volume_texture = -1;
-    // Volume volume; // optional
   } transfer_function;
 };
 
@@ -275,7 +275,7 @@ struct Material {
     float ns = 10.f; // specular exponent
     float d = 1.f; // opacity
     vec3f tf = vec3f(1.f); // transparency filter
-    // Texture maps
+    // texture maps
     int32_t map_kd = -1;
     int32_t map_bump = -1;
   } obj;
@@ -300,7 +300,6 @@ struct Geometry {
   struct GeometryIsosurfaces {
     int32_t volume_texture;
     std::vector<float> isovalues;
-    // TransferFunction transfer_function; // TODO optional
   } isosurfaces;
 };
 
@@ -312,7 +311,8 @@ struct Model {
 
   struct VolumetricModel {
     TransferFunction transfer_function;
-    Volume volume;
+    int32_t volume_texture;
+    // Volume volume;
   } volume_model;
 
   struct GeometricModel {
@@ -350,12 +350,12 @@ struct Light {
 };
 
 struct Scene {
-  std::vector<Texture> textures;
-  std::vector<Material> materials;
+  std::vector<scene::Texture> textures;
+  std::vector<scene::Material> materials;
 
   std::vector<scene::Instance> instances;
   std::vector<scene::Light> lights;
-  Camera camera;
+  scene::Camera camera;
 
   int ao_samples = 0;
   int spp = 1;
@@ -372,7 +372,7 @@ struct Scene {
 
 } // namespace scene
 
-using Scene = scene::Scene;
+using scene::Scene;
 
 // ------------------------------------------------------------------
 // Factory Functions
@@ -405,6 +405,25 @@ CreateColorMap(const std::string& name);
 
 array_3d_scalar_t
 CreateArray3DScalarFromFile(const std::string& filename, vec3i dims, ValueType type, size_t offset, bool is_big_endian);
+
+// ------------------------------------------------------------------
+//
+// ------------------------------------------------------------------
+
+inline const scene::Volume&
+parse_single_volume_scene(const scene::Scene& scene, scene::Volume::VolumeType vtype = scene::Volume::STRUCTURED_REGULAR_VOLUME) 
+{
+  if (scene.instances.size() != 1) throw std::runtime_error("expect only one instance"); 
+  if (scene.instances[0].models.size() != 1) throw std::runtime_error("expect only one model");
+  if (scene.instances[0].models[0].type != scene::Model::VOLUMETRIC_MODEL) throw std::runtime_error("expect a volume model");
+  // check texture type
+  int32_t tex = scene.instances[0].models[0].volume_model.volume_texture;
+  if (tex < 0 && tex >= scene.textures.size()) throw std::runtime_error("invalid texture index: " + std::to_string(tex));
+  if (scene.textures[tex].type != scene::Texture::VOLUME_TEXTURE) throw std::runtime_error("expect a volume texture");
+  // check volume type
+  if (scene.textures[tex].volume.volume.type != vtype) throw std::runtime_error("expect a volume of type: " + std::to_string((int)vtype));
+  return scene.textures[tex].volume.volume;
+}
 
 #endif // defined(__cplusplus)
 
