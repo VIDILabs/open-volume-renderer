@@ -443,7 +443,6 @@ DeviceOSPRay::Impl::init(int argc, const char** argv, DeviceOSPRay* p) {
     ospDeviceRelease(device);
 #endif
 
-    ospray.world = ospNewWorld();
   }
 
   build_scene();
@@ -620,16 +619,48 @@ DeviceOSPRay::Impl::build_scene() {
   // put the instance in the world
   const auto& scene = parent->current_scene;
 
+  // cleanup previous scene
+  // std::cout << "clean tfns" << std::endl;
+  for (auto tfn : ospray.tfns) ospRelease(tfn);
+  ospray.tfns.clear();
+
+  // std::cout << "clean world" << std::endl;  
+  if (ospray.world) ospRelease(ospray.world);
+  ospray.world = ospNewWorld();
+
+  // std::cout << "clean framebuffer" << std::endl;  
+  // if (ospray.framebuffer) {
+  //   ospUnmapFrameBuffer(framebuffer_rgba_ptr, ospray.framebuffer);
+  //   ospRelease(ospray.framebuffer);
+  //   ospray.framebuffer = nullptr;
+  // }
+
+  // std::cout << "clean materials" << std::endl;
+  for (auto mtl : ospray.materials) ospRelease(mtl);
+  ospray.materials.clear();
+  
+  // std::cout << "clean texorvols" << std::endl;
+  for (auto tov : ospray.texorvols) {
+    if (tov.vol && tov.tex) {
+      throw std::runtime_error("OSPRay: texture and volume are both set");
+    }
+    if (tov.vol) ospRelease(tov.vol);
+    if (tov.tex) ospRelease(tov.tex);
+  }
+  ospray.texorvols.clear();
+
+  // std::cout << "build 0" << std::endl;
+
   // create all standalone volumes & textures
-  ospray.texorvols.reserve(scene.textures.size());
-  for (auto t : scene.textures) {
-    ospray.texorvols.push_back(create_ospray_texture(t));
+  ospray.texorvols.resize(scene.textures.size());
+  for (auto i = 0; i < scene.textures.size(); ++i) {
+    ospray.texorvols[i] = create_ospray_texture(scene.textures[i]);
   }
 
   // create all materials
-  ospray.materials.reserve(scene.materials.size());
-  for (auto m : scene.materials) {
-    ospray.materials.push_back(create_ospray_material(m));
+  ospray.materials.resize(scene.materials.size());
+  for (auto i = 0; i < scene.materials.size(); ++i) {
+    ospray.materials[i] = create_ospray_material(scene.materials[i]);
   }
 
   // create all ospray instances
