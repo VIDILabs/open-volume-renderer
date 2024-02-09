@@ -39,7 +39,7 @@ add_library(rendercommon SHARED
   common/generate_mask.cpp
   common/dylink/Library.cpp
 )
-target_link_libraries(rendercommon PRIVATE gdt Threads::Threads)
+target_link_libraries(rendercommon PRIVATE gdt Threads::Threads ${CMAKE_DL_LIBS})
 target_include_directories(rendercommon PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/..)
 target_include_directories(rendercommon PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/common)
 target_include_directories(rendercommon PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
