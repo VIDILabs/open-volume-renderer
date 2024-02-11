@@ -168,6 +168,11 @@ private:
   unsigned int v0, v1;
 
 public:
+  __forceinline__ __device__ __host__ RandomTEA()
+  { /* intentionally empty so we can use it in device vars that
+       don't allow dynamic initialization (ie, PRD) */
+  }
+
   __forceinline__ __device__ RandomTEA(const unsigned int idx, const unsigned int seed)
   {
     this->v0 = idx;
