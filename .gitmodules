@@ -7,3 +7,9 @@
 [submodule "extern/glfw"]
 	path = extern/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "extern/imgui/implot"]
+	path = extern/imgui/implot
+	url = https://github.com/epezent/implot.git
+[submodule "extern/imgui/imgui"]
+	path = extern/imgui/imgui
+	url = https://github.com/ocornut/imgui.git

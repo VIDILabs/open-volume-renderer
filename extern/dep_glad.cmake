@@ -1,5 +1,5 @@
 # ======================================================================== #
-# Copyright 2018-2021 Qi Wu                                                #
+# Copyright 2019-2024 Qi Wu                                                #
 #                                                                          #
 # Licensed under the Apache License, Version 2.0 (the "License");          #
 # you may not use this file except in compliance with the License.         #
@@ -13,31 +13,29 @@
 # See the License for the specific language governing permissions and      #
 # limitations under the License.                                           #
 # ======================================================================== #
-project(DearImGui LANGUAGES CXX)
-cmake_minimum_required(VERSION 3.5)
 
-add_library(imgui
-  imgui.cpp
-  imgui_draw.cpp
-  imgui_demo.cpp
-  imgui_widgets.cpp
-  examples/imgui_impl_glfw.cpp
-  examples/imgui_impl_opengl2.cpp
-  examples/imgui_impl_opengl3.cpp
+set(COMPONENT_NAME glad)
+set(COMPONENT_PATH ${INSTALL_DIR_ABSOLUTE})
+
+ExternalProject_Add(${COMPONENT_NAME}
+  PREFIX ${COMPONENT_NAME}
+  DOWNLOAD_DIR ${COMPONENT_NAME}
+  STAMP_DIR ${COMPONENT_NAME}/stamp
+  SOURCE_DIR ${COMPONENT_NAME}/src
+  BINARY_DIR ${COMPONENT_NAME}/build
+  GIT_REPOSITORY "https://github.com/wilsonCernWq/glad.git"
+  CMAKE_ARGS
+    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+    -DCMAKE_INSTALL_PREFIX:PATH=${COMPONENT_PATH}
+    -DCMAKE_INSTALL_INCLUDEDIR=${CMAKE_INSTALL_INCLUDEDIR}
+    -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
+    -DCMAKE_INSTALL_DOCDIR=${CMAKE_INSTALL_DOCDIR}
+    -DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR}
+    -DCMAKE_BUILD_TYPE=${DEPENDENCIES_BUILD_TYPE}
+    -DINSTALL_DEV_HEADERS=ON
+  BUILD_COMMAND ${DEFAULT_BUILD_COMMAND}
+  BUILD_ALWAYS ${ALWAYS_REBUILD}
 )
 
-set_target_properties(imgui PROPERTIES POSITION_INDEPENDENT_CODE ON)
-
-target_link_libraries(imgui glad::glad ${GFX_LIBRARIES})
-
-target_include_directories(imgui PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/examples/opengl2_example>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/examples/opengl3_example>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/examples>
-)
-
-target_compile_definitions(imgui 
-PUBLIC 
-  IMGUI_IMPL_OPENGL_LOADER_GLAD
-)
+list(APPEND CMAKE_PREFIX_PATH ${COMPONENT_PATH})

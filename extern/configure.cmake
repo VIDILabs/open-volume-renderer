@@ -88,10 +88,8 @@ if(OVR_BUILD_OPENGL)
   list(APPEND GFX_LIBRARIES glad-core-3.3)
 
   # import imgui
-  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/imgui-1.79 EXCLUDE_FROM_ALL)
-  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/implot-0.13 EXCLUDE_FROM_ALL)
+  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/imgui EXCLUDE_FROM_ALL)
   list(APPEND GFX_LIBRARIES imgui)
-  list(APPEND GFX_LIBRARIES implot)
 
   # for building render apps
   add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glfwapp EXCLUDE_FROM_ALL)
