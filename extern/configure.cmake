@@ -80,7 +80,7 @@ endif()
 # ------------------------------------------------------------------
 set(TFNMODULE_INCLUDE ${CMAKE_CURRENT_LIST_DIR}/tfn/colormaps)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tfn/colormaps)
-add_library(tfnmodule ${embedded_colormap})
+add_library(tfnmodule OBJECT ${embedded_colormap})
 target_include_directories(tfnmodule PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/tfn/colormaps>
 )

@@ -2,25 +2,31 @@
     "cmake.configureSettings": {
         /* windows */
         "CMAKE_PREFIX_PATH": [
-            "C:\\Users\\wilso\\Documents\\Softwares\\win\\libtorch-win-shared-with-deps-1.11.0+cu113\\libtorch-${command:cmake.buildType}",
-            "E:\\Projects\\research\\ospray\\build\\Release\\install",
+            // "C:\\Users\\wilso\\Documents\\Softwares\\win\\libtorch-win-shared-with-deps-1.11.0+cu113\\libtorch-${command:cmake.buildType}",
+            // "E:\\Projects\\research\\ospray\\build\\Release\\install",
+            // "E:\\Projects\\research\\ospray\\build\\Debug\\install",
+            "E:\\Projects\\research\\ospray\\deps",
+            "C:\\Users\\wilso\\Documents\\Softwares\\win\\ospray-2.11.0.x86_64.windows_sparse_sampling"
         ],
         "OptiX_INSTALL_DIR": "C:\\ProgramData\\NVIDIA Corporation\\OptiX SDK 7.4.0",
-        "TensorRT_INSTALL_DIR": "C:\\Users\\wilso\\Documents\\Softwares\\win\\TensorRT-8.2.3.0.Windows10.x86_64.cuda-11.4.cudnn8.2\\TensorRT-8.2.3.0",
-        "TorchTensorRT_INSTALL_DIR": "C:\\Users\\wilso\\Documents\\Softwares\\win\\TorchTensorRT-v1.1.0",
-        "pxr_DIR": "C:\\Users\\wilso\\Documents\\Softwares\\win\\USDInstall",
+        // "TensorRT_ROOT": "C:\\Users\\wilso\\Documents\\Softwares\\win\\TensorRT-8.2.3.0.Windows10.x86_64.cuda-11.4.cudnn8.2\\TensorRT-8.2.3.0",
+        // "TorchTensorRT_INSTALL_DIR": "C:\\Users\\wilso\\Documents\\Softwares\\win\\TorchTensorRT-v1.1.0",
+        // "pxr_DIR": "C:\\Users\\wilso\\Documents\\Softwares\\win\\USDInstall",
         // "ospray_DIR": "C:\\Users\\wilso\\Documents\\Softwares\\win\\ospray-2.5.0.x86_64.windows\\lib\\cmake\\ospray-2.5.0",
         // "TBB_DIR": "C:\\Users\\wilso\\Documents\\Softwares\\win\\oneapi-tbb-2021.1.1-win\\oneapi-tbb-2021.1.1\\lib\\cmake\\tbb",
         "GDT_CUDA_ARCHITECTURES": 86,
         "TORCH_CUDA_ARCH_LIST": "Ampere",
         "OVR_BUILD_OPENGL": true,
-        "OVR_BUILD_SCENE_USD": true,
+        "OVR_BUILD_SCENE_USD": false,
         "OVR_BUILD_DEVICE_OPTIX7": true,
         "OVR_BUILD_DEVICE_OSPRAY": true,
-        "OVR_BUILD_MODULE_NNVOLUME": true
+        "OVR_BUILD_MODULE_NNVOLUME": true,
+        "OVR_BUILD_MODULE_NNCACHE": false,
+        "OVR_BUILD_MODULE_FOVOLNET": false
     },
     "cmake.buildDirectory": "${workspaceFolder}/build/${command:cmake.buildType}",
     "cmake.configureOnEdit": false,
+    "cmake.configureOnOpen": false,
     "files.associations": {
         "*.json": "jsonc",
         "memory": "cpp",
@@ -126,6 +132,5 @@
         "string_view": "cpp",
         "__locale": "cpp",
         "__bit_reference": "cpp"
-    },
-    "cmake.configureOnOpen": false
+    }
 }
