@@ -58,34 +58,12 @@ if(OVR_BUILD_OPENGL)
   endif()
 
   # build glfw
-  set(GLFW_USE_OSMESA OFF CACHE BOOL "" FORCE)
-  set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-  set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-  set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-  set(GLFW_INSTALL ON CACHE BOOL "" FORCE)
-  
-  set(BUILD_SHARED_LIBS ON)
-  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glfw EXCLUDE_FROM_ALL)
-  set(BUILD_SHARED_LIBS OFF)
-  
-  mark_as_advanced(
-    GLFW_INSTALL
-    GLFW_BUILD_DOCS 
-    GLFW_BUILD_TESTS 
-    GLFW_BUILD_EXAMPLES
-    GLFW_USE_OSMESA 
-    GLFW_USE_WAYLAND 
-    GLFW_VULKAN_STATIC
-  )
-  
+  include(extern/dep_glfw.cmake)
   list(APPEND GFX_LIBRARIES glfw)
 
   # build glad
-  set(INSTALL_DEV_HEADERS ON CACHE BOOL "" FORCE)
-  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glad EXCLUDE_FROM_ALL)
-  add_library(glad::glad ALIAS glad-core-3.3) # make it the global glad
-  add_library(GLAD::GLAD ALIAS glad-core-3.3) # make it the global glad
-  list(APPEND GFX_LIBRARIES glad-core-3.3)
+  include(extern/dep_glad.cmake)
+  list(APPEND GFX_LIBRARIES glad)
 
   # import imgui
   add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/imgui EXCLUDE_FROM_ALL)

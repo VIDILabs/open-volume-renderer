@@ -13,29 +13,22 @@
 # See the License for the specific language governing permissions and      #
 # limitations under the License.                                           #
 # ======================================================================== #
+include(FetchContent)
+
+set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
 
 set(COMPONENT_NAME glad)
-set(COMPONENT_PATH ${INSTALL_DIR_ABSOLUTE})
-
-ExternalProject_Add(${COMPONENT_NAME}
-  PREFIX ${COMPONENT_NAME}
+FetchContent_Declare(${COMPONENT_NAME}
   DOWNLOAD_DIR ${COMPONENT_NAME}
   STAMP_DIR ${COMPONENT_NAME}/stamp
   SOURCE_DIR ${COMPONENT_NAME}/src
   BINARY_DIR ${COMPONENT_NAME}/build
   GIT_REPOSITORY "https://github.com/wilsonCernWq/glad.git"
-  CMAKE_ARGS
-    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-    -DCMAKE_INSTALL_PREFIX:PATH=${COMPONENT_PATH}
-    -DCMAKE_INSTALL_INCLUDEDIR=${CMAKE_INSTALL_INCLUDEDIR}
-    -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
-    -DCMAKE_INSTALL_DOCDIR=${CMAKE_INSTALL_DOCDIR}
-    -DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR}
-    -DCMAKE_BUILD_TYPE=${DEPENDENCIES_BUILD_TYPE}
-    -DINSTALL_DEV_HEADERS=ON
-  BUILD_COMMAND ${DEFAULT_BUILD_COMMAND}
-  BUILD_ALWAYS ${ALWAYS_REBUILD}
 )
+FetchContent_MakeAvailable(${COMPONENT_NAME})
 
-list(APPEND CMAKE_PREFIX_PATH ${COMPONENT_PATH})
+# fix the include directory
+target_include_directories(${COMPONENT_NAME} INTERFACE 
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/${COMPONENT_NAME}/src/include>
+)
+message(STATUS ${CMAKE_CURRENT_BINARY_DIR}/${COMPONENT_NAME}/src/include)

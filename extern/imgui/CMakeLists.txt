@@ -29,7 +29,7 @@ add_library(imgui OBJECT
   implot/implot.cpp
 )
 
-target_link_libraries(imgui glad-core-3.3 ${GFX_LIBRARIES})
+target_link_libraries(imgui ${GFX_LIBRARIES})
 
 target_include_directories(imgui PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/imgui/examples/opengl2_example>
@@ -43,3 +43,5 @@ target_compile_definitions(imgui
 PUBLIC 
   IMGUI_IMPL_OPENGL_LOADER_GLAD
 )
+
+set_target_properties(imgui PROPERTIES POSITION_INDEPENDENT_CODE ON)

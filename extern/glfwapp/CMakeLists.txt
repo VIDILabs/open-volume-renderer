@@ -31,5 +31,5 @@
 # ======================================================================== #
 
 add_library(glfwApp GLFWApp.h GLFWApp.cpp)
-target_link_libraries(glfwApp PUBLIC imgui gdt glad::glad ${GFX_LIBRARIES})
+target_link_libraries(glfwApp PUBLIC imgui gdt ${GFX_LIBRARIES})
 target_compile_definitions(glfwApp PRIVATE GLFWAPP_USE_OPENGL2)
