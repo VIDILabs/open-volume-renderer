@@ -318,15 +318,15 @@ MainRenderer::set_scene(const Scene& scene)
     std::vector<float> tfn_alphas;
     vec2f tfn_value_range = { 1, -1 };
 
-    for (int i = 0; i < size_c; ++i) {
-      float p = (float)i / (size_c - 1);
+    for (size_t i = 0; i < size_c; ++i) {
+      // float p = (float)i / (size_c - 1);
       // tfn_colors.push_back(p);
       tfn_colors.push_back(data_c[i].x);
       tfn_colors.push_back(data_c[i].y);
       tfn_colors.push_back(data_c[i].z);
     }
 
-    for (int i = 0; i < size_o; ++i) {
+    for (size_t i = 0; i < size_o; ++i) {
       float p = (float)i / (size_o - 1);
       tfn_alphas.push_back(p);
       tfn_alphas.push_back(data_o[i]);

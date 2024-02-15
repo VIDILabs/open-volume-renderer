@@ -418,7 +418,7 @@ parse_single_volume_scene(const scene::Scene& scene, scene::Volume::VolumeType v
   if (scene.instances[0].models[0].type != scene::Model::VOLUMETRIC_MODEL) throw std::runtime_error("expect a volume model");
   // check texture type
   int32_t tex = scene.instances[0].models[0].volume_model.volume_texture;
-  if (tex < 0 && tex >= scene.textures.size()) throw std::runtime_error("invalid texture index: " + std::to_string(tex));
+  if (tex < 0 && tex >= (int32_t)scene.textures.size()) throw std::runtime_error("invalid texture index: " + std::to_string(tex));
   if (scene.textures[tex].type != scene::Texture::VOLUME_TEXTURE) throw std::runtime_error("expect a volume texture");
   // check volume type
   if (scene.textures[tex].volume.volume.type != vtype) throw std::runtime_error("expect a volume of type: " + std::to_string((int)vtype));
