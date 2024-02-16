@@ -146,3 +146,11 @@ endif(OVR_BUILD_OSPRAY)
 if(OVR_BUILD_SCENE_USD)
   find_package(pxr REQUIRED)
 endif()
+
+
+# ------------------------------------------------------------------
+# import pybind11
+# ------------------------------------------------------------------
+if(OVR_BUILD_PYTHON_BINDINGS)
+  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/pybind11)
+endif()

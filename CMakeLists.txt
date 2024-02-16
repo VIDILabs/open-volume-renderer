@@ -43,6 +43,8 @@ option(OVR_BUILD_DEVICE_OPTIX7  "Build OptiX7 Device"  ON)
 option(OVR_BUILD_DEVICE_OSPRAY  "Build OSPRay Device" OFF)
 option(OVR_BUILD_SCENE_USD "Build USDA Scene Reader" OFF)
 
+option(OVR_BUILD_PYTHON_BINDINGS "Build Python Bindings" OFF)
+
 # ------------------------------------------------------------------
 # toggles
 # ------------------------------------------------------------------
