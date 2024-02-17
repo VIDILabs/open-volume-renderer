@@ -49,8 +49,8 @@ class RendererTestCase(unittest.TestCase):
         self.renderer = ovrpy.create_renderer(renderername)
 
         self.fbsize = ovrpy.vec2i()
-        self.fbsize.x = 128
-        self.fbsize.y = 128
+        self.fbsize.x = 640
+        self.fbsize.y = 480
         self.renderer.set_fbsize(self.fbsize)
 
         self.args = []
