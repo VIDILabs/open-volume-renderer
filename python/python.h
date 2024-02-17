@@ -1,5 +1,6 @@
 #pragma once
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h> 
 #include <pybind11/numpy.h>
 #include <memory>
 
@@ -12,9 +13,12 @@ namespace py = pybind11;
 #define OVR_PY_NAMED_STRUCT(Class, Name, ...) \
     py::class_<Class>(m, Name, ##__VA_ARGS__)
 
+#define OVR_PY_NAMED_INHERITED_STRUCT(Class, Name, Baseclass, ...) \
+    py::class_<Class, Baseclass>(m, Name, ##__VA_ARGS__)
+
 /// Shorthand to make a class or struct wrap in shared_ptr instead of the default unique_ptr
-#define OVR_PY_STRUCT_PTR(Name, PointsToName, ...) \
-    py::class_<PointsToName, std::shared_ptr<PointsToName>>(m, #Name, ##__VA_ARGS__)
+#define OVR_PY_STRUCT_PTR(PointsToName, Name, ...) \
+    py::class_<PointsToName, std::shared_ptr<PointsToName>>(m, Name, ##__VA_ARGS__)
 
 /// Shorthand notation for defining an enum
 #define OVR_PY_ENUM(Name, ...) \
@@ -31,6 +35,12 @@ namespace py = pybind11;
 /// Shorthand notation for defining most kinds of methods
 #define def_class_method(Class, Function, ...) \
     def(#Function, &Class::Function, ##__VA_ARGS__)
+
+#define def_class_method_overload(Class, Function, Name, ReturnType, ...) \
+    def(Name, static_cast<ReturnType (Class::*)(__VA_ARGS__)>(&Class::Function))
+
+#define def_class_lambda(Class, Function, Lambda, ...) \
+    def(#Function, Lambda, ##__VA_ARGS__)
 
 /// Shorthand notation for defining class/struct fields
 #define def_class_field(Class, Field, ...) \
