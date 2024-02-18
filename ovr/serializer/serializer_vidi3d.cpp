@@ -314,7 +314,7 @@ create_scene_camera(const json& jsview)
 
   ovr::scene::Camera camera;
 
-  camera.from = scalar_from_json<vec3f>(jscamera[EYE]);
+  camera.eye = scalar_from_json<vec3f>(jscamera[EYE]);
   camera.at = scalar_from_json<vec3f>(jscamera[CENTER]);
   camera.up = scalar_from_json<vec3f>(jscamera[UP]);
   camera.perspective.fovy = jscamera[FOVY].get<float>();

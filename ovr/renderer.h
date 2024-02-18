@@ -140,7 +140,7 @@ public:
   void set_camera(const Camera& camera)
   {
     // std::cout << "camera update" << std::endl;
-    // std::cout << "  from: " << camera.from << std::endl;
+    // std::cout << "  eye: " << camera.eye << std::endl;
     // std::cout << "  at:   " << camera.at << std::endl;
     // std::cout << "  up:   " << camera.up << std::endl;
     params.camera = camera;

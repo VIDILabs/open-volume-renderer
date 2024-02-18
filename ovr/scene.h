@@ -200,7 +200,7 @@ namespace scene {
 
 struct Camera {
   // camera position - *from* where we are looking
-  vec3f from;
+  vec3f eye;
   vec3f at; // which point we are looking *at*
   vec3f up; // up direction of the camera
 

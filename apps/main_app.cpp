@@ -165,7 +165,7 @@ public:
              int width,
              int height,
              std::string default_tfn)
-    : GLFCameraWindow(title, camera.from, camera.at, camera.up, scale, width, height)
+    : GLFCameraWindow(title, camera.eye, camera.at, camera.up, scale, width, height)
     , async_rendering_loop(std::bind(&MainWindow::render_background, this))
     , widget(std::bind(&MainWindow::set_transfer_function,
                        this,

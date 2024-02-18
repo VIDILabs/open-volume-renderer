@@ -130,13 +130,13 @@ DeviceOptix7::Impl::commit()
     const float t = 2.f /* (note above) */ * tan(fovy * 0.5f * (float)M_PI / 180.f);
     const float aspect = params.frame.size.x / float(params.frame.size.y);
     params.last_camera = params.camera;
-    params.camera.position = camera.from;
-    params.camera.direction = normalize(camera.at - camera.from);
+    params.camera.position = camera.eye;
+    params.camera.direction = normalize(camera.at - camera.eye);
     params.camera.horizontal = t * aspect * normalize(cross(params.camera.direction, camera.up));
     params.camera.vertical = cross(params.camera.horizontal, params.camera.direction) / aspect;
 
     // std::cout << "camera update" << std::endl;
-    // std::cout << "  from: " << camera.from << std::endl;
+    // std::cout << "  from: " << camera.eye << std::endl;
     // std::cout << "  at:   " << camera.at << std::endl;
     // std::cout << "  up:   " << camera.up << std::endl;
 

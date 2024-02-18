@@ -50,7 +50,7 @@ OVR_PY_NAMED_STRUCT(ovr::scene::Camera::OrthographicCamera, "OrthographicCamera"
 
 OVR_PY_NAMED_STRUCT(ovr::scene::Camera, "Camera")
 .def_init()
-.def_class_field(ovr::scene::Camera, from)
+.def_class_field(ovr::scene::Camera, eye)
 .def_class_field(ovr::scene::Camera, at)
 .def_class_field(ovr::scene::Camera, up)
 .def_class_field(ovr::scene::Camera, type)
