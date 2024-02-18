@@ -15,6 +15,11 @@ OVR_PY_NAMED_STRUCT(ovr::vec3f, "vec3f")
 .def_class_field(ovr::vec3f, y)
 .def_class_field(ovr::vec3f, z);
 
+OVR_PY_NAMED_STRUCT(ovr::vec2f, "vec2f")
+.def_init()
+.def_class_field(ovr::vec2f, x)
+.def_class_field(ovr::vec2f, y);
+
 OVR_PY_NAMED_STRUCT(ovr::vec2i, "vec2i")
 .def_init()
 .def_class_field(ovr::vec2i, x)
@@ -87,7 +92,25 @@ OVR_PY_STRUCT_PTR(ovr::MainRenderer, "Renderer")
 .def_class_method(ovr::MainRenderer, mapframe)
 .def_class_method(ovr::MainRenderer, set_fbsize)
 .def_class_method_overload(ovr::MainRenderer, set_camera, "set_camera", void, const ovr::scene::Camera&)
-.def_class_method_overload(ovr::MainRenderer, set_camera, "set_camera_vectors", void, ovr::vec3f, ovr::vec3f, ovr::vec3f);
+.def_class_method_overload(ovr::MainRenderer, set_camera, "set_camera_vectors", void, ovr::vec3f, ovr::vec3f, ovr::vec3f)
+.def_class_method(ovr::MainRenderer, set_transfer_function)
+.def_class_method(ovr::MainRenderer, set_focus)
+.def_class_method(ovr::MainRenderer, set_sample_per_pixel)
+.def_class_method(ovr::MainRenderer, set_add_lights)
+.def_class_method(ovr::MainRenderer, set_sparse_sampling)
+.def_class_method(ovr::MainRenderer, set_path_tracing)
+.def_class_method(ovr::MainRenderer, set_photonmapping)
+.def_class_method(ovr::MainRenderer, set_frame_accumulation)
+.def_class_method(ovr::MainRenderer, set_volume_sampling_rate)
+.def_class_method(ovr::MainRenderer, set_volume_density_scale)
+.def_class_method(ovr::MainRenderer, set_mat_ambient)
+.def_class_method(ovr::MainRenderer, set_mat_diffuse)
+.def_class_method(ovr::MainRenderer, set_mat_specular)
+.def_class_method(ovr::MainRenderer, set_mat_shininess)
+.def_class_method(ovr::MainRenderer, set_light_phi)
+.def_class_method(ovr::MainRenderer, set_light_theta)
+.def_class_method(ovr::MainRenderer, set_light_radius)
+.def_class_method(ovr::MainRenderer, set_light_intensity);
 
 def_named_method(create_renderer, "create_renderer");
 
