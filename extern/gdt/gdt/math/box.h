@@ -61,11 +61,11 @@ namespace gdt {
   };
 
   template<typename T>
-  inline __both__ std::ostream &operator<<(std::ostream &o, const interval<T> &b)
+  inline std::ostream &operator<<(std::ostream &o, const interval<T> &b)
   {
-#ifndef __CUDACC__
+// #ifndef __CUDACC__
     o << "[" << b.lower << ":" << b.upper << "]";
-#endif
+// #endif
     return o;
   }
   
@@ -185,11 +185,11 @@ namespace gdt {
   }
 
   template<typename T>
-  inline __both__ std::ostream &operator<<(std::ostream &o, const box_t<T> &b)
+  inline std::ostream &operator<<(std::ostream &o, const box_t<T> &b)
   {
-#ifndef __CUDACC__
+// #ifndef __CUDACC__
     o << "[" << b.lower << ":" << b.upper << "]";
-#endif
+// #endif
     return o;
   }
 

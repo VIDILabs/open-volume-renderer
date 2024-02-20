@@ -595,7 +595,7 @@ main(int ac, const char** av)
   // -------------------------------------------------------
   // initialize opengl window
   // -------------------------------------------------------
-  MainWindow* window = new MainWindow("OVR", renderer, layer, scene.camera, worldScale, 1536, 768, tfn);
+  MainWindow* window = new MainWindow("OVR", renderer, layer, scene.camera, worldScale, 768, 768, tfn);
   window->run();
   window->close();
 
