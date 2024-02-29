@@ -32,8 +32,8 @@
 
 #pragma once
 
+#include "renderer_macro.h"
 #include "scene.h"
-#include "serializer/serializer.h"
 
 #include <cross_device_buffer.h>
 #include <vidi_transactional_value.h>

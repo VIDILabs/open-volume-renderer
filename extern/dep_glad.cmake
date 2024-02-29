@@ -15,8 +15,6 @@
 # ======================================================================== #
 include(FetchContent)
 
-set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
-
 set(COMPONENT_NAME glad)
 FetchContent_Declare(${COMPONENT_NAME}
   DOWNLOAD_DIR ${COMPONENT_NAME}

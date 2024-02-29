@@ -49,6 +49,7 @@
 #include "common/vidi_screenshot.h"
 #include "common/vidi_transactional_value.h"
 #include "renderer.h"
+#include "serializer/serializer.h"
 
 // #define OVR_LOGGING
 

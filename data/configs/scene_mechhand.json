@@ -8,10 +8,10 @@
       },
       "endian" : "LITTLE_ENDIAN",
       "fileName" : [
-        "F:/mechhand/MechHand_f_640x220x229.raw",
+        "H:/mechhand/MechHand_f_640x220x229.raw",
         "/media/data/qadwu/volume/others/MechHand_f_640x220x229.raw",
         "/home/davbauer/Downloads/MechHand_f_640x220x229.raw",
-        "F:/mechhand/MechHand_f_640x220x229.raw"
+        "H:/mechhand/MechHand_f_640x220x229.raw"
       ],
       "fileUpperLeft" : false,
       "format" : "REGULAR_GRID_RAW_BINARY",

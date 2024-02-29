@@ -39,7 +39,8 @@ add_library(rendercommon SHARED
   common/generate_mask.cpp
   common/dylink/Library.cpp
 )
-target_link_libraries(rendercommon PRIVATE gdt Threads::Threads ${CMAKE_DL_LIBS})
+target_link_libraries(rendercommon PUBLIC gdt tfnmodule TBB::tbb Threads::Threads)
+target_link_libraries(rendercommon PRIVATE ${CMAKE_DL_LIBS})
 target_include_directories(rendercommon PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/..)
 target_include_directories(rendercommon PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/common)
 target_include_directories(rendercommon PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
@@ -49,7 +50,7 @@ if(OVR_BUILD_CUDA)
     common/generate_mask.cu
     common/cuda/texture.cu
   )
-  target_link_libraries(rendercommon PUBLIC CUDA::cudart_static)
+  # target_link_libraries(rendercommon PUBLIC CUDA::cudart_static)
   target_compile_options(rendercommon PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>)
   target_compile_definitions(rendercommon PUBLIC OVR_BUILD_CUDA_DEVICES=1)
   target_include_directories(rendercommon PUBLIC ${CMAKE_CURRENT_LIST_DIR}/common/cuda)
@@ -83,7 +84,7 @@ add_library(renderlib SHARED
   renderer.cpp
   renderer.h
 )
-target_link_libraries(renderlib PUBLIC gdt tfnmodule rendercommon TBB::tbb Threads::Threads)
+target_link_libraries(renderlib PUBLIC rendercommon)
 target_include_directories(renderlib PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 target_include_directories(renderlib PUBLIC ${CMAKE_CURRENT_LIST_DIR}/..)
 

@@ -80,13 +80,13 @@ endif()
 # ------------------------------------------------------------------
 set(TFNMODULE_INCLUDE ${CMAKE_CURRENT_LIST_DIR}/tfn/colormaps)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tfn/colormaps)
-add_library(tfnmodule OBJECT ${embedded_colormap})
+add_library(tfnmodule STATIC ${embedded_colormap})
 target_include_directories(tfnmodule PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/tfn/colormaps>
 )
-set_target_properties(tfnmodule PROPERTIES 
-  POSITION_INDEPENDENT_CODE ON
-)
+if (UNIX)
+  set_target_properties(tfnmodule PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
 # ------------------------------------------------------------------
 # import CUDA
@@ -94,7 +94,6 @@ set_target_properties(tfnmodule PROPERTIES
 if(OVR_BUILD_CUDA)  
   include(configure_cuda)
   mark_as_advanced(CUDA_SDK_ROOT_DIR)
-  # add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cukd EXCLUDE_FROM_ALL)
 endif()
 
 # ------------------------------------------------------------------

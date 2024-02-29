@@ -20,6 +20,7 @@
 #include "common/vidi_fps_counter.h"
 #include "common/vidi_highperformance_timer.h"
 #include "renderer.h"
+#include "serializer/serializer.h"
 
 // #include <ovr/common/json/json.hpp>
 #include <json/json.hpp>

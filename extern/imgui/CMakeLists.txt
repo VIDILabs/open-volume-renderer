@@ -16,7 +16,7 @@
 project(DearImGui LANGUAGES CXX)
 cmake_minimum_required(VERSION 3.5)
 
-add_library(imgui OBJECT
+add_library(imgui STATIC
   imgui/imgui.cpp
   imgui/imgui_draw.cpp
   imgui/imgui_demo.cpp
@@ -44,4 +44,6 @@ PUBLIC
   IMGUI_IMPL_OPENGL_LOADER_GLAD
 )
 
-set_target_properties(imgui PROPERTIES POSITION_INDEPENDENT_CODE ON)
+if (UNIX)
+  set_target_properties(imgui PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
