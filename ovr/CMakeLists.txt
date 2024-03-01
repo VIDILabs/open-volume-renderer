@@ -50,7 +50,7 @@ if(OVR_BUILD_CUDA)
     common/generate_mask.cu
     common/cuda/texture.cu
   )
-  # target_link_libraries(rendercommon PUBLIC CUDA::cudart_static)
+  target_link_libraries(rendercommon PUBLIC CUDA::cudart_static) # this is useful for including CUDABuffer in C++ code
   target_compile_options(rendercommon PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>)
   target_compile_definitions(rendercommon PUBLIC OVR_BUILD_CUDA_DEVICES=1)
   target_include_directories(rendercommon PUBLIC ${CMAKE_CURRENT_LIST_DIR}/common/cuda)
