@@ -225,3 +225,6 @@ MainRenderer::set_scene(const Scene& scene)
 
 std::shared_ptr<ovr::MainRenderer>
 create_renderer(std::string name);
+
+ovr::Scene
+create_scene_device(std::string filename, std::string device);

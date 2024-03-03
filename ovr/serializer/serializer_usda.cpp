@@ -17,7 +17,7 @@
 
 PXR_NAMESPACE_USING_DIRECTIVE
 
-namespace ovr::scene {
+namespace ovr::usda {
 
 static const vec3f&
 to_vec3f(const GfVec3f& input_vec3f) { return *(const vec3f*)&input_vec3f; }
@@ -121,9 +121,15 @@ dirname(const std::string& fname)
   return str.empty() ? "." : str;
 }
 
+} // namespace usda
+
+namespace ovr::scene {
+
 Scene
-create_json_scene_usda(std::string filename)
+create_usda_scene(std::string filename)
 {
+  using namespace ovr::usda;
+
   std::cout << "[usd] loading USDA file for scene path: " << filename << std::endl;
 
   // 'stage' needs to be alive throughout the entire function  
@@ -201,7 +207,6 @@ create_json_scene_usda(std::string filename)
   scene.parallel_view = parallel_view;
   scene.simple_path_tracing = simple_path_tracing;
   return scene;
-
 }
 
 } // namespace ovr::scene

@@ -368,6 +368,8 @@ struct Scene {
   int use_dda = 0;
   bool parallel_view = false;
   bool simple_path_tracing = false;
+
+  void* user_data { nullptr };
 };
 
 } // namespace scene

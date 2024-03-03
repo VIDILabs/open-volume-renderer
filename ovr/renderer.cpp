@@ -59,3 +59,32 @@ create_renderer(std::string name)
 
   throw std::runtime_error("unknown device name: " + name);
 }
+
+ovr::Scene
+create_scene_device(std::string filename, std::string name) 
+{
+
+  ovr::dynamic::LibraryRepository::GetInstance()->add("device_" + name, true);
+  
+  // Function pointer type
+  using function_t = ovr::Scene(*)(const char*);
+
+  // Function pointers corresponding to each subtype.
+  function_t symbol;
+
+  // Construct the name of the creation function to look for.
+  std::string function_name = "ovr_create_scene__" + name;
+
+  // Load library from the disk
+  auto& repo = *ovr::dynamic::LibraryRepository::GetInstance();
+  repo.addDefaultLibrary();
+
+  // Look for the named function.
+  symbol = (function_t)repo.getSymbol(function_name);
+  if (symbol) { 
+    return (*symbol)(filename.c_str()); 
+  }
+  else {
+    return create_scene_default(filename);
+  }
+}

@@ -79,19 +79,17 @@ using tfn::TransferFunctionWidget;
 using namespace ovr::math;
 using ovr::Camera;
 using ovr::MainRenderer;
-// using ovr::AutomatedCameraPath;
 
 using vidi::AsyncLoop;
 using vidi::FPSCounter;
 using vidi::HistoryFPSCounter;
 using vidi::CsvLogger;
 using vidi::TransactionalValue;
-// using vidi::EyeMovement;
 
 void help()
 {
-  std::cout << "renderapp <renderer> <scene-file>."  << std::endl
-            << "\t available renderers: optix7-rm, optix7-pt, ospray-rm, osptay-pt, vidi3d, gradient"
+  std::cout << "renderapp <renderer> <scene-file> <device> <transfer-function>."  << std::endl
+            << "\t available renderers: optix7, ospray, gradient, etc."
             << std::endl;
 }
 
@@ -465,41 +463,42 @@ extern "C" int
 main(int ac, const char** av)
 {
   // -------------------------------------------------------
-  // initialize camera
+  // initialize 
   // -------------------------------------------------------
 
   // something approximating the scale of the world, so the
   // camera knows how much to move for any given user interaction:
   const float worldScale = 100.f;
 
-  ovr::Scene scene;
+  // -------------------------------------------------------
+  // parse arguments
+  // -------------------------------------------------------
+  std::string scene_file;
   if (ac < 2) {
-    // scene = create_example_scene();
-    // scene.camera = { /*from*/ vec3f(0.f, 0.f, -1200.f),
-    //                  /* at */ vec3f(0.f, 0.f, 0.f),
-    //                  /* up */ vec3f(0.f, 1.f, 0.f) };
+    help();
     throw std::runtime_error("no scene file specified");
   }
-  else {
-    scene = ovr::scene::create_scene(std::string(av[1]));
-  }
+  scene_file = av[1];
 
-  MainWindow::FrameLayer layer;  
-  std::shared_ptr<ovr::MainRenderer> renderer;
   std::string device = "optix7";
   if (ac >= 3) {
     device = av[2];
   }
-
+  
   std::string tfn = "";
   if (ac >= 4) {
     tfn = av[3];
   }
 
-  if (device == "ospray-iso") {
-    device = "ospray";
+  // -------------------------------------------------------
+  // parse device name
+  // -------------------------------------------------------
+  ovr::Scene scene;
 
-    // TODO hack for testing isosurface rendering
+  // Hack for testing isosurface rendering
+  if (device == "isosurface") {
+    scene = create_scene_device(scene_file, "ospray");
+
     const int32_t volume_raw_id = scene.instances[0].models[0].volume_model.volume_texture;
     scene.instances[0].models[0].volume_model.volume_texture = volume_raw_id;
 
@@ -524,7 +523,15 @@ main(int ac, const char** av)
     model.geometry_model.mtl = volume_mtl_id;
     scene.instances[0].models[0] = model;
   }
+  else {
+    scene = create_scene_device(scene_file, device);
+  }
 
+  // -------------------------------------------------------
+  // create renderer
+  // -------------------------------------------------------
+  MainWindow::FrameLayer layer;  
+  std::shared_ptr<ovr::MainRenderer> renderer;
   if (device == "gradient") {
     renderer = create_renderer("optix7");
     renderer->set_path_tracing(false);

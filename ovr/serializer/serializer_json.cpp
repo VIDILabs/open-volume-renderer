@@ -1,10 +1,5 @@
 #include "serializer.h"
 
-// #include "devices/vidi3d/dictionary.h"
-// #include <v3d/Serializer/CameraSerializer.h>
-// #include <v3d/Serializer/TransferFunctionSerializer.h>
-// #include <v3d/Serializer/VectorSerializer.h>
-// #include <v3d/Serializer/VolumeSerializer.h>
 namespace tfn {
 typedef ovr::math::vec2f vec2f;
 typedef ovr::math::vec2i vec2i;
@@ -70,7 +65,9 @@ NLOHMANN_JSON_SERIALIZE_ENUM(ValueType, {
 
 #define assert_throw(x, msg) { if (!(x)) throw std::runtime_error(msg); }
 
-namespace ovr::vidi3d {
+namespace ovr::diva {}
+
+namespace ovr::vidi {
   
 enum Endianness { OVR_LITTLE_ENDIAN, OVR_BIG_ENDIAN };
 NLOHMANN_JSON_SERIALIZE_ENUM(Endianness, {
@@ -293,7 +290,10 @@ create_scene_volume(const json& jsdata, std::string workdir)
 
     volume.type = ovr::scene::Volume::STRUCTURED_REGULAR_VOLUME;
     volume.structured_regular.data = CreateArray3DScalarFromFile(filename, dims, type, offset, is_big_endian);
-    volume.structured_regular.grid_origin = vec3f(0, 0, 0);
+
+    // volume.structured_regular.data = std::make_shared<Array<3>>();
+    // volume.structured_regular.data->dims = dims;
+    // volume.structured_regular.data->type = type;
 
     if (jsdata.contains(SCALES)) {
       auto scales = scalar_from_json<vec3f>(jsdata[SCALES]);
@@ -327,22 +327,35 @@ create_scene_camera(const json& jsview)
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-namespace ovr::scene {
-
-using namespace ovr::vidi3d;
-
-Scene
-create_json_scene_vidi3d(json root, std::string workdir)
+ovr::scene::TransferFunction
+ovr::scene::create_tfn(std::string filename)
 {
+  std::ifstream file(filename);
+  std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+  json root = json::parse(text, nullptr, true, true);
+  return ovr::vidi::create_scene_tfn(root[VIEW], ovr::ValueType::VALUE_TYPE_DOUBLE);
+}
+
+ovr::scene::Scene
+ovr::scene::create_json_scene_diva(json root, std::string workdir)
+{
+  throw std::runtime_error("unimplemented by now");
+}
+
+ovr::scene::Scene
+ovr::scene::create_json_scene_vidi(json root, std::string workdir)
+{
+  using namespace ovr::vidi;
+
   Scene scene;
 
   Instance instance;
   instance.transform = affine3f::translate(vec3f(0));
 
   for (auto& ds : root[DATA_SOURCE]) {
-    auto volume = vidi3d::create_scene_volume(ds, workdir);
+    auto volume = vidi::create_scene_volume(ds, workdir);
 
-    auto tfn = vidi3d::create_scene_tfn(root[VIEW], volume.structured_regular.data->type);
+    auto tfn = vidi::create_scene_tfn(root[VIEW], volume.structured_regular.data->type);
 
     if (!root[VIEW][VOLUME].contains(SCALAR_MAPPING_RANGE_UNNORMALIZED)) {
       auto type = scalar_from_json<ValueType>(ds[TYPE]);
@@ -398,7 +411,7 @@ create_json_scene_vidi3d(json root, std::string workdir)
 
   std::cout << "scene.lights = " << scene.lights.size() << std::endl;
 
-  scene.camera = vidi3d::create_scene_camera(root[VIEW]);
+  scene.camera = vidi::create_scene_camera(root[VIEW]);
   scene.volume_sampling_rate = 1.f / (float)scalar_from_json<double>(root[VIEW][VOLUME][SAMPLING_DISTANCE]);
   if (scene.volume_sampling_rate > 1) {
     std::cout << "scene.volume_sampling_rate = " << scene.volume_sampling_rate << std::endl;
@@ -407,14 +420,36 @@ create_json_scene_vidi3d(json root, std::string workdir)
   return scene;
 }
 
-} // namespace ovr::scene
-
-ovr::scene::TransferFunction
-create_scene_tfn_vidi3d(std::string filename)
+ovr::scene::Scene
+ovr::scene::create_json_scene(std::string filename)
 {
   std::ifstream file(filename);
   std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
   json root = json::parse(text, nullptr, true, true);
 
-  return ovr::vidi3d::create_scene_tfn(root[VIEW], ovr::ValueType::VALUE_TYPE_DOUBLE);
+  // find the base path from filename using pure c++ 11
+  std::string workdir = filename.substr(0, filename.find_last_of("/\\"));
+  workdir = workdir.empty() ? "." : workdir; // make sure workdir is never empty
+
+  assert(root.is_object());
+  if (root.contains("version")) {
+    if (root["version"] == "DIVA") {
+      return create_json_scene_diva(root, workdir);
+    }
+    else {
+      throw std::runtime_error("unknown scene format: " + root["version"].get<std::string>());
+    }
+  }
+  return create_json_scene_vidi(root, workdir);
+}
+
+ovr::scene::Scene
+create_scene_default(std::string filename)
+{
+  const auto ext = filename.substr(filename.find_last_of(".") + 1);
+  if (ext == "json") return ovr::scene::create_json_scene(filename);
+#ifdef OVR_BUILD_SCENE_USD
+  if (ext == "usda") return ovr::scene::create_usda_scene(filename);
+#endif
+  throw std::runtime_error("unknown scene format");
 }

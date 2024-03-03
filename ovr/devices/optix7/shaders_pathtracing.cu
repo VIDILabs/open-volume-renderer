@@ -488,7 +488,7 @@ pathtracing(const DeviceStructuredRegularVolume& self,
   const auto wto = payload.wto ? *payload.wto : get_xfm_wto();
   const auto in_world_space = payload.wto == nullptr;
 
-  auto rng = (RandomTEA* const)payload.rng;
+  auto rng = (RandomTEA*)payload.rng;
   auto scatter_index = payload.scatter_index;
 
   vec3f Le(0, 0, 0);

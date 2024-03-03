@@ -38,6 +38,8 @@ add_library(rendercommon SHARED
   common/imageio.cpp
   common/generate_mask.cpp
   common/dylink/Library.cpp
+  scene.cpp
+  scene.h
 )
 target_link_libraries(rendercommon PUBLIC gdt tfnmodule TBB::tbb Threads::Threads)
 target_link_libraries(rendercommon PRIVATE ${CMAKE_DL_LIBS})
@@ -83,10 +85,7 @@ endif()
 # ======================================================================== #
 add_library(renderlib SHARED
   serializer/serializer.h
-  serializer/serializer_diva.cpp
-  serializer/serializer_vidi3d.cpp
-  scene.cpp
-  scene.h
+  serializer/serializer_json.cpp
   renderer.cpp
   renderer.h
 )
