@@ -64,7 +64,7 @@ DeviceOSPRay::ui()
     float base_noise{ 0.07f };
     bool sparse_sampling{ false };
   } config;
-  if (ImGui::Begin("OptiX Panel", NULL)) {
+  if (ImGui::Begin("OSPRay Panel", NULL)) {
     bool updated = false;
     updated |= ImGui::SliderFloat("Focus Center X", &config.focus.x, 0.f, 1.f, "%.3f");
     updated |= ImGui::SliderFloat("Focus Center Y", &config.focus.y, 0.f, 1.f, "%.3f");
