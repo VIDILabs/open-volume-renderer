@@ -16,7 +16,10 @@
 project(DearImGui LANGUAGES CXX)
 cmake_minimum_required(VERSION 3.5)
 
-add_library(imgui STATIC
+# Now it is important to make imgui a shared library
+# TODO: verify the correctness on windows
+# TODO: add support for Vulkan
+add_library(imgui SHARED
   imgui/imgui.cpp
   imgui/imgui_draw.cpp
   imgui/imgui_demo.cpp
@@ -44,6 +47,6 @@ PUBLIC
   IMGUI_IMPL_OPENGL_LOADER_GLAD
 )
 
-if (UNIX)
-  set_target_properties(imgui PROPERTIES POSITION_INDEPENDENT_CODE ON)
-endif()
+# if (UNIX)
+#   set_target_properties(imgui PROPERTIES POSITION_INDEPENDENT_CODE ON)
+# endif()

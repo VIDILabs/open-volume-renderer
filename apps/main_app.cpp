@@ -120,27 +120,11 @@ private:
 
   /* local to GUI thread */
   struct {
-    vec2f focus{ 0.5f, 0.5f };
-    float focus_scale{ 0.06f };
-    float base_noise{ 0.07f };
-    bool add_lights{ true };
-    bool sparse_sampling{ false };
+    bool global_illumination{ false };
     bool frame_accumulation{ true };
     float volume_sampling_rate{ 1.f };
     float camera_path_speed{ 0.5f };
-    bool global_illumination{ false };
     int spp{ 1 };
-
-    float ambient{ .6f };
-    float diffuse{ .9f };
-    float specular{ .4f };
-    float shininess{ 40.f };
-
-    float radius{ 2415.8f };
-    float phi{ 99.53f };
-    float theta{ 112.2f };
-    float intensity{ 1.f };
-
   } config;
 
   bool async_enabled{ true }; /* local to GUI thread */
@@ -168,8 +152,7 @@ public:
              std::string default_tfn)
     : GLFCameraWindow(title, camera.from, camera.at, camera.up, scale, width, height)
     , async_rendering_loop(std::bind(&MainWindow::render_background, this))
-    , widget(std::bind(&MainWindow::set_transfer_function,
-                       this,
+    , widget(std::bind(&MainWindow::set_transfer_function, this,
                        std::placeholders::_1,
                        std::placeholders::_2,
                        std::placeholders::_3))
@@ -182,8 +165,8 @@ public:
 #endif
 
     /* over write initial values defined internally by devices */
-    renderer->set_focus(config.focus, config.focus_scale, config.base_noise);
-    renderer->set_sparse_sampling(config.sparse_sampling);
+    renderer->set_focus(vec2f(0.5), 0.06f, 0.07f);
+    renderer->set_sparse_sampling(false);
     renderer->set_frame_accumulation(config.frame_accumulation);
     renderer->set_volume_sampling_rate(config.volume_sampling_rate);
 
@@ -198,9 +181,9 @@ public:
       std::vector<vec4f> color_controls;
       for (int i = 0; i < tfn.tfn_colors.size() / 3; ++i) {
         color_controls.push_back(vec4f(i / float(tfn.tfn_colors.size() / 3 - 1), /* control point position */
-                                       tfn.tfn_colors.at(3 * i),                 //
-                                       tfn.tfn_colors.at(3 * i + 1),             //
-                                       tfn.tfn_colors.at(3 * i + 2)));           //
+                                       tfn.tfn_colors.at(3 * i),       // R value
+                                       tfn.tfn_colors.at(3 * i + 1),   // G value
+                                       tfn.tfn_colors.at(3 * i + 2))); // B value
       }
       assert(!tfn.tfn_alphas.empty());
       std::vector<vec2f> alpha_controls;
@@ -364,7 +347,7 @@ public:
     {
       switch (frame_active_layer) {
       case FRAME_RGBA: glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, out.size.x, out.size.y, 0, GL_RGBA, GL_FLOAT, out.rgba); break;
-      case FRAME_GRAD: glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,  out.size.x, out.size.y, 0, GL_RGB, GL_FLOAT, out.grad); break;
+      case FRAME_GRAD: glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,  out.size.x, out.size.y, 0, GL_RGB,  GL_FLOAT, out.grad); break;
       default: throw std::runtime_error("something is wrong");
       }
     });
@@ -401,52 +384,6 @@ public:
     if (gui_enabled) {
       ImGui::SetNextWindowSizeConstraints(ImVec2(450, 400), ImVec2(FLT_MAX, FLT_MAX));
       if (ImGui::Begin("Control Panel", NULL)) {
-
-        bool updated_mat = false;
-        updated_mat |= ImGui::SliderFloat("Mat: Ambient", &config.ambient, 0.f, 1.f, "%.3f");
-        updated_mat |= ImGui::SliderFloat("Mat: Diffuse", &config.diffuse, 0.f, 1.f, "%.3f");
-        updated_mat |= ImGui::SliderFloat("Mat: Specular", &config.specular, 0.f, 1.f, "%.3f");
-        updated_mat |= ImGui::SliderFloat("Mat: Shininess", &config.shininess, 0.f, 100.f, "%.3f");
-
-        bool updated_light = false;
-        updated_light |= ImGui::SliderFloat("Light: Phi", &config.phi, 0.f, 360.f, "%.2f");
-        updated_light |= ImGui::SliderFloat("Light: Theta", &config.theta, 0.f, 360.f, "%.2f");
-        updated_light |= ImGui::SliderFloat("Light: Intensity", &config.intensity, 0.f, 2.f, "%.3f");
-
-        bool updated = false;
-        updated |= ImGui::SliderFloat("Focus Center X", &config.focus.x, 0.f, 1.f, "%.3f");
-        updated |= ImGui::SliderFloat("Focus Center Y", &config.focus.y, 0.f, 1.f, "%.3f");
-        updated |= ImGui::SliderFloat("Focus Scale", &config.focus_scale, 0.01f, 1.f, "%.3f");
-        updated |= ImGui::SliderFloat("Base Noise", &config.base_noise, 0.01f, 1.0f, "%.3f", ImGuiSliderFlags_Logarithmic);
-        if (updated) {
-          renderer->set_focus(config.focus, config.focus_scale, config.base_noise);
-        }
-
-        if (updated_mat) {
-          renderer->set_mat_ambient(config.ambient);
-          renderer->set_mat_diffuse(config.diffuse);
-          renderer->set_mat_specular(config.specular);
-          renderer->set_mat_shininess(config.shininess);
-        }
-
-        if (updated_light) {
-          // renderer->set_light_radius(config.radius);
-          renderer->set_light_phi(config.phi);
-          renderer->set_light_theta(config.theta);
-          renderer->set_light_intensity(config.intensity);
-        }
-
-        static bool add_lights = config.add_lights;
-        if (ImGui::Checkbox("Add Lights", &add_lights)) {
-          config.add_lights = add_lights;
-          renderer->set_add_lights(config.add_lights);
-        }
-
-        static bool sparse_sampling = config.sparse_sampling;
-        if (ImGui::Checkbox("Sparse Sampling", &sparse_sampling)) {
-          config.sparse_sampling = sparse_sampling;
-          renderer->set_sparse_sampling(config.sparse_sampling);
-        }
 
         static bool frame_accumulation = config.frame_accumulation;
         if (ImGui::Checkbox("Frame Accumulation", &frame_accumulation)) {
@@ -489,10 +426,14 @@ public:
           ImPlot::PlotLine("frame time", background_fps.indices.data(), background_fps.frame_time_history.data(), (int)background_fps.frame_time_history.size());
           ImPlot::EndPlot();
         }
-        ImGui::End();
       }
+      ImGui::End();
     }
 
+    // Device Specific GUIs
+    renderer->ui();
+
+    // FPS Counters
     if (foreground_fps.count()) {
       std::stringstream title;
       title << std::fixed << std::setprecision(3) << " fg = " << foreground_fps.fps << " fps,";

@@ -116,135 +116,32 @@ public:
   virtual void mapframe(FrameBufferData*) = 0;
 
   /*! unsafe: getters */
-  math::vec2i unsafe_get_fbsize() const
-  {
-    return params.fbsize.get();
-  }
+  math::vec2i unsafe_get_fbsize() const { return params.fbsize.get(); }
+  float unsafe_get_variance() const { return variance; }
+  const TransferFunctionData& unsafe_get_tfn() const { return params.tfn.ref(); }
 
-  float unsafe_get_variance() const
-  {
-    return variance;
-  }
-
-  const TransferFunctionData& unsafe_get_tfn() const
-  {
-    return params.tfn.ref();
-  }
+  /*! thread safe: called in GUI thread */
+  virtual void ui() {}
 
   /*! thread safe: setters */
-  void set_fbsize(const math::vec2i& fbsize)
-  {
-    params.fbsize = fbsize;
-  }
-
-  void set_camera(const Camera& camera)
-  {
-    // std::cout << "camera update" << std::endl;
-    // std::cout << "  from: " << camera.from << std::endl;
-    // std::cout << "  at:   " << camera.at << std::endl;
-    // std::cout << "  up:   " << camera.up << std::endl;
-    params.camera = camera;
-  }
-
-  void set_camera(math::vec3f from, math::vec3f at, math::vec3f up)
-  {
-    set_camera(Camera{ from, at, up });
-  }
-
-  void set_transfer_function(const std::vector<float>& c, const std::vector<float>& o, const math::vec2f& r)
-  {
+  void set_fbsize(const math::vec2i& fbsize) { params.fbsize = fbsize; }
+  void set_camera(const Camera& camera) { params.camera = camera; }
+  void set_camera(math::vec3f from, math::vec3f at, math::vec3f up) { set_camera(Camera{ from, at, up }); }
+  void set_transfer_function(const std::vector<float>& c, const std::vector<float>& o, const math::vec2f& r) {
     params.tfn.assign([&](TransferFunctionData& d) {
-      d.tfn_colors = c;
-      d.tfn_alphas = o;
-      d.tfn_value_range = r;
+      d.tfn_colors = c; d.tfn_alphas = o; d.tfn_value_range = r;
     });
   }
+  void set_sample_per_pixel(int spp) { params.sample_per_pixel = spp; }
+  void set_path_tracing(bool path_tracing) { params.path_tracing = path_tracing; }
+  void set_frame_accumulation(bool frame_accumulation) { params.frame_accumulation = frame_accumulation; }
+  void set_volume_sampling_rate(float volume_sampling_rate) { params.volume_sampling_rate = volume_sampling_rate; }
+  void set_volume_density_scale(float volume_density_scale) { params.volume_density_scale = volume_density_scale; }
 
-  void set_focus(const math::vec2f& center, float scale, float base_noise)
-  {
-    params.focus_center = center;
-    params.focus_scale = scale;
-    params.base_noise = base_noise;
-  }
-
-  void set_sample_per_pixel(int spp)
-  {
-    params.sample_per_pixel = spp;
-  }
-
-  void set_add_lights(bool add_lights)
-  {
-    params.add_lights = add_lights;
-  }
-
-  void set_sparse_sampling(bool sparse_sampling)
-  {
-    params.sparse_sampling = sparse_sampling;
-  }
-
-  void set_path_tracing(bool path_tracing)
-  {
-    params.path_tracing = path_tracing;
-  }
-
-  void set_photonmapping(bool photonmapping)
-  {
-    params.photonmapping = photonmapping;
-  }
-
-  void set_frame_accumulation(bool frame_accumulation)
-  {
-    params.frame_accumulation = frame_accumulation;
-  }
-
-  void set_volume_sampling_rate(float volume_sampling_rate)
-  {
-    params.volume_sampling_rate = volume_sampling_rate;
-  }
-
-  void set_volume_density_scale(float volume_density_scale)
-  {
-    params.volume_density_scale = volume_density_scale;
-  }
-
-  void set_mat_ambient(float ambient)
-  {
-    params.ambient = ambient;
-  }
-
-  void set_mat_diffuse(float diffuse)
-  {
-    params.diffuse = diffuse;
-  }
-
-  void set_mat_specular(float specular)
-  {
-    params.specular = specular;
-  }
-
-  void set_mat_shininess(float shininess)
-  {
-    params.shininess = shininess;
-  }
-
-  void set_light_phi(float phi)
-  {
-    params.phi = phi;
-  }
-
-  void set_light_theta(float theta)
-  {
-    params.theta = theta;
-  }
-
-  void set_light_radius(float radius)
-  {
-    params.radius = radius;
-  }
-
-  void set_light_intensity(float intensity)
-  {
-    params.intensity = intensity;
+  // setters for sparse sampling //
+  void set_sparse_sampling(bool sparse_sampling) { params.sparse_sampling = sparse_sampling; }
+  void set_focus(const math::vec2f& center, float scale, float base_noise) {
+    params.focus_center = center; params.focus_scale = scale; params.base_noise = base_noise;
   }
 
 protected:
@@ -253,35 +150,19 @@ protected:
 
 protected:
   struct {
+    TransactionalValue<Camera> camera;
     TransactionalValue<TransferFunctionData> tfn;
     TransactionalValue<vec2i> fbsize;
-
     TransactionalValue<int> sample_per_pixel;
     TransactionalValue<float> volume_sampling_rate;
     TransactionalValue<float> volume_density_scale;
-
-    TransactionalValue<float> ambient;
-    TransactionalValue<float> diffuse;
-    TransactionalValue<float> specular;
-    TransactionalValue<float> shininess;
-
-    TransactionalValue<float> radius;
-    TransactionalValue<float> phi;
-    TransactionalValue<float> theta;
-    TransactionalValue<float> intensity;
-
+    TransactionalValue<bool> path_tracing;
+    TransactionalValue<bool> frame_accumulation;
+    // options for sparse sampling 
     TransactionalValue<vec2f> focus_center;
     TransactionalValue<float> focus_scale;
     TransactionalValue<float> base_noise;
-    TransactionalValue<bool> add_lights;
-
     TransactionalValue<bool> sparse_sampling;
-    TransactionalValue<bool> path_tracing;
-    TransactionalValue<bool> photonmapping;
-
-    TransactionalValue<bool> frame_accumulation;
-
-    TransactionalValue<Camera> camera;
   } params;
 
   float variance{ std::numeric_limits<float>::infinity() };

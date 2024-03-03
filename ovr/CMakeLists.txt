@@ -72,6 +72,12 @@ target_add_embeded_shaders(rendercommon
   stbn_128x128x64=${PROJECT_SOURCE_DIR}/data/noise/stbn_128x128x64.bin
 )
 
+# Allow device to define its own GUI pannel
+if(OVR_BUILD_OPENGL)
+  target_link_libraries(rendercommon PUBLIC imgui)
+  target_compile_definitions(rendercommon PUBLIC OVR_BUILD_OPENGL=1)
+endif()
+
 # ======================================================================== #
 # renderer
 # ======================================================================== #
@@ -108,7 +114,6 @@ if (NOT APPLE)
   target_link_libraries(renderlib PUBLIC $<$<CXX_COMPILER_ID:GNU>:stdc++fs>)
   target_link_libraries(renderlib PUBLIC $<$<CXX_COMPILER_ID:Clang>:c++fs>)
 endif()
-
 
 # ---------------------------------------------
 # devices  
