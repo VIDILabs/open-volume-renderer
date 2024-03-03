@@ -4,7 +4,7 @@
 
 namespace ovr::scene {
 
-Scene
+inline Scene
 create_json_scene_diva(json root, std::string workdir)
 {
   throw std::runtime_error("unimplemented by now");
