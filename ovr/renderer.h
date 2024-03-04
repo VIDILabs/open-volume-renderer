@@ -46,6 +46,8 @@
 #include <string>
 #include <vector>
 
+#define OVR_FRAMEBUFFERDATA_REQUIRE_SIZE 1
+
 namespace ovr {
 
 using vidi::TransactionalValue;
