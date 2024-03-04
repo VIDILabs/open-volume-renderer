@@ -47,6 +47,23 @@ if(OVR_BUILD_DEVICE_OSPRAY)
   set(OVR_BUILD_OSPRAY TRUE)
 endif()
 
+# force to pull subdirectories, credit to Nate :)
+find_package(Git)
+set(WORKDIR ${CMAKE_CURRENT_SOURCE_DIR})
+if(GIT_FOUND AND EXISTS "${WORKDIR}/.git")
+  option(GIT_SUBMODULE "Check submodules during build" ON)
+  if(GIT_SUBMODULE)
+    message(STATUS "Submodule update")
+    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+                    WORKING_DIRECTORY ${WORKDIR}
+                    RESULT_VARIABLE GIT_SUBMOD_RESULT)
+    if(NOT GIT_SUBMOD_RESULT EQUAL 0)
+      message(FATAL_ERROR "'git submodule update --init --recursive' failed with \
+        ${GIT_SUBMOD_RESULT}, please checkout submodules")
+    endif()
+  endif()
+endif()
+
 # ------------------------------------------------------------------
 # configure
 # ------------------------------------------------------------------
