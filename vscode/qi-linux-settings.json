@@ -1,14 +1,13 @@
 {
     "cmake.configureSettings": {
         /* redbull */
-        "CMAKE_PREFIX_PATH": [
-            "/home/qadwu/Software/libtorch-shared-with-deps-1.12.1-cu116/libtorch",
-            "/home/qadwu/Work/ospray/deps"
-        ],
-        "TensorRT_INSTALL_DIR": "/home/davbauer/software/TensorRT-8.2.3.0",
-        "TorchTensorRT_INSTALL_DIR": "/home/davbauer/software/torch_tensorrt",
+        // "CMAKE_PREFIX_PATH": [
+        //     "/home/qadwu/Software/libtorch-shared-with-deps-1.12.1-cu116/libtorch",
+        // ],
+        // "TensorRT_ROOT": "/home/davbauer/software/TensorRT-8.2.3.0",
+        // "TorchTensorRT_INSTALL_DIR": "/home/davbauer/software/torch_tensorrt",
         "ospray_DIR": "/home/qadwu/Software/ospray-2.11.0.x86_64.linux_sparse_sampling/lib/cmake/ospray-2.11.0",
-        // "ospray_DIR": "/home/qadwu/Work/ospray/build/${command:cmake.buildType}/install/lib/cmake/ospray-2.11.0",
+        "openvkl_DIR": "/home/qadwu/Software/openvkl-1.3.2.x86_64.linux/lib/cmake/openvkl-1.3.2",
 	    "pxr_DIR": "/home/weishen/USD",
         "GDT_CUDA_ARCHITECTURES": 75,
         "TORCH_CUDA_ARCH_LIST": "Turing",
@@ -18,13 +17,18 @@
         "OVR_BUILD_DEVICE_OSPRAY": true,
         // projects
         "OVR_BUILD_MODULE_VIDI3D":   false,
-        "OVR_BUILD_MODULE_NNVOLUME": false,
         "OVR_BUILD_MODULE_NNCACHE":  false,
+        "OVR_BUILD_MODULE_NNVOLUME": true,
         "OVR_BUILD_MODULE_FOVOLNET": false,
+        "OVR_BUILD_MODULE_VULKAN": false
     },
     "cmake.buildDirectory": "${workspaceFolder}/build/${command:cmake.buildType}",
     "cmake.configureOnEdit": false,
     "cmake.configureOnOpen": false,
+    "git.scanRepositories": [
+        "projects/instantvnr",
+        "projects/vidi3d"
+    ],
     "files.associations": {
         "*.json": "jsonc",
         "stdexcept": "cpp",

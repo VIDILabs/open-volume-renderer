@@ -11,7 +11,8 @@
             "program": "${workspaceFolder}/build/${command:cmake.buildType}/vnr_int_isosurface",
             "args": [
                 "--simple-volume", "configs/scene_bonsai.json", 
-                // "--neural-volume=params.json", 
+                // "--neural-volume=vorts-params.json", 
+                // "--simple-volume=/media/data/qadwu/volume/s3d_cases/temp_ptj.json",
                 "--isovalue", "0.5"
             ],
             "stopAtEntry": false,
@@ -19,7 +20,7 @@
             "environment": [
                 {
                     "name": "DISPLAY",
-                    "value": ":2"
+                    "value": ":4"
                 },
                 {
                     "name": "LD_LIBRARY_PATH",
@@ -47,25 +48,116 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/${command:cmake.buildType}/vnr_int_dual",
             "args": [
-                "--rendering-mode", "14",
-                "--pause-reference",
+                // "--mode", "OUT_OF_CORE",
+                // "--rendering-mode", "14",
+                "--rendering-mode", "5",
+                // "--pause-reference",
                 "--pause-inference",
                 "--pause-training",
                 "--volume", 
-                "configs/scene_chameleon.json",
+                // "configs/scene_chameleon.json",
+                "configs/scene_mechhand.json",
+                // "/media/data/qadwu/volume/s3d_cases/temp_ptj.json",
                 "--network",
-                "${workspaceFolder}/projects/instantvnr/example-model.json"
+                "${workspaceFolder}/projects/instantvnr/apps/example-model.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/data",
             "environment": [
                 {
                     "name": "DISPLAY",
-                    "value": ":2"
+                    "value": ":4"
+                },
+                {
+                    "name": "CUDA_VISIBLE_DEVICES",
+                    "value": "1"
                 }
             ],
             "externalConsole": false,
             "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "(gdb) vnr_int_compare",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/${command:cmake.buildType}/vnr_int_single",
+            "args": [
+                "--rendering-mode=5",
+                "--neural-volume=${workspaceFolder}/projects/instantvnr/apps/rm60_instantvnr.json",
+                // "--neural-volume=${workspaceFolder}/projects/instantvnr/apps/rm60_fvsrn.json",
+                "--tfn=${workspaceFolder}/projects/instantvnr/apps/rm60_tfn.json"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/data",
+            "environment": [
+                {
+                    "name": "DISPLAY",
+                    "value": ":4"
+                },
+                {
+                    "name": "CUDA_VISIBLE_DEVICES",
+                    "value": "1"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "(gdb) vnr_int_single",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/${command:cmake.buildType}/vnr_int_single",
+            "args": [
+                // "--rendering-mode", "5",
+                "--rendering-mode", "14",
+                // "--neural-volume=params.json",
+                // "--neural-volume=/home/qadwu/model.json",
+                "--simple-volume=configs/scene_mechhand.json",
+                "--tfn=configs/scene_mechhand.json"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/data",
+            "environment": [
+                {
+                    "name": "DISPLAY",
+                    "value": ":4"
+                },
+                {
+                    "name": "CUDA_VISIBLE_DEVICES",
+                    "value": "1"
+                },
+                {
+                    "name": "LD_LIBRARY_PATH",
+                    "value": "${workspaceFolder}/build/${command:cmake.buildType}:${env:LD_LIBRARY_PATH}"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/home/qadwu/vglgdb",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
@@ -95,6 +187,10 @@
                     "name": "LD_LIBRARY_PATH",
                     "value": "/home/weishen/USD/lib:/home/qadwu/Software/ospray-2.11.0.x86_64.linux_sparse_sampling/lib:${env:LD_LIBRARY_PATH}:${workspaceFolder}/build/${command:cmake.buildType}:${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d"
                     // "value": "/home/weishen/USD/lib:/home/qadwu/Work/ospray/build/${command:cmake.buildType}/install/lib:/home/qadwu/Work/ospray/deps/lib:/home/qadwu/Work/ospray/deps/lib/intel64/gcc4.8:${env:LD_LIBRARY_PATH}:${workspaceFolder}/build/${command:cmake.buildType}:${workspaceFolder}/build/${command:cmake.buildType}/common/vidi3d"
+                },
+                {
+                    "name": "CUDA_VISIBLE_DEVICES",
+                    "value": "1"
                 }
             ],
             "externalConsole": false,
@@ -119,6 +215,8 @@
             "program": "${workspaceFolder}/build/${command:cmake.buildType}/renderapp",
             "args": [
                 "configs/scene_mechhand.json",
+                // "configs/scene_chameleon.json",
+                // "/media/data/qadwu/volume/s3d_cases/temp_ptj.json",
                 "${input:device}",
             ],
             "stopAtEntry": false,
@@ -131,7 +229,11 @@
                 },
                 {
                     "name": "DISPLAY",
-                    "value": ":2"
+                    "value": ":4"
+                },
+                {
+                    "name": "CUDA_VISIBLE_DEVICES",
+                    "value": "1"
                 }
             ],
             "externalConsole": false,
@@ -170,7 +272,7 @@
                 },
                 {
                     "name": "DISPLAY",
-                    "value": ":2"
+                    "value": ":4"
                 }
             ],
             "externalConsole": false,
@@ -192,7 +294,7 @@
             "name": "(gdb) FolVolNet",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build_folvolnet/${command:cmake.buildType}/renderfolvolnet",
+            "program": "${workspaceFolder}/build/${command:cmake.buildType}/renderfolvolnet",
             "args": [
                 "configs/scene_mechhand.json",
                 "../projects/fovolnet/ovrmodule/models/rt_stbn_of40_int8fp16.trt"
@@ -206,11 +308,11 @@
                 // },
                 {
                     "name": "LD_LIBRARY_PATH",
-                    "value": "/home/qadwu/Software/ospray-2.11.0.x86_64.linux_sparse_sampling/lib:${env:LD_LIBRARY_PATH}:${workspaceFolder}/build_folvolnet/${command:cmake.buildType}"
+                    "value": "/home/qadwu/Software/ospray-2.11.0.x86_64.linux_sparse_sampling/lib:${env:LD_LIBRARY_PATH}:${workspaceFolder}/build/${command:cmake.buildType}"
                 },
                 {
                     "name": "DISPLAY",
-                    "value": ":2"
+                    "value": ":4"
                 }
             ],
             "externalConsole": false,
