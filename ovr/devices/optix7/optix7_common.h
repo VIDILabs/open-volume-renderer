@@ -415,10 +415,13 @@ public:
     return (void*)front_buffer().h_pointer(layout);
   }
 
-  void reset()
-  {
-    buffers[0].reset();
-    buffers[1].reset();
+  void front_reset() { front_buffer().reset(); }
+
+  void back_reset()  { back_buffer().reset(); }
+
+  void reset() {
+    front_buffer().reset();
+    back_buffer().reset();
   }
 };
 

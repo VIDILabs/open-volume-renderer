@@ -220,7 +220,13 @@ public:
     // commit first to make sure framebuffer data are valid
     renderer->commit();
 
-    // display the front buffer
+    // async rendering to the backbuffer
+    double render_time = 0.0;
+    renderer->render(); 
+    render_time = renderer->render_time; 
+    variance = renderer->unsafe_get_variance();
+
+    // display the front buffer at the same time
     renderer->mapframe(&renderer_output);
     if (renderer_output.size.long_product() == 0) { return; }
     FrameOutputs output; 
@@ -231,12 +237,6 @@ public:
     default: throw std::runtime_error("something is wrong");
     }
     frame_outputs = output;
-
-    // async rendering to the backbuffer
-    double render_time = 0.0;
-    renderer->render(); 
-    render_time = renderer->render_time; 
-    variance = renderer->unsafe_get_variance();
 
     // swap front and back
     renderer->swap();
