@@ -51,6 +51,11 @@
 #include "renderer.h"
 #include "serializer/serializer.h"
 
+#include "imageops/imageop.h"
+#ifdef OVR_BUILD_OPTIX7
+#include "imageops/optix7_denoiser.h"
+#endif
+
 // #define OVR_LOGGING
 
 namespace tfn {
@@ -79,6 +84,7 @@ using tfn::TransferFunctionWidget;
 using namespace ovr::math;
 using ovr::Camera;
 using ovr::MainRenderer;
+using ovr::ImageOp;
 
 using vidi::AsyncLoop;
 using vidi::FPSCounter;
@@ -104,6 +110,9 @@ private:
   std::shared_ptr<MainRenderer> renderer;
   MainRenderer::FrameBufferData renderer_output;
 
+  std::shared_ptr<ImageOp> denoiser;
+  MainRenderer::FrameBufferData denoiser_output;
+
   struct FrameOutputs {
     vec2i size{ 0 };
     vec4f* rgba{ nullptr };
@@ -121,8 +130,9 @@ private:
     bool frame_accumulation{ true };
     float volume_sampling_rate{ 1.f };
     float volume_density_scale{ 1.f };
-    float camera_path_speed{ 0.5f };
+    // float camera_path_speed{ 0.5f };
     int spp{ 1 };
+    std::atomic<bool> denoise{ false };
   } config;
 
   bool async_enabled{ true }; /* local to GUI thread */
@@ -168,6 +178,11 @@ public:
     renderer->set_frame_accumulation(config.frame_accumulation);
     renderer->set_volume_sampling_rate(config.volume_sampling_rate);
     renderer->set_volume_density_scale(config.volume_density_scale);
+
+#ifdef OVR_BUILD_OPTIX7
+    denoiser = std::make_shared<ovr::optix7::Optix7Denoiser>();
+    denoiser->initialize(0, NULL);
+#endif
 
     glDisable(GL_LIGHTING);
     glEnable(GL_BLEND);
@@ -229,14 +244,27 @@ public:
     // display the front buffer at the same time
     renderer->mapframe(&renderer_output);
     if (renderer_output.size.long_product() == 0) { return; }
-    FrameOutputs output; 
-    output.size = renderer_output.size;
+
+    auto* output = &renderer_output;
+#ifdef OVR_BUILD_OPTIX7 // denoising
+    if (config.denoise) {
+      denoiser_output.size = renderer_output.size;
+      denoiser->resize(denoiser_output.size.x, denoiser_output.size.y);
+      denoiser->process(renderer_output.rgba);
+      denoiser->map(denoiser_output.rgba);
+      output = &denoiser_output;
+    }
+#endif
+
+    // copy to the GUI thread
+    FrameOutputs out; 
+    out.size = renderer_output.size;
     switch (frame_active_layer) {
-    case FRAME_RGBA: output.rgba = (vec4f*)renderer_output.rgba->to_cpu()->data(); break;
-    case FRAME_GRAD: output.grad = (vec3f*)renderer_output.grad->to_cpu()->data(); break;
+    case FRAME_RGBA: out.rgba = (vec4f*)output->rgba->to_cpu()->data(); break;
+    case FRAME_GRAD: out.grad = (vec3f*)output->grad->to_cpu()->data(); break;
     default: throw std::runtime_error("something is wrong");
     }
-    frame_outputs = output;
+    frame_outputs = out;
 
     // swap front and back
     renderer->swap();
@@ -379,15 +407,16 @@ public:
       ImGui::SetNextWindowSizeConstraints(ImVec2(450, 400), ImVec2(FLT_MAX, FLT_MAX));
       if (ImGui::Begin("Control Panel", NULL)) {
 
-        static bool frame_accumulation = config.frame_accumulation;
-        if (ImGui::Checkbox("Frame Accumulation", &frame_accumulation)) {
-          config.frame_accumulation = frame_accumulation;
+        static bool denoise = config.denoise;
+        if (ImGui::Checkbox("OptiX Denoise", &denoise)) {
+          config.denoise = denoise;
+        }
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Frame Accumulation", &config.frame_accumulation)) {
           renderer->set_frame_accumulation(config.frame_accumulation);
         }
 
-        static bool global_illumination = config.global_illumination;
-        if (ImGui::Checkbox("Global Illumination", &global_illumination)) {
-          config.global_illumination = global_illumination;
+        if (ImGui::Checkbox("Global Illumination", &config.global_illumination)) {
           renderer->set_path_tracing(config.global_illumination);
         }
 
@@ -447,7 +476,6 @@ public:
   void resize(const vec2i& size) override
   {
     frame_size_local = size;
-    // frame_size_shared = size;
     renderer->set_fbsize(size);
   }
 

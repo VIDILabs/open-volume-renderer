@@ -36,6 +36,22 @@
 // this include may only appear in a single source file:
 #include <optix_function_table_definition.h>
 
+// #include <optix_function_table.h>
+// #ifdef __cplusplus
+// extern "C" {
+// #endif
+// /** \addtogroup optix_function_table
+// @{
+// */
+// /// If the stubs in optix_stubs.h are used, then the function table needs to be defined in exactly
+// /// one translation unit. This can be achieved by including this header file in that translation
+// /// unit.
+// OptixFunctionTable g_optixFunctionTable{};
+// /*@}*/  // end group optix_function_table
+// #ifdef __cplusplus
+// }
+// #endif
+
 #include <generate_mask.h>
 
 namespace ovr::optix7 {
@@ -336,8 +352,11 @@ DeviceOptix7::Impl::initOptix()
   // -------------------------------------------------------
   // initialize optix
   // -------------------------------------------------------
-  OPTIX_CHECK(optixInit());
-  std::cout << "[optix7] successfully initialized OptiX" << std::endl;
+  // if (!g_optixFunctionTable.optixDeviceContextCreate) 
+  {
+    OPTIX_CHECK(optixInit());
+    std::cout << "[optix7] successfully initialized OptiX" << std::endl;
+  }
 }
 
 /*! creates and configures a optix device context (in this simple

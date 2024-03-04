@@ -9,9 +9,10 @@ namespace ovr {
 
 struct ImageOp {
   virtual void initialize(int ac, const char** av) = 0;
-  virtual void process(MainRenderer::FrameBufferData* fb) = 0;
   virtual void resize(int width, int height) = 0;
+  virtual void process(std::shared_ptr<CrossDeviceBuffer>& input) = 0;
   virtual void map(std::shared_ptr<CrossDeviceBuffer>& output) const = 0;
+  // virtual void reset() = 0;
 };
 
 }

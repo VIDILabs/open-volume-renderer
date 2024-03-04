@@ -88,8 +88,14 @@ add_library(renderlib SHARED
   serializer/serializer_json.cpp
   renderer.cpp
   renderer.h
+  $<$<BOOL:${OVR_BUILD_DEVICE_OPTIX7}>:imageops/optix7_denoiser.cpp>
 )
-target_link_libraries(renderlib PUBLIC rendercommon)
+target_link_libraries(renderlib 
+PUBLIC 
+  rendercommon
+PRIVATE
+  $<$<BOOL:${OVR_BUILD_DEVICE_OPTIX7}>:OptiX::optix7>
+)
 target_include_directories(renderlib PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 target_include_directories(renderlib PUBLIC ${CMAKE_CURRENT_LIST_DIR}/..)
 
