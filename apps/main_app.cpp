@@ -404,7 +404,7 @@ public:
         }
 
         static float ds = config.volume_density_scale;
-        if (ImGui::SliderFloat("Sample Rate", &ds, 0.01f, 10.f, "%.3f")) {
+        if (ImGui::SliderFloat("Density Scale", &ds, 0.01f, 10.f, "%.3f")) {
           config.volume_density_scale = ds;
           renderer->set_volume_density_scale(config.volume_density_scale);
         }
