@@ -112,15 +112,15 @@ private:
 
   const FrameLayer frame_active_layer;
   TransactionalValue<FrameOutputs> frame_outputs; /* wrote by BG, consumed by GUI */
-  GLuint frame_texture{ 0 };                        /* local to GUI thread */
-  vec2i frame_size_local{ 0 };                      /* local to GUI thread */
-  TransactionalValue<vec2i> frame_size_shared{ 0 }; /* wrote by GUI, consumed by BG */
+  GLuint frame_texture{ 0 };   /* local to GUI thread */
+  vec2i frame_size_local{ 0 }; /* local to GUI thread */
 
   /* local to GUI thread */
   struct {
     bool global_illumination{ false };
     bool frame_accumulation{ true };
     float volume_sampling_rate{ 1.f };
+    float volume_density_scale{ 1.f };
     float camera_path_speed{ 0.5f };
     int spp{ 1 };
   } config;
@@ -167,6 +167,7 @@ public:
     renderer->set_sparse_sampling(false);
     renderer->set_frame_accumulation(config.frame_accumulation);
     renderer->set_volume_sampling_rate(config.volume_sampling_rate);
+    renderer->set_volume_density_scale(config.volume_density_scale);
 
     glDisable(GL_LIGHTING);
     glEnable(GL_BLEND);
@@ -216,35 +217,31 @@ public:
   {
     auto start = std::chrono::high_resolution_clock::now(); 
 
-    if (frame_size_shared.update()) {
-      frame_outputs.assign([&](FrameOutputs& d) { d.size = vec2i(0, 0); });
-      renderer->set_fbsize(frame_size_shared.ref());
-    }
-    if (frame_size_shared.ref().long_product() == 0)
-      return;
-
+    // commit first to make sure framebuffer data are valid
     renderer->commit();
-    renderer->mapframe(&renderer_output);
 
-    FrameOutputs output;
-    {
-      switch (frame_active_layer) {
-      case FRAME_RGBA: output.rgba = (vec4f*)renderer_output.rgba->to_cpu()->data(); break;
-      case FRAME_GRAD: output.grad = (vec3f*)renderer_output.grad->to_cpu()->data(); break;
-      default: throw std::runtime_error("something is wrong");
-      }
-      output.size = frame_size_shared.get();
+    // display the front buffer
+    renderer->mapframe(&renderer_output);
+    if (renderer_output.size.long_product() == 0) { return; }
+    FrameOutputs output; 
+    output.size = renderer_output.size;
+    switch (frame_active_layer) {
+    case FRAME_RGBA: output.rgba = (vec4f*)renderer_output.rgba->to_cpu()->data(); break;
+    case FRAME_GRAD: output.grad = (vec3f*)renderer_output.grad->to_cpu()->data(); break;
+    default: throw std::runtime_error("something is wrong");
     }
     frame_outputs = output;
 
-    renderer->swap();
-
-    variance = renderer->unsafe_get_variance();
-
+    // async rendering to the backbuffer
     double render_time = 0.0;
     renderer->render(); 
     render_time = renderer->render_time; 
+    variance = renderer->unsafe_get_variance();
 
+    // swap front and back
+    renderer->swap();
+
+    // statistics
     auto end = std::chrono::high_resolution_clock::now();
     auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     frame_time += diff.count();
@@ -339,10 +336,9 @@ public:
   /* GUI thread */
   void draw() override
   {
-    glBindTexture(GL_TEXTURE_2D, frame_texture);
-
-    frame_outputs.update([&](const FrameOutputs& out) 
-    {
+    frame_outputs.update([&](const FrameOutputs& out) {
+      glBindTexture(GL_TEXTURE_2D, frame_texture);
+      assert(frame_size_local == out.size);
       switch (frame_active_layer) {
       case FRAME_RGBA: glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, out.size.x, out.size.y, 0, GL_RGBA, GL_FLOAT, out.rgba); break;
       case FRAME_GRAD: glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,  out.size.x, out.size.y, 0, GL_RGB,  GL_FLOAT, out.grad); break;
@@ -351,8 +347,8 @@ public:
     });
 
     const auto& size = frame_size_local;
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT);
     glColor3f(1, 1, 1);
     glMatrixMode(GL_MODELVIEW);
@@ -407,10 +403,19 @@ public:
           renderer->set_volume_sampling_rate(config.volume_sampling_rate);
         }
 
+        static float ds = config.volume_density_scale;
+        if (ImGui::SliderFloat("Sample Rate", &ds, 0.01f, 10.f, "%.3f")) {
+          config.volume_density_scale = ds;
+          renderer->set_volume_density_scale(config.volume_density_scale);
+        }
+
         widget.build_gui();
       }
       ImGui::End();
       widget.render();
+      
+      // Device Specific GUIs
+      renderer->ui();
     }
 
     // Performance Graph
@@ -428,9 +433,6 @@ public:
       ImGui::End();
     }
 
-    // Device Specific GUIs
-    renderer->ui();
-
     // FPS Counters
     if (foreground_fps.count()) {
       std::stringstream title;
@@ -445,15 +447,14 @@ public:
   void resize(const vec2i& size) override
   {
     frame_size_local = size;
-    frame_size_shared = size;
+    // frame_size_shared = size;
+    renderer->set_fbsize(size);
   }
 
   /* GUI thread */
   void close() override
   {
-    if (async_enabled)
-      async_rendering_loop.stop();
-
+    if (async_enabled) async_rendering_loop.stop();
     glDeleteTextures(1, &frame_texture);
   }
 };

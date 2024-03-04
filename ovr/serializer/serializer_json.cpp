@@ -409,13 +409,14 @@ ovr::scene::create_json_scene_vidi(json root, std::string workdir)
     scene.lights.push_back(light);
   }
 
-  std::cout << "scene.lights = " << scene.lights.size() << std::endl;
+  // std::cout << "scene.lights = " << scene.lights.size() << std::endl;
 
   scene.camera = vidi::create_scene_camera(root[VIEW]);
   scene.volume_sampling_rate = 1.f / (float)scalar_from_json<double>(root[VIEW][VOLUME][SAMPLING_DISTANCE]);
-  if (scene.volume_sampling_rate > 1) {
-    std::cout << "scene.volume_sampling_rate = " << scene.volume_sampling_rate << std::endl;
-  }
+
+  // if (scene.volume_sampling_rate > 1) {
+  //   std::cout << "scene.volume_sampling_rate = " << scene.volume_sampling_rate << std::endl;
+  // }
 
   return scene;
 }

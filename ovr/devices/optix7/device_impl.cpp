@@ -102,12 +102,7 @@ DeviceOptix7::Impl::init(int argc, const char** argv, DeviceOptix7* p)
 void
 DeviceOptix7::Impl::swap()
 {
-  CUDA_CHECK(cudaStreamSynchronize(framebuffer_stream));
-
   framebuffer.safe_swap();
-
-  /* now working on the background stream */
-  framebuffer_stream = framebuffer.current_stream();
 }
 
 void
@@ -199,6 +194,10 @@ DeviceOptix7::Impl::commit()
 void
 DeviceOptix7::Impl::render()
 {
+  // CUDA_CHECK(cudaStreamSynchronize(framebuffer_stream));
+  /* now working on the background stream */
+  framebuffer_stream = framebuffer.back_stream();
+
   /* commit others */
   framebuffer_size_updated = false;
   framebuffer_accum_rgba.resize(params.frame.size.long_product() * sizeof(vec4f));
@@ -216,8 +215,8 @@ DeviceOptix7::Impl::render()
     return;
 
   /* layout has to match the framebuffer definition in params.h */
-  params.frame.rgba = (vec4f*)framebuffer.device_pointer(/*layout=*/0);
-  params.frame.grad = (vec3f*)framebuffer.device_pointer(/*layout=*/1);
+  params.frame.rgba = (vec4f*)framebuffer.back_dpointer(/*layout=*/0);
+  params.frame.grad = (vec3f*)framebuffer.back_dpointer(/*layout=*/1);
   params.frame_accum_rgba = (vec4f*)framebuffer_accum_rgba.d_pointer();
   params.frame_accum_grad = (vec3f*)framebuffer_accum_grad.d_pointer();
 
@@ -261,7 +260,7 @@ DeviceOptix7::Impl::render()
                           /*! dimensions of the launch: */
                           launch_dims.x, launch_dims.y, launch_dims.z));
 
-  CUDA_SYNC_CHECK();
+  // CUDA_SYNC_CHECK();
 
   parent->variance = 0.f; /* TODO compute real variance */
 
@@ -274,10 +273,10 @@ DeviceOptix7::Impl::mapframe(FrameBufferData* fb)
   /* layout has to match the framebuffer definition in params.h */
   // fb->rgba = (vec4f*)framebuffer.host_pointer(0);
   // fb->grad = (vec3f*)framebuffer.host_pointer(1);
-
   const size_t num_bytes = framebuffer.size().long_product();
-  fb->rgba->set_data(framebuffer.device_pointer(0), num_bytes * sizeof(vec4f), CrossDeviceBuffer::DEVICE_CUDA);
-  fb->grad->set_data(framebuffer.device_pointer(1), num_bytes * sizeof(vec3f), CrossDeviceBuffer::DEVICE_CUDA);
+  fb->rgba->set_data(framebuffer.front_dpointer(0), num_bytes * sizeof(vec4f), CrossDeviceBuffer::DEVICE_CUDA);
+  fb->grad->set_data(framebuffer.front_dpointer(1), num_bytes * sizeof(vec3f), CrossDeviceBuffer::DEVICE_CUDA);
+  fb->size = framebuffer.size();
 }
 
 void
@@ -285,11 +284,8 @@ DeviceOptix7::Impl::buildScene(const Scene& scene)
 {
   auto& scene_volume = parse_single_volume_scene(scene, scene::Volume::STRUCTURED_REGULAR_VOLUME).structured_regular;
 
-  vec3f scale = scene_volume.grid_spacing * vec3f(scene_volume.data->dims);
-  vec3f translate = scene_volume.grid_origin;
-  
-  // std::cout << "scale " << scale.x << " " << scale.y << " " << scale.z << std::endl;
-  // std::cout << "translate " << translate.x << " " << translate.y << " " << translate.z << std::endl;
+  const vec3f scale = scene_volume.grid_spacing * vec3f(scene_volume.data->dims);
+  const vec3f translate = scene_volume.grid_origin;  
 
   // TODO support other parameters //
   auto v = StructuredRegularVolume();

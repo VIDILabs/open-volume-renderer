@@ -113,7 +113,7 @@ protected:
 
   uint32_t framebuffer_channels = OSP_FB_COLOR | OSP_FB_VARIANCE /*| OSP_FB_NORMAL*/ /*| OSP_FB_ACCUM*/;
   vec2i framebuffer_size_latest{ 1 /* give a non zero initial size */};
-  int  framebuffer_index = 0;
+  // int  framebuffer_index = 0;
   bool framebuffer_should_reset_accum{ true };
   const void* framebuffer_rgba_ptr{ 0 };
   const void* framebuffer_grad_ptr{ 0 }; // TODO gradient layer is not calculated //

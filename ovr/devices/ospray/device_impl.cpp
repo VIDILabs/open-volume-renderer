@@ -735,7 +735,7 @@ DeviceOSPRay::Impl::build_scene() {
 
 void
 DeviceOSPRay::Impl::swap() {
-  framebuffer_index = (framebuffer_index + 1) % 2;
+  // TODO we only have one framebuffer for now, so not doing any double buffering
 }
 
 void
@@ -815,6 +815,7 @@ void
 DeviceOSPRay::Impl::mapframe(FrameBufferData* fb) {
   const size_t num_bytes = framebuffer_size_latest.long_product();
   fb->rgba->set_data((void*)framebuffer_rgba_ptr, num_bytes * sizeof(vec4f), CrossDeviceBuffer::DEVICE_CPU);
+  fb->size = framebuffer_size_latest;
 }
 
 } // namespace ovr::ospray

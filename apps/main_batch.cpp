@@ -289,6 +289,7 @@ main(int ac, char** av)
       printf("fps = %f\n", 25 / tot);
     }
 
+    ren->swap();
     ren->mapframe(&fbdata);
     auto* frame = (vec4f*)fbdata.rgba->to_cpu()->data();
     ovr::save_image(expname + timestamp(0) + ".png", frame, fbsize.x, fbsize.y);
