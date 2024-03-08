@@ -366,7 +366,6 @@ public:
   {
     frame_outputs.update([&](const FrameOutputs& out) {
       glBindTexture(GL_TEXTURE_2D, frame_texture);
-      assert(frame_size_local == out.size);
       switch (frame_active_layer) {
       case FRAME_RGBA: glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, out.size.x, out.size.y, 0, GL_RGBA, GL_FLOAT, out.rgba); break;
       case FRAME_GRAD: glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,  out.size.x, out.size.y, 0, GL_RGB,  GL_FLOAT, out.grad); break;
