@@ -127,6 +127,7 @@ private:
   /* local to GUI thread */
   struct {
     bool global_illumination{ false };
+    bool tonemapping { false };
     bool frame_accumulation{ true };
     float volume_sampling_rate{ 1.f };
     float volume_density_scale{ 1.f };
@@ -418,6 +419,10 @@ public:
 
         if (ImGui::Checkbox("Global Illumination", &config.global_illumination)) {
           renderer->set_path_tracing(config.global_illumination);
+        }
+
+        if (ImGui::Checkbox("Tonemapping", &config.tonemapping)) {
+          renderer->set_tonemapping(config.tonemapping);
         }
 
         static int spp = config.spp;
