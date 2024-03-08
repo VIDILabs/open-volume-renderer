@@ -189,8 +189,11 @@ CreateArray3DScalarFromFile(const std::string& filename, vec3i dims, ValueType t
   size_t elem_size = // clang-format off
     (type == VALUE_TYPE_UINT8  || type == VALUE_TYPE_INT8 ) ? sizeof(uint8_t)  :
     (type == VALUE_TYPE_UINT16 || type == VALUE_TYPE_INT16) ? sizeof(uint16_t) :
-    (type == VALUE_TYPE_UINT32 || type == VALUE_TYPE_INT32 || type == VALUE_TYPE_FLOAT) ? 
-    sizeof(uint32_t) : sizeof(double);
+    (type == VALUE_TYPE_UINT32 || type == VALUE_TYPE_INT32 || type == VALUE_TYPE_FLOAT) ? sizeof(uint32_t) : 
+    (type == VALUE_TYPE_FLOAT2) ? sizeof(vec2f) :
+    (type == VALUE_TYPE_FLOAT3) ? sizeof(vec3f) :
+    (type == VALUE_TYPE_FLOAT4) ? sizeof(vec4f) :
+    sizeof(double);
   // clang-format on
 
   size_t data_size = elem_count * elem_size;

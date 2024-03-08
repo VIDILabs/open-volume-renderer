@@ -23,6 +23,8 @@
   ],
   "snapshot" : [
   ],
+  "cfgName": "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/config/config_mechhand.cfg",
+  "cfgDir": "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/data",
   "view" : {
     "backgroundColor" : {
       "a" : 1,

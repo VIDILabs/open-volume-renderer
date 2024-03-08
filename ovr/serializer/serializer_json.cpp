@@ -291,10 +291,6 @@ create_scene_volume(const json& jsdata, std::string workdir)
     volume.type = ovr::scene::Volume::STRUCTURED_REGULAR_VOLUME;
     volume.structured_regular.data = CreateArray3DScalarFromFile(filename, dims, type, offset, is_big_endian);
 
-    // volume.structured_regular.data = std::make_shared<Array<3>>();
-    // volume.structured_regular.data->dims = dims;
-    // volume.structured_regular.data->type = type;
-
     if (jsdata.contains(SCALES)) {
       auto scales = scalar_from_json<vec3f>(jsdata[SCALES]);
       volume.structured_regular.grid_spacing = scales;

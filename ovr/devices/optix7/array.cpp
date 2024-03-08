@@ -125,7 +125,7 @@ CreateArray1DScalarOptix7(const std::vector<T>& input, cudaStream_t stream)
   std::tie(output.lower.v, output.upper.v) = cuda_scalar_range<T>(input.data(), input.size(), 0);
   output.scale.v = 1.f / (output.upper.v - output.lower.v);
   auto array_handler = createCudaArray1D<T>(input.data(), input.size());
-  if (std::is_floating_point<T>::value) {
+  if (sizeof(T) > 2) {
     output.data = createCudaTexture<T>(array_handler, cudaReadModeElementType, cudaFilterModeLinear, cudaFilterModeLinear, cudaAddressModeClamp, true);
   }
   else {
@@ -160,7 +160,7 @@ CreateArray1DScalarOptix7(array_1d_scalar_t input, const char* data)
   output.scale.v = 1.f / (output.upper.v - output.lower.v);
 
   auto array_handler = createCudaArray1D<T>(data, input->dims.v);
-  if (std::is_floating_point<T>::value) {
+  if (sizeof(T) > 2) {
     output.data = createCudaTexture<T>(array_handler, cudaReadModeElementType, cudaFilterModeLinear, cudaFilterModeLinear, cudaAddressModeClamp, true);
   }
   else {
@@ -298,7 +298,7 @@ CreateArray3DScalarOptix7(void* input, vec3i dims)
   output.scale.v = 1.f / (output.upper.v - output.lower.v);
 
   auto array_handler = createCudaArray3D<T>(input, (int3&)dims);
-  if (std::is_floating_point<T>::value) {
+  if (sizeof(T) > 2) {
     output.data = createCudaTexture<T>(array_handler, cudaReadModeElementType, cudaFilterModeLinear, cudaFilterModeLinear, cudaAddressModeClamp, true);
   }
   else {
