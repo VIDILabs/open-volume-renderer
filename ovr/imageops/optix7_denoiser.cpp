@@ -33,7 +33,7 @@ Optix7Denoiser::initialize(int ac, const char** av)
   cudaGetDeviceCount(&numDevices);
   if (numDevices == 0)
     throw std::runtime_error("[optix7] no CUDA capable devices found!");
-  std::cout << "[optix7] found " << numDevices << " CUDA devices" << std::endl;
+  // std::cout << "[optix7] found " << numDevices << " CUDA devices" << std::endl;
 
   // if (!g_optixFunctionTable.optixDeviceContextCreate) 
   {

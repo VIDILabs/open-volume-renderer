@@ -45,14 +45,14 @@ private:
 
     case (DEVICE_CPU):
       owned_buffer_cpu.resize(num_bytes);
-      std::cout << "allocate CPU buffer" << std::endl;
+      // std::cout << "allocate CPU buffer" << std::endl;
       buffer_ptr = owned_buffer_cpu.data();
       break;
 
 #ifdef OVR_BUILD_CUDA_DEVICES
     case (DEVICE_CUDA):
       owned_buffer_cuda.resize(num_bytes);
-      std::cout << "allocate CUDA buffer" << std::endl;
+      // std::cout << "allocate CUDA buffer" << std::endl;
       buffer_ptr = (void*)owned_buffer_cuda.d_pointer();
       break;
 #endif
@@ -132,7 +132,7 @@ public:
     if (device != DEVICE_CPU) {
       if (owned_buffer_cpu.size() != buffer_size_in_bytes) {
         owned_buffer_cpu.resize(buffer_size_in_bytes);
-        std::cout << "allocate CPU buffer" << std::endl;
+        // std::cout << "allocate CPU buffer" << std::endl;
       }
 
       /* CUDA to CPU */
@@ -164,7 +164,7 @@ public:
     if (device != DEVICE_CUDA) {
       if (owned_buffer_cuda.sizeInBytes != buffer_size_in_bytes) {
         owned_buffer_cuda.resize(buffer_size_in_bytes);
-        std::cout << "allocate CUDA buffer" << std::endl;
+        // std::cout << "allocate CUDA buffer" << std::endl;
       }
 
       /* CPU to CUDA */
