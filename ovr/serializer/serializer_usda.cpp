@@ -56,7 +56,7 @@ import_camera_from_usda(Scene& scene, UsdPrim prim_ref)
   auto camera_data_prim = prim_ref.GetChild(TfToken("camera"));
 
   if (camera_data_prim) {
-    scene.camera.from = collect_vec3f(camera_data_prim, "from");
+    scene.camera.eye = collect_vec3f(camera_data_prim, "from");
     scene.camera.at   = collect_vec3f(camera_data_prim, "at");
     scene.camera.up   = collect_vec3f(camera_data_prim, "up");
   }

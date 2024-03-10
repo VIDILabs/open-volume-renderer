@@ -102,6 +102,15 @@ public:
   {
   }
 
+  size_t get_size_in_bytes() const {
+      return buffer_size_in_bytes;
+  }
+
+  template<typename T>
+  size_t get_size() const {
+      return buffer_size_in_bytes / sizeof(T);
+  }
+
   void set_data(size_t num_bytes, Device d)
   {
     device = d;

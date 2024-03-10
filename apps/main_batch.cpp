@@ -250,7 +250,7 @@ main(int ac, char** av)
   } : scene.camera;
 
   auto camera_frame = glfwapp::CameraFrame(100.f);
-  camera_frame.setOrientation(camera.from, camera.at, camera.up);
+  camera_frame.setOrientation(camera.eye, camera.at, camera.up);
 
   auto ren = create_renderer(args.device());
   ren->set_fbsize(args.fbsize());

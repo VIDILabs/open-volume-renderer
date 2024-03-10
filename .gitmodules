@@ -7,3 +7,6 @@
 [submodule "extern/imgui/imgui"]
 	path = extern/imgui/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "extern/pybind11"]
+	path = extern/pybind11
+	url = git@github.com:pybind/pybind11.git

@@ -543,7 +543,7 @@ DeviceOSPRay::Impl::commit_camera() {
 
     const Camera& camera = parent->params.camera.ref();
     // std::cout << "camera update" << std::endl;
-    // std::cout << "  from: " << camera.from << std::endl;
+    // std::cout << "  from: " << camera.eye << std::endl;
     // std::cout << "  at:   " << camera.at << std::endl;
     // std::cout << "  up:   " << camera.up << std::endl;
 
@@ -558,9 +558,9 @@ DeviceOSPRay::Impl::commit_camera() {
       ospSetFloat(ospray.camera, "height", camera.orthographic.height);
     }
 
-    const vec3f dir = camera.at - camera.from;
+    const vec3f dir = camera.at - camera.eye;
     ospSetFloat(ospray.camera, "aspect", framebuffer_size_latest.x / (float)framebuffer_size_latest.y);
-    ospSetParam(ospray.camera, "position", OSP_VEC3F, &camera.from);
+    ospSetParam(ospray.camera, "position", OSP_VEC3F, &camera.eye);
     ospSetParam(ospray.camera, "direction", OSP_VEC3F, &dir);
     ospSetParam(ospray.camera, "up", OSP_VEC3F, &camera.up);
     ospCommit(ospray.camera); // commit each object to indicate modifications are done
