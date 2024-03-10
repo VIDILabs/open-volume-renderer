@@ -22,17 +22,10 @@
       "type" : "FLOAT"
     }
   ],
-  "cfgDir" : "/home/deralik/GitHub/open-volume-renderer/data/configs/",
-  "cfgName" : "config_mechhand.cfg",
-  "macroDims" : {
-    "x" : 16,
-    "y" : 16,
-    "z" : 16
-  },
   "snapshot" : [
   ],
   "cache": {
-    "config" : "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/config/config_mechhand.cfg",
+    "config" : "/home/deralik/GitHub/open-volume-renderer/data/configs/config_mechhand.cfg",
     "capacity": {
       "x": 16,
       "y": 16,
@@ -41,11 +34,11 @@
     "numLevels": 1
   },
   "macrocell": {
-    "fileName": "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/data/mechhand_640x220x229_float32/mechhand_mc_16_2x40x14x15_float32.bin",
-    "mcDims" : {
-      "x": 40,
-      "y": 14,
-      "z": 15
+    "fileName": "/home/deralik/GitHub/open-volume-renderer/data/mechhand_mc_16_2x2x40x14_float32.bin",
+    "mcSize" : {
+      "x": 16,
+      "y": 16,
+      "z": 16
     }
   },
   "view" : {
