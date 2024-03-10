@@ -51,10 +51,7 @@
 #include "renderer.h"
 #include "serializer/serializer.h"
 
-#include "imageops/imageop.h"
-#ifdef OVR_BUILD_OPTIX7
-#include "imageops/optix7_denoiser.h"
-#endif
+#include "imageop.h"
 
 // #define OVR_LOGGING
 
@@ -179,10 +176,8 @@ public:
     renderer->set_volume_sampling_rate(config.volume_sampling_rate);
     renderer->set_volume_density_scale(config.volume_density_scale);
 
-#ifdef OVR_BUILD_OPTIX7
-    denoiser = std::make_shared<ovr::optix7::Optix7Denoiser>();
-    denoiser->initialize(0, NULL);
-#endif
+    denoiser = create_imageop("denoiser1");
+    denoiser->initialize(0, NULL); // TODO: add a more generic way to manage image ops
 
     glDisable(GL_LIGHTING);
     glEnable(GL_BLEND);
@@ -246,7 +241,6 @@ public:
     if (renderer_output.size.long_product() == 0) { return; }
 
     auto* output = &renderer_output;
-#ifdef OVR_BUILD_OPTIX7 // denoising
     if (config.denoise) {
       denoiser_output.size = renderer_output.size;
       denoiser->resize(denoiser_output.size.x, denoiser_output.size.y);
@@ -254,7 +248,6 @@ public:
       denoiser->map(denoiser_output.rgba);
       output = &denoiser_output;
     }
-#endif
 
     // copy to the GUI thread
     FrameOutputs out; 

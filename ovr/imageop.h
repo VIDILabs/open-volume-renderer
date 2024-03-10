@@ -16,3 +16,6 @@ struct ImageOp {
 };
 
 }
+
+std::shared_ptr<ovr::ImageOp>
+create_imageop(std::string name);

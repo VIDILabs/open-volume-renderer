@@ -86,9 +86,10 @@ endif()
 add_library(renderlib SHARED
   serializer/serializer.h
   serializer/serializer_json.cpp
+  imageops/imageop.cpp
+  imageops/$<$<BOOL:${OVR_BUILD_DEVICE_OPTIX7}>:optix7_denoiser.cpp>
   renderer.cpp
   renderer.h
-  $<$<BOOL:${OVR_BUILD_DEVICE_OPTIX7}>:imageops/optix7_denoiser.cpp>
 )
 target_link_libraries(renderlib 
 PUBLIC 
