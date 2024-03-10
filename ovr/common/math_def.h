@@ -30,12 +30,22 @@ namespace ovr {
 
 namespace math = gdt;
 
-using vec2f = math::vec2f;
 using vec2i = math::vec2i;
-using vec3f = math::vec3f;
+using vec2f = math::vec2f;
+using vec2d = math::vec2d;
+
 using vec3i = math::vec3i;
-using vec4f = math::vec4f;
+using vec3f = math::vec3f;
+using vec3d = math::vec3d;
+
 using vec4i = math::vec4i;
+using vec4f = math::vec4f;
+using vec4d = math::vec4d;
+
+// using vec2h = math::vec2h;
+// using vec3h = math::vec3h;
+// using vec4h = math::vec4h;
+
 using box3f = math::box3f;
 
 using range1f = math::range1f;
