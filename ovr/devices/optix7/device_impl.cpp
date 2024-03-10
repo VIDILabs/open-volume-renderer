@@ -186,6 +186,11 @@ DeviceOptix7::Impl::commit()
     framebuffer_reset = true;
   }
 
+  if (parent->params.tonemapping.update()) {
+    params.enable_tonemapping = parent->params.tonemapping.ref();
+    framebuffer_reset = true;
+  }
+
   if (parent->params.sparse_sampling.update()) {
     params.enable_sparse_sampling = parent->params.sparse_sampling.ref();
     framebuffer_reset = true;

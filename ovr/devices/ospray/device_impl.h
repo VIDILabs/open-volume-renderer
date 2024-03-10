@@ -83,6 +83,7 @@ protected:
     OSPFrameBuffer framebuffer{ 0 };
     OSPWorld world{ 0 };
     OSPRenderer renderer{ 0 };
+    OSPImageOperation tonemapper { 0 };
     std::vector<OSPTransferFunction> tfns;
     std::vector<OSPTexOrVol> texorvols;
     std::vector<OSPMaterial> materials;

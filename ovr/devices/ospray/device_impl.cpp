@@ -405,6 +405,8 @@ DeviceOSPRay::Impl::~Impl() {
     ospRelease(ospray.framebuffer);
   }
 
+  if (ospray.tonemapper) ospRelease(ospray.tonemapper);
+
   ospShutdown();
 }
 
@@ -515,6 +517,16 @@ DeviceOSPRay::Impl::commit_framebuffer() {
     recreate = true;
   }
 
+  if (parent->params.tonemapping.update()) {
+    if (parent->params.tonemapping.get()) {
+      if (ospray.tonemapper) ospRelease(ospray.tonemapper);
+      ospray.tonemapper = ospNewImageOperation("tonemapper");
+    } else {
+      if (ospray.tonemapper) ospRelease(ospray.tonemapper);
+    }
+    recreate = true;
+  }
+
   if (recreate) {
     if (ospray.framebuffer) {
       ospUnmapFrameBuffer(framebuffer_rgba_ptr, ospray.framebuffer);
@@ -522,6 +534,10 @@ DeviceOSPRay::Impl::commit_framebuffer() {
     }
 
     ospray.framebuffer = ospNewFrameBuffer(framebuffer_size_latest.x, framebuffer_size_latest.y, OSP_FB_RGBA32F, framebuffer_channels);
+    if (ospray.tonemapper) { 
+      ospSetParam(ospray.framebuffer, "imageOperation", OSP_IMAGE_OPERATION, &ospray.tonemapper);
+      ospCommit(ospray.framebuffer);
+    }
 
     framebuffer_rgba_ptr = ospMapFrameBuffer(ospray.framebuffer, OSP_FB_COLOR);
     framebuffer_should_reset_accum = true;
@@ -791,6 +807,10 @@ DeviceOSPRay::Impl::render() {
     // TODO throw if launch_size is too large.
 
     OSPFrameBuffer fb = ospNewFrameBuffer((int)launch_size, 1, OSP_FB_RGBA32F, OSP_FB_COLOR);
+    if (ospray.tonemapper) {
+      ospSetParam(fb, "imageOperation", OSP_IMAGE_OPERATION, &ospray.tonemapper);
+      ospCommit(fb);
+    }
 
     parent->variance = ospRenderFrameBlocking(fb, ospray.renderer, ospray.camera, ospray.world);
 

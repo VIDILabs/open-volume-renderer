@@ -73,6 +73,7 @@ struct LaunchParams { // shared global data
   OptixTraversableHandle traversable{};
 
   bool enable_path_tracing{ false };
+  bool enable_tonemapping{ false };
   bool enable_sparse_sampling{ false };
   bool enable_frame_accumulation{ false };
 
