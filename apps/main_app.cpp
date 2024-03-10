@@ -405,16 +405,16 @@ public:
           config.denoise = denoise;
         }
         ImGui::SameLine();
-        if (ImGui::Checkbox("Frame Accumulation", &config.frame_accumulation)) {
-          renderer->set_frame_accumulation(config.frame_accumulation);
+        if (ImGui::Checkbox("Tonemapping", &config.tonemapping)) {
+          renderer->set_tonemapping(config.tonemapping);
         }
 
         if (ImGui::Checkbox("Global Illumination", &config.global_illumination)) {
           renderer->set_path_tracing(config.global_illumination);
         }
-
-        if (ImGui::Checkbox("Tonemapping", &config.tonemapping)) {
-          renderer->set_tonemapping(config.tonemapping);
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Frame Accumulation", &config.frame_accumulation)) {
+          renderer->set_frame_accumulation(config.frame_accumulation);
         }
 
         static int spp = config.spp;
