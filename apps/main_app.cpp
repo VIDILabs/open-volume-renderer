@@ -177,7 +177,7 @@ public:
     renderer->set_volume_sampling_rate(config.volume_sampling_rate);
     renderer->set_volume_density_scale(config.volume_density_scale);
 
-    denoiser = create_imageop("denoiser1");
+    denoiser = create_imageop("denoiser");
     denoiser->initialize(0, NULL); // TODO: add a more generic way to manage image ops
 
     glDisable(GL_LIGHTING);

@@ -34,14 +34,7 @@
     "numLevels": 2
   },
   "macrocell": {
-    "fileName" : [
-      "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/data/chameleon_1024x1024x1080_uint16/chameleon_mc_16_2x64x64x68_float32.bin"
-    ],
-    "mcDims" : {
-      "x": 64,
-      "y": 64,
-      "z": 68
-    },
+    "fileName" : "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/data/chameleon_1024x1024x1080_uint16/chameleon_mc_16_2x64x64x68_float32.bin",
     "mcSize" : {
       "x": 16,
       "y": 16,
