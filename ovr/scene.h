@@ -176,7 +176,7 @@ struct Array {
 
 private:
   char* buffer{ nullptr };
-  std::shared_ptr<char[]> owned_buffer;
+  std::shared_ptr<char[]> owned_buffer; // NOTE: should be unique pointer?
 };
 
 using Array1DScalar = Array<1>;

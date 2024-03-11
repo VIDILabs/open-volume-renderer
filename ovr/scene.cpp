@@ -105,11 +105,6 @@ array_1d_float4_t
 CreateColorMap(const std::string& name)
 {
   if (colormap::data.count(name) > 0) {
-    // auto& _arr = *colormap::data.at(name);
-    // std::vector<vec4f> arr;
-    // for (int i = 0; i < _arr.size(); ++i) {
-    //   arr.push_back(vec4f(_arr[i].r, _arr[i].g, _arr[i].b, _arr[i].a));
-    // }
     std::vector<vec4f>& arr = *((std::vector<vec4f>*)colormap::data.at(name));
     return CreateArray1DFloat4(arr, false);
   }

@@ -231,6 +231,8 @@ create_scene_tfn(const json& jsview, ValueType type)
   /* try it ... */
   else if (jsvolume.contains(SCALAR_MAPPING_RANGE)) {
     auto r = range_from_json(jsvolume[SCALAR_MAPPING_RANGE]);
+    // we assume the OpenGL data normalization rule being applied here:
+    // -- https://www.khronos.org/opengl/wiki/Normalized_Integer
     switch (type) {
     case VALUE_TYPE_UINT8:
       ret.value_range.x = std::numeric_limits<uint8_t>::max() * r.x;

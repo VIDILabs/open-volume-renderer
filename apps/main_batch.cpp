@@ -27,7 +27,7 @@
 
 #include <glfwapp/camera_frame.h>
 
-#include <colormap.h>
+// #include <colormap.h>
 
 #include <algorithm>
 #include <atomic>
