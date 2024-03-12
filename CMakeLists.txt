@@ -23,6 +23,10 @@ endif (POLICY CMP0054)
 if (POLICY CMP0104)
   cmake_policy(SET CMP0104 NEW)
 endif (POLICY CMP0104)
+if (POLICY CMP0135)
+  cmake_policy(SET CMP0135 NEW)
+endif (POLICY CMP0135)
+
 
 project(OpenVisRenderer LANGUAGES C CXX)
 

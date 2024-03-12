@@ -26,6 +26,8 @@ namespace colormap {
 struct color_t { float r, g, b, a; };
 extern const std::unordered_map<std::string, const std::vector<color_t>*> data;
 extern const std::vector<std::string> name;
+bool has(const std::string& name);
+const std::vector<color_t>& get(const std::string& name);
 extern const std::vector<color_t> data_diverging_BrBG;
 extern const std::vector<color_t> data_diverging_RdYlGn;
 extern const std::vector<color_t> data_diverging_RdBu;
@@ -185,3 +187,9 @@ const std::vector<std::string> colormap::name = /* NOLINT(cert-err58-cpp) */
 "sequential2/gist_heat",
 "sequential2/summer",
 };
+bool colormap::has(const std::string& name) {
+	return data.find(name) != data.end();
+}
+const std::vector<colormap::color_t>& colormap::get(const std::string& name) {
+  return *data.at(name);
+}

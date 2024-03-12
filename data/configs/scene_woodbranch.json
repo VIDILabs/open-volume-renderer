@@ -99,8 +99,8 @@
         "specular" : 0.25
       },
       "scalarMappingRangeUnnormalized" : {
-        "maximum" : 0,
-        "minimum" : 57147
+        "minimum" : 0,
+        "maximum" : 57147
       }
     }
   }

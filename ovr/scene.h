@@ -65,9 +65,9 @@ value_type_size(ValueType type) {
   case VALUE_TYPE_FLOAT3:  return sizeof(vec3f);
   case VALUE_TYPE_FLOAT4:  return sizeof(vec4f);
   case VALUE_TYPE_DOUBLE:  return sizeof(double);
-  case VALUE_TYPE_DOUBLE2: return sizeof(double);
-  case VALUE_TYPE_DOUBLE3: return sizeof(double);
-  case VALUE_TYPE_DOUBLE4: return sizeof(double);
+  case VALUE_TYPE_DOUBLE2: return sizeof(double)*2;
+  case VALUE_TYPE_DOUBLE3: return sizeof(double)*3;
+  case VALUE_TYPE_DOUBLE4: return sizeof(double)*4;
   default: throw std::runtime_error("unknown type encountered");
   }
 }

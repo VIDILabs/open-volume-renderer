@@ -22,12 +22,9 @@
 #include "renderer.h"
 #include "serializer/serializer.h"
 
-// #include <ovr/common/json/json.hpp>
 #include <json/json.hpp>
 
 #include <glfwapp/camera_frame.h>
-
-// #include <colormap.h>
 
 #include <algorithm>
 #include <atomic>

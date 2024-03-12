@@ -28,8 +28,6 @@
 #include <ovr/common/dylink/ObjectFactory.h>
 #include <ovr/common/dylink/Library.h>
 
-// #include <colormap.h>
-
 #include <fstream>
 #include <random>
 
