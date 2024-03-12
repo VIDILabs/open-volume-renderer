@@ -29,7 +29,7 @@ add_library(imgui SHARED
   imgui/examples/imgui_impl_glfw.cpp
   imgui/examples/imgui_impl_opengl2.cpp
   imgui/examples/imgui_impl_opengl3.cpp
-  imgui/examples/$<$<BOOL:${Vulkan_FOUND}>:imgui_impl_vulkan.cpp>
+  $<$<BOOL:${Vulkan_FOUND}>:imgui/examples/imgui_impl_vulkan.cpp>
   implot/implot_demo.cpp
   implot/implot_items.cpp
   implot/implot.cpp
