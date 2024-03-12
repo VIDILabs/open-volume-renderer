@@ -89,7 +89,7 @@ public:
   double render_time;
 
   struct FrameBufferData {
-    vec2i size{};
+    vec2i size{ 0 };
     std::shared_ptr<CrossDeviceBuffer> rgba;
     std::shared_ptr<CrossDeviceBuffer> grad;
 
