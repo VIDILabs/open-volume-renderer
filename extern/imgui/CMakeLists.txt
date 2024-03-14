@@ -29,13 +29,17 @@ add_library(imgui SHARED
   imgui/examples/imgui_impl_glfw.cpp
   imgui/examples/imgui_impl_opengl2.cpp
   imgui/examples/imgui_impl_opengl3.cpp
-  $<$<BOOL:${Vulkan_FOUND}>:imgui/examples/imgui_impl_vulkan.cpp>
   implot/implot_demo.cpp
   implot/implot_items.cpp
   implot/implot.cpp
 )
 
-target_link_libraries(imgui ${GFX_LIBRARIES} ${Vulkan_LIBRARY})
+target_link_libraries(imgui PRIVATE ${GFX_LIBRARIES})
+
+if(Vulkan_FOUND) 
+  target_sources(imgui PRIVATE imgui/examples/imgui_impl_vulkan.cpp)
+  target_link_libraries(imgui PRIVATE ${Vulkan_LIBRARY})
+endif()
 
 target_include_directories(imgui PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/imgui/examples/opengl2_example>
