@@ -31,7 +31,8 @@ if(OVR_BUILD_DEVICE_OPTIX7)
     CUDA_SEPARABLE_COMPILATION ON
     POSITION_INDEPENDENT_CODE ON
   )
-  target_link_libraries     (device_optix7 PRIVATE   rendercommon TBB::tbb  OptiX::optix7 ${CUDA_LIBRARIES} cuda)
+  target_link_libraries     (device_optix7 PRIVATE   rendercommon OptiX::optix7)
+  target_link_libraries     (device_optix7 PRIVATE   cuda) # LNK2019: unresolved external symbol cuCtxGetCurrent referenced in function
   target_compile_options    (device_optix7 PRIVATE   $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>)
   target_compile_definitions(device_optix7 INTERFACE OVR_BUILD_OPTIX7=1)
 

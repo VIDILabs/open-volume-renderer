@@ -24,6 +24,23 @@
   ],
   "snapshot" : [
   ],
+  "cache": {
+    "config" : "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/config/config_chameleon.cfg",
+    "capacity": {
+      "x": 16,
+      "y": 16,
+      "z": 16
+    },
+    "numLevels": 2
+  },
+  "macrocell": {
+    "fileName" : "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/data/chameleon_1024x1024x1080_uint16/chameleon_mc_16_2x64x64x68_float32.bin",
+    "mcSize" : {
+      "x": 16,
+      "y": 16,
+      "z": 16
+    }
+  },
   "view" : {
     "backgroundColor" : {
       "a" : 1,

@@ -33,6 +33,7 @@
 #define OVR_OPTIX7_RANDOM_RANDOM_H
 
 #include "pcg32.h"
+#include <gdt/random/random.h>
 
 namespace ovr { namespace random {
 
@@ -143,7 +144,9 @@ generate_random_logistic(RNG& rng, size_t n_elements, T* out, const T mean = (T)
 // https://github.com/openvkl/openvkl/blob/b2cfd8ab94420489e2ed9a25fb0d512c2577e5de/examples/interactive/renderer/Random.ih
 // https://github.com/NVIDIA/OptiX_Apps/blob/master/apps/intro_driver/shaders/random_number_generators.h
 
-struct RandomTEA {
+using RandomTEA = gdt::LCG<16>;
+
+struct RandomTEA_ {
 private:
   // Tiny Encryption Algorithm (TEA) to calculate a the seed per launch index and iteration.
   // This results in a ton of integer instructions! Use the smallest N necessary.
@@ -164,11 +167,15 @@ private:
     _v1 = v1;
   }
 
-private:
+public:
   unsigned int v0, v1;
 
-public:
-  __forceinline__ __device__ RandomTEA(const unsigned int idx, const unsigned int seed)
+  __forceinline__ __device__ __host__ RandomTEA_()
+  { /* intentionally empty so we can use it in device vars that
+       don't allow dynamic initialization (ie, PRD) */
+  }
+
+  __forceinline__ __device__ RandomTEA_(const unsigned int idx, const unsigned int seed)
   {
     this->v0 = idx;
     this->v1 = seed;

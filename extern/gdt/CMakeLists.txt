@@ -19,14 +19,15 @@ cmake_minimum_required(VERSION 3.5)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_library(gdt OBJECT
+add_library(gdt INTERFACE
   cmake/configure_build_type.cmake
   cmake/configure_optix.cmake
   cmake/FindOptiX.cmake
   gdt/gdt.h  
-  gdt/gdt.cpp)
-
-target_include_directories(gdt PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-set_target_properties(gdt PROPERTIES 
-  POSITION_INDEPENDENT_CODE ON
+  # gdt/gdt.cpp
 )
+
+target_include_directories(gdt INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+if (UNIX)
+  set_target_properties(gdt PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()

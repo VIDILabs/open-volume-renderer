@@ -390,16 +390,25 @@ __raygen__render_frame()
     assert(optix_launch_params.frame_index > 0 && "frame index should always be positive");
     if (optix_launch_params.frame_index == 1) {
       optix_launch_params.frame_accum_rgba[pixel_index] = vec4f(output.color, output.alpha);
-      optix_launch_params.frame.rgba[pixel_index] = vec4f(output.color, output.alpha);
+      if (optix_launch_params.enable_tonemapping)
+        optix_launch_params.frame.rgba[pixel_index] = vec4f(tonemap_aces(output.color), output.alpha);
+      else
+        optix_launch_params.frame.rgba[pixel_index] = vec4f(output.color, output.alpha);
     }
     else {
       const vec4f rgba = optix_launch_params.frame_accum_rgba[pixel_index] + vec4f(output.color, output.alpha);
+      vec4f rgba_ldr = rgba / vec4f(optix_launch_params.frame_index);
+      if (optix_launch_params.enable_tonemapping)
+        rgba_ldr = vec4f(tonemap_aces(vec3f(rgba_ldr)), rgba_ldr.w);
       optix_launch_params.frame_accum_rgba[pixel_index] = rgba;
-      optix_launch_params.frame.rgba[pixel_index] = rgba / vec4f(optix_launch_params.frame_index);
+      optix_launch_params.frame.rgba[pixel_index] = rgba_ldr;
     }
   }
   else {
-    optix_launch_params.frame.rgba[pixel_index] = vec4f(output.color, output.alpha);
+    if (optix_launch_params.enable_tonemapping)
+      optix_launch_params.frame.rgba[pixel_index] = vec4f(output.color, output.alpha);
+    else
+      optix_launch_params.frame.rgba[pixel_index] = vec4f(tonemap_aces(output.color), output.alpha);
   }
 
   /* gradient field */

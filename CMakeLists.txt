@@ -23,18 +23,14 @@ endif (POLICY CMP0054)
 if (POLICY CMP0104)
   cmake_policy(SET CMP0104 NEW)
 endif (POLICY CMP0104)
+if (POLICY CMP0135)
+  cmake_policy(SET CMP0135 NEW)
+endif (POLICY CMP0135)
+
 
 project(OpenVisRenderer LANGUAGES C CXX)
 
 cmake_minimum_required(VERSION 3.18)
-# if(NOT WIN32)
-#   # visual studio doesn't like these (not need them):
-#   set(CMAKE_CXX_FLAGS "--std=c++17")
-#   set(CUDA_PROPAGATE_HOST_FLAGS ON)
-# endif()
-# if(UNIX)
-#   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-# endif()
 
 option(OVR_BUILD_OPENGL "Build with OpenGL Apps" ON)
 option(OVR_BUILD_CUDA "Build with CUDA" ON)
@@ -42,6 +38,8 @@ option(OVR_BUILD_CUDA "Build with CUDA" ON)
 option(OVR_BUILD_DEVICE_OPTIX7  "Build OptiX7 Device"  ON)
 option(OVR_BUILD_DEVICE_OSPRAY  "Build OSPRay Device" OFF)
 option(OVR_BUILD_SCENE_USD "Build USDA Scene Reader" OFF)
+
+option(OVR_BUILD_PYTHON_BINDINGS "Build Python Bindings" OFF)
 
 # ------------------------------------------------------------------
 # toggles
@@ -55,6 +53,23 @@ if(OVR_BUILD_DEVICE_OSPRAY)
   set(OVR_BUILD_OSPRAY TRUE)
 endif()
 
+# force to pull subdirectories, credit to Nate :)
+find_package(Git)
+set(WORKDIR ${CMAKE_CURRENT_SOURCE_DIR})
+if(GIT_FOUND AND EXISTS "${WORKDIR}/.git")
+  option(GIT_SUBMODULE "Check submodules during build" ON)
+  if(GIT_SUBMODULE)
+    message(STATUS "Submodule update")
+    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+                    WORKING_DIRECTORY ${WORKDIR}
+                    RESULT_VARIABLE GIT_SUBMOD_RESULT)
+    if(NOT GIT_SUBMOD_RESULT EQUAL 0)
+      message(FATAL_ERROR "'git submodule update --init --recursive' failed with \
+        ${GIT_SUBMOD_RESULT}, please checkout submodules")
+    endif()
+  endif()
+endif()
+
 # ------------------------------------------------------------------
 # configure
 # ------------------------------------------------------------------
@@ -65,11 +80,23 @@ endif()
 if(MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_CRT_SECURE_NO_WARNINGS")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP24")
+  set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT")
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT")
 else()
 	# if(BUILD_SHARED_LIBS)
 	# 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+  #   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 	# endif()
 endif()
+# if(NOT WIN32)
+#   # visual studio doesn't like these (not need them):
+#   set(CMAKE_CXX_FLAGS "--std=c++17")
+#   set(CUDA_PROPAGATE_HOST_FLAGS ON)
+# endif()
+# if(UNIX)
+#   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+# endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -124,3 +151,4 @@ include(extern/configure.cmake)
 add_subdirectory(ovr)
 add_subdirectory(apps)
 add_subdirectory(projects)
+add_subdirectory(python)

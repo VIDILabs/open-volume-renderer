@@ -49,6 +49,9 @@
 #include "common/vidi_screenshot.h"
 #include "common/vidi_transactional_value.h"
 #include "renderer.h"
+#include "serializer/serializer.h"
+
+#include "imageop.h"
 
 // #define OVR_LOGGING
 
@@ -78,19 +81,18 @@ using tfn::TransferFunctionWidget;
 using namespace ovr::math;
 using ovr::Camera;
 using ovr::MainRenderer;
-// using ovr::AutomatedCameraPath;
+using ovr::ImageOp;
 
 using vidi::AsyncLoop;
 using vidi::FPSCounter;
 using vidi::HistoryFPSCounter;
 using vidi::CsvLogger;
 using vidi::TransactionalValue;
-// using vidi::EyeMovement;
 
 void help()
 {
-  std::cout << "renderapp <renderer> <scene-file>."  << std::endl
-            << "\t available renderers: optix7-rm, optix7-pt, ospray-rm, osptay-pt, vidi3d, gradient"
+  std::cout << "renderapp <renderer> <scene-file> <device> <transfer-function>."  << std::endl
+            << "\t available renderers: optix7, ospray, gradient, etc."
             << std::endl;
 }
 
@@ -105,6 +107,9 @@ private:
   std::shared_ptr<MainRenderer> renderer;
   MainRenderer::FrameBufferData renderer_output;
 
+  std::shared_ptr<ImageOp> denoiser;
+  MainRenderer::FrameBufferData denoiser_output;
+
   struct FrameOutputs {
     vec2i size{ 0 };
     vec4f* rgba{ nullptr };
@@ -113,33 +118,19 @@ private:
 
   const FrameLayer frame_active_layer;
   TransactionalValue<FrameOutputs> frame_outputs; /* wrote by BG, consumed by GUI */
-  GLuint frame_texture{ 0 };                        /* local to GUI thread */
-  vec2i frame_size_local{ 0 };                      /* local to GUI thread */
-  TransactionalValue<vec2i> frame_size_shared{ 0 }; /* wrote by GUI, consumed by BG */
+  GLuint frame_texture{ 0 };   /* local to GUI thread */
+  vec2i frame_size_local{ 0 }; /* local to GUI thread */
 
   /* local to GUI thread */
   struct {
-    vec2f focus{ 0.5f, 0.5f };
-    float focus_scale{ 0.06f };
-    float base_noise{ 0.07f };
-    bool add_lights{ true };
-    bool sparse_sampling{ false };
+    bool global_illumination{ false };
+    bool tonemapping { false };
     bool frame_accumulation{ true };
     float volume_sampling_rate{ 1.f };
-    float camera_path_speed{ 0.5f };
-    bool global_illumination{ false };
+    float volume_density_scale{ 1.f };
+    // float camera_path_speed{ 0.5f };
     int spp{ 1 };
-
-    float ambient{ .6f };
-    float diffuse{ .9f };
-    float specular{ .4f };
-    float shininess{ 40.f };
-
-    float radius{ 2415.8f };
-    float phi{ 99.53f };
-    float theta{ 112.2f };
-    float intensity{ 1.f };
-
+    std::atomic<bool> denoise{ false };
   } config;
 
   bool async_enabled{ true }; /* local to GUI thread */
@@ -165,10 +156,9 @@ public:
              int width,
              int height,
              std::string default_tfn)
-    : GLFCameraWindow(title, camera.from, camera.at, camera.up, scale, width, height)
+    : GLFCameraWindow(title, camera.eye, camera.at, camera.up, scale, width, height)
     , async_rendering_loop(std::bind(&MainWindow::render_background, this))
-    , widget(std::bind(&MainWindow::set_transfer_function,
-                       this,
+    , widget(std::bind(&MainWindow::set_transfer_function, this,
                        std::placeholders::_1,
                        std::placeholders::_2,
                        std::placeholders::_3))
@@ -181,10 +171,14 @@ public:
 #endif
 
     /* over write initial values defined internally by devices */
-    renderer->set_focus(config.focus, config.focus_scale, config.base_noise);
-    renderer->set_sparse_sampling(config.sparse_sampling);
+    renderer->set_focus(vec2f(0.5), 0.06f, 0.07f);
+    renderer->set_sparse_sampling(false);
     renderer->set_frame_accumulation(config.frame_accumulation);
     renderer->set_volume_sampling_rate(config.volume_sampling_rate);
+    renderer->set_volume_density_scale(config.volume_density_scale);
+
+    denoiser = create_imageop("denoiser");
+    denoiser->initialize(0, NULL); // TODO: add a more generic way to manage image ops
 
     glDisable(GL_LIGHTING);
     glEnable(GL_BLEND);
@@ -197,9 +191,9 @@ public:
       std::vector<vec4f> color_controls;
       for (int i = 0; i < tfn.tfn_colors.size() / 3; ++i) {
         color_controls.push_back(vec4f(i / float(tfn.tfn_colors.size() / 3 - 1), /* control point position */
-                                       tfn.tfn_colors.at(3 * i),                 //
-                                       tfn.tfn_colors.at(3 * i + 1),             //
-                                       tfn.tfn_colors.at(3 * i + 2)));           //
+                                       tfn.tfn_colors.at(3 * i),       // R value
+                                       tfn.tfn_colors.at(3 * i + 1),   // G value
+                                       tfn.tfn_colors.at(3 * i + 2))); // B value
       }
       assert(!tfn.tfn_alphas.empty());
       std::vector<vec2f> alpha_controls;
@@ -234,35 +228,42 @@ public:
   {
     auto start = std::chrono::high_resolution_clock::now(); 
 
-    if (frame_size_shared.update()) {
-      frame_outputs.assign([&](FrameOutputs& d) { d.size = vec2i(0, 0); });
-      renderer->set_fbsize(frame_size_shared.ref());
-    }
-    if (frame_size_shared.ref().long_product() == 0)
-      return;
-
+    // commit first to make sure framebuffer data are valid
     renderer->commit();
-    renderer->mapframe(&renderer_output);
 
-    FrameOutputs output;
-    {
-      switch (frame_active_layer) {
-      case FRAME_RGBA: output.rgba = (vec4f*)renderer_output.rgba->to_cpu()->data(); break;
-      case FRAME_GRAD: output.grad = (vec3f*)renderer_output.grad->to_cpu()->data(); break;
-      default: throw std::runtime_error("something is wrong");
-      }
-      output.size = frame_size_shared.get();
-    }
-    frame_outputs = output;
-
-    renderer->swap();
-
-    variance = renderer->unsafe_get_variance();
-
+    // async rendering to the backbuffer
     double render_time = 0.0;
     renderer->render(); 
     render_time = renderer->render_time; 
+    variance = renderer->unsafe_get_variance();
 
+    // display the front buffer at the same time
+    renderer->mapframe(&renderer_output);
+    if (renderer_output.size.long_product() == 0) { return; }
+
+    auto* output = &renderer_output;
+    if (config.denoise) {
+      denoiser_output.size = renderer_output.size;
+      denoiser->resize(denoiser_output.size.x, denoiser_output.size.y);
+      denoiser->process(renderer_output.rgba);
+      denoiser->map(denoiser_output.rgba);
+      output = &denoiser_output;
+    }
+
+    // copy to the GUI thread
+    FrameOutputs out; 
+    out.size = renderer_output.size;
+    switch (frame_active_layer) {
+    case FRAME_RGBA: out.rgba = (vec4f*)output->rgba->to_cpu()->data(); break;
+    case FRAME_GRAD: out.grad = (vec3f*)output->grad->to_cpu()->data(); break;
+    default: throw std::runtime_error("something is wrong");
+    }
+    frame_outputs = out;
+
+    // swap front and back
+    renderer->swap();
+
+    // statistics
     auto end = std::chrono::high_resolution_clock::now();
     auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     frame_time += diff.count();
@@ -357,20 +358,18 @@ public:
   /* GUI thread */
   void draw() override
   {
-    glBindTexture(GL_TEXTURE_2D, frame_texture);
-
-    frame_outputs.update([&](const FrameOutputs& out) 
-    {
+    frame_outputs.update([&](const FrameOutputs& out) {
+      glBindTexture(GL_TEXTURE_2D, frame_texture);
       switch (frame_active_layer) {
-      case FRAME_RGBA: glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, out.size.x, out.size.y, 0, GL_RGBA, GL_FLOAT, out.rgba); break;
-      case FRAME_GRAD: glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,  out.size.x, out.size.y, 0, GL_RGB, GL_FLOAT, out.grad); break;
+      case FRAME_RGBA: if (out.rgba) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, out.size.x, out.size.y, 0, GL_RGBA, GL_FLOAT, out.rgba); break;
+      case FRAME_GRAD: if (out.grad) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,  out.size.x, out.size.y, 0, GL_RGB,  GL_FLOAT, out.grad); break;
       default: throw std::runtime_error("something is wrong");
       }
     });
 
     const auto& size = frame_size_local;
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT);
     glColor3f(1, 1, 1);
     glMatrixMode(GL_MODELVIEW);
@@ -401,62 +400,21 @@ public:
       ImGui::SetNextWindowSizeConstraints(ImVec2(450, 400), ImVec2(FLT_MAX, FLT_MAX));
       if (ImGui::Begin("Control Panel", NULL)) {
 
-        bool updated_mat = false;
-        updated_mat |= ImGui::SliderFloat("Mat: Ambient", &config.ambient, 0.f, 1.f, "%.3f");
-        updated_mat |= ImGui::SliderFloat("Mat: Diffuse", &config.diffuse, 0.f, 1.f, "%.3f");
-        updated_mat |= ImGui::SliderFloat("Mat: Specular", &config.specular, 0.f, 1.f, "%.3f");
-        updated_mat |= ImGui::SliderFloat("Mat: Shininess", &config.shininess, 0.f, 100.f, "%.3f");
-
-        bool updated_light = false;
-        updated_light |= ImGui::SliderFloat("Light: Phi", &config.phi, 0.f, 360.f, "%.2f");
-        updated_light |= ImGui::SliderFloat("Light: Theta", &config.theta, 0.f, 360.f, "%.2f");
-        updated_light |= ImGui::SliderFloat("Light: Intensity", &config.intensity, 0.f, 2.f, "%.3f");
-
-        bool updated = false;
-        updated |= ImGui::SliderFloat("Focus Center X", &config.focus.x, 0.f, 1.f, "%.3f");
-        updated |= ImGui::SliderFloat("Focus Center Y", &config.focus.y, 0.f, 1.f, "%.3f");
-        updated |= ImGui::SliderFloat("Focus Scale", &config.focus_scale, 0.01f, 1.f, "%.3f");
-        updated |= ImGui::SliderFloat("Base Noise", &config.base_noise, 0.01f, 1.0f, "%.3f", ImGuiSliderFlags_Logarithmic);
-        if (updated) {
-          renderer->set_focus(config.focus, config.focus_scale, config.base_noise);
+        static bool denoise = config.denoise;
+        if (ImGui::Checkbox("OptiX Denoise", &denoise)) {
+          config.denoise = denoise;
+        }
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Tonemapping", &config.tonemapping)) {
+          renderer->set_tonemapping(config.tonemapping);
         }
 
-        if (updated_mat) {
-          renderer->set_mat_ambient(config.ambient);
-          renderer->set_mat_diffuse(config.diffuse);
-          renderer->set_mat_specular(config.specular);
-          renderer->set_mat_shininess(config.shininess);
-        }
-
-        if (updated_light) {
-          // renderer->set_light_radius(config.radius);
-          renderer->set_light_phi(config.phi);
-          renderer->set_light_theta(config.theta);
-          renderer->set_light_intensity(config.intensity);
-        }
-
-        static bool add_lights = config.add_lights;
-        if (ImGui::Checkbox("Add Lights", &add_lights)) {
-          config.add_lights = add_lights;
-          renderer->set_add_lights(config.add_lights);
-        }
-
-        static bool sparse_sampling = config.sparse_sampling;
-        if (ImGui::Checkbox("Sparse Sampling", &sparse_sampling)) {
-          config.sparse_sampling = sparse_sampling;
-          renderer->set_sparse_sampling(config.sparse_sampling);
-        }
-
-        static bool frame_accumulation = config.frame_accumulation;
-        if (ImGui::Checkbox("Frame Accumulation", &frame_accumulation)) {
-          config.frame_accumulation = frame_accumulation;
-          renderer->set_frame_accumulation(config.frame_accumulation);
-        }
-
-        static bool global_illumination = config.global_illumination;
-        if (ImGui::Checkbox("Global Illumination", &global_illumination)) {
-          config.global_illumination = global_illumination;
+        if (ImGui::Checkbox("Global Illumination", &config.global_illumination)) {
           renderer->set_path_tracing(config.global_illumination);
+        }
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Frame Accumulation", &config.frame_accumulation)) {
+          renderer->set_frame_accumulation(config.frame_accumulation);
         }
 
         static int spp = config.spp;
@@ -471,10 +429,19 @@ public:
           renderer->set_volume_sampling_rate(config.volume_sampling_rate);
         }
 
+        static float ds = config.volume_density_scale;
+        if (ImGui::SliderFloat("Density Scale", &ds, 0.01f, 10.f, "%.3f")) {
+          config.volume_density_scale = ds;
+          renderer->set_volume_density_scale(config.volume_density_scale);
+        }
+
         widget.build_gui();
       }
       ImGui::End();
       widget.render();
+      
+      // Device Specific GUIs
+      renderer->ui();
     }
 
     // Performance Graph
@@ -483,15 +450,16 @@ public:
       ImGui::SetNextWindowPos(ImVec2(padding, padding), ImGuiCond_Always, ImVec2(0.0f, 1.0f));
       ImGui::SetNextWindowSizeConstraints(ImVec2(300, 200), ImVec2(FLT_MAX, FLT_MAX));
       if (ImGui::Begin("Performance", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration)) {
-        if (ImPlot::BeginPlot("##Performance Plot", ImVec2(500,150), ImPlotFlags_AntiAliased | ImPlotFlags_NoFrame)) {
+        if (ImPlot::BeginPlot("##Performance Plot", ImVec2(500,150), ImPlotFlags_NoFrame)) {
           ImPlot::SetupAxes("frame history", "time [ms]", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
           ImPlot::PlotLine("frame time", background_fps.indices.data(), background_fps.frame_time_history.data(), (int)background_fps.frame_time_history.size());
           ImPlot::EndPlot();
         }
-        ImGui::End();
       }
+      ImGui::End();
     }
 
+    // FPS Counters
     if (foreground_fps.count()) {
       std::stringstream title;
       title << std::fixed << std::setprecision(3) << " fg = " << foreground_fps.fps << " fps,";
@@ -505,15 +473,13 @@ public:
   void resize(const vec2i& size) override
   {
     frame_size_local = size;
-    frame_size_shared = size;
+    renderer->set_fbsize(size);
   }
 
   /* GUI thread */
   void close() override
   {
-    if (async_enabled)
-      async_rendering_loop.stop();
-
+    if (async_enabled) async_rendering_loop.stop();
     glDeleteTextures(1, &frame_texture);
   }
 };
@@ -523,63 +489,75 @@ extern "C" int
 main(int ac, const char** av)
 {
   // -------------------------------------------------------
-  // initialize camera
+  // initialize 
   // -------------------------------------------------------
 
   // something approximating the scale of the world, so the
   // camera knows how much to move for any given user interaction:
   const float worldScale = 100.f;
 
-  ovr::Scene scene;
+  // -------------------------------------------------------
+  // parse arguments
+  // -------------------------------------------------------
+  std::string scene_file;
   if (ac < 2) {
-    // scene = create_example_scene();
-    // scene.camera = { /*from*/ vec3f(0.f, 0.f, -1200.f),
-    //                  /* at */ vec3f(0.f, 0.f, 0.f),
-    //                  /* up */ vec3f(0.f, 1.f, 0.f) };
+    help();
     throw std::runtime_error("no scene file specified");
   }
-  else {
-    scene = ovr::scene::create_scene(std::string(av[1]));
+  scene_file = av[1];
 
-    // TODO hack for testing isosurface rendering
-
-    // const int32_t volume_raw_id = scene.instances[0].models[0].volume_model.volume_texture;
-    // scene.instances[0].models[0].volume_model.volume_texture = volume_raw_id;
-
-    // ovr::scene::Texture volume_tfn;
-    // volume_tfn.type = ovr::scene::Texture::TRANSFER_FUNCTION_TEXTURE;
-    // volume_tfn.transfer_function.transfer_function = scene.instances[0].models[0].volume_model.transfer_function;
-    // volume_tfn.transfer_function.volume_texture = volume_raw_id;
-    // scene.textures.push_back(volume_tfn);
-    // const int32_t volume_tfn_id = scene.textures.size() - 1;
-
-    // ovr::scene::Material volume_mtl;
-    // volume_mtl.type = ovr::scene::Material::OBJ_MATERIAL;
-    // volume_mtl.obj.map_kd = volume_tfn_id;
-    // scene.materials.push_back(volume_mtl);
-    // const int32_t volume_mtl_id = scene.materials.size() - 1;
-
-    // ovr::scene::Model model;
-    // model.type = ovr::scene::Model::GEOMETRIC_MODEL;
-    // model.geometry_model.geometry.type = ovr::scene::Geometry::ISOSURFACE_GEOMETRY;
-    // model.geometry_model.geometry.isosurfaces.volume_texture = volume_raw_id;
-    // model.geometry_model.geometry.isosurfaces.isovalues = { 0.5f };
-    // model.geometry_model.mtl = volume_mtl_id;
-    // scene.instances[0].models[0] = model;
-  }
-
-  MainWindow::FrameLayer layer;  
-  std::shared_ptr<ovr::MainRenderer> renderer;
   std::string device = "optix7";
   if (ac >= 3) {
     device = av[2];
   }
-
+  
   std::string tfn = "";
   if (ac >= 4) {
     tfn = av[3];
   }
 
+  // -------------------------------------------------------
+  // parse device name
+  // -------------------------------------------------------
+  ovr::Scene scene;
+
+  // Hack for testing isosurface rendering
+  if (device == "isosurface") {
+    scene = create_scene_device(scene_file, "ospray");
+
+    const int32_t volume_raw_id = scene.instances[0].models[0].volume_model.volume_texture;
+    scene.instances[0].models[0].volume_model.volume_texture = volume_raw_id;
+
+    ovr::scene::Texture volume_tfn;
+    volume_tfn.type = ovr::scene::Texture::TRANSFER_FUNCTION_TEXTURE;
+    volume_tfn.transfer_function.transfer_function = scene.instances[0].models[0].volume_model.transfer_function;
+    volume_tfn.transfer_function.volume_texture = volume_raw_id;
+    scene.textures.push_back(volume_tfn);
+    const int32_t volume_tfn_id = scene.textures.size() - 1;
+
+    ovr::scene::Material volume_mtl;
+    volume_mtl.type = ovr::scene::Material::OBJ_MATERIAL;
+    volume_mtl.obj.map_kd = volume_tfn_id;
+    scene.materials.push_back(volume_mtl);
+    const int32_t volume_mtl_id = scene.materials.size() - 1;
+
+    ovr::scene::Model model;
+    model.type = ovr::scene::Model::GEOMETRIC_MODEL;
+    model.geometry_model.geometry.type = ovr::scene::Geometry::ISOSURFACE_GEOMETRY;
+    model.geometry_model.geometry.isosurfaces.volume_texture = volume_raw_id;
+    model.geometry_model.geometry.isosurfaces.isovalues = { 0.5f };
+    model.geometry_model.mtl = volume_mtl_id;
+    scene.instances[0].models[0] = model;
+  }
+  else {
+    scene = create_scene_device(scene_file, device);
+  }
+
+  // -------------------------------------------------------
+  // create renderer
+  // -------------------------------------------------------
+  MainWindow::FrameLayer layer;  
+  std::shared_ptr<ovr::MainRenderer> renderer;
   if (device == "gradient") {
     renderer = create_renderer("optix7");
     renderer->set_path_tracing(false);
@@ -595,7 +573,7 @@ main(int ac, const char** av)
   // -------------------------------------------------------
   // initialize opengl window
   // -------------------------------------------------------
-  MainWindow* window = new MainWindow("OVR", renderer, layer, scene.camera, worldScale, 2560, 1440, tfn);
+  MainWindow* window = new MainWindow("OVR", renderer, layer, scene.camera, worldScale, 768, 768, tfn);
   window->run();
   window->close();
 

@@ -81,8 +81,8 @@
 #include <unordered_map>
 namespace colormap {
 struct color_t { float r, g, b, a; };
-extern const std::unordered_map<std::string, const std::vector<color_t>*> data;
-extern const std::vector<std::string> name;
+bool has(const std::string& name);
+const std::vector<color_t>& get(const std::string& name);
 }
 
 #endif // TFN_COLORMAP_H

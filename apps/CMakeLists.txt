@@ -12,6 +12,5 @@ if(OVR_BUILD_OPENGL)
   PUBLIC 
     renderlib 
     glfwApp
-    implot
   )
 endif()

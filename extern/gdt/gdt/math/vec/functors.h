@@ -76,6 +76,9 @@ namespace gdt {
     return x;
   }
 
+  inline __both__ float floor(const float &x)
+  { return floorf(x); }
+
 #define _define_float_functor(func)                                     \
   template<typename T> inline __both__ vec_t<T,2> func(const vec_t<T,2> &v) \
   { return vec_t<T,2>(func(v.x),func(v.y)); }                           \

@@ -120,8 +120,6 @@ namespace glfwapp
     GLFWindow *gw = static_cast<GLFWindow *>(glfwGetWindowUserPointer(window));
     assert(gw);
     gw->resize(vec2i(width, height));
-    // assert(GLFWindow::current);
-    //   GLFWindow::current->resize(vec2i(width,height));
   }
 
   /*! callback for a key press */
@@ -165,7 +163,6 @@ namespace glfwapp
     glfwGetFramebufferSize(handle, &width, &height);
     resize(vec2i(width, height));
 
-    // glfwSetWindowUserPointer(window, GLFWindow::current);
     glfwSetFramebufferSizeCallback(handle, glfwindow_reshape_cb);
     glfwSetMouseButtonCallback(handle, glfwindow_mouseButton_cb);
     glfwSetKeyCallback(handle, glfwindow_key_cb);

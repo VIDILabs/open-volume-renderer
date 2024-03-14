@@ -32,7 +32,6 @@ data/vortices/
 # Trained models
 *.pt
 .vscode/
-vscode/
 ShadowMapData/
 photonmap.bin
 shadowmap.bin

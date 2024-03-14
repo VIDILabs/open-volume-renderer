@@ -58,40 +58,16 @@ if(OVR_BUILD_OPENGL)
   endif()
 
   # build glfw
-  set(GLFW_USE_OSMESA OFF CACHE BOOL "" FORCE)
-  set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-  set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-  set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-  set(GLFW_INSTALL ON CACHE BOOL "" FORCE)
-  
-  set(BUILD_SHARED_LIBS ON)
-  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glfw EXCLUDE_FROM_ALL)
-  set(BUILD_SHARED_LIBS OFF)
-  
-  mark_as_advanced(
-    GLFW_INSTALL
-    GLFW_BUILD_DOCS 
-    GLFW_BUILD_TESTS 
-    GLFW_BUILD_EXAMPLES
-    GLFW_USE_OSMESA 
-    GLFW_USE_WAYLAND 
-    GLFW_VULKAN_STATIC
-  )
-  
+  include(extern/dep_glfw.cmake)
   list(APPEND GFX_LIBRARIES glfw)
 
   # build glad
-  set(INSTALL_DEV_HEADERS ON CACHE BOOL "" FORCE)
-  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glad EXCLUDE_FROM_ALL)
-  add_library(glad::glad ALIAS glad-core-3.3) # make it the global glad
-  add_library(GLAD::GLAD ALIAS glad-core-3.3) # make it the global glad
-  list(APPEND GFX_LIBRARIES glad-core-3.3)
+  include(extern/dep_glad.cmake)
+  list(APPEND GFX_LIBRARIES glad)
 
   # import imgui
-  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/imgui-1.79 EXCLUDE_FROM_ALL)
-  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/implot-0.13 EXCLUDE_FROM_ALL)
+  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/imgui EXCLUDE_FROM_ALL)
   list(APPEND GFX_LIBRARIES imgui)
-  list(APPEND GFX_LIBRARIES implot)
 
   # for building render apps
   add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glfwapp EXCLUDE_FROM_ALL)
@@ -104,13 +80,13 @@ endif()
 # ------------------------------------------------------------------
 set(TFNMODULE_INCLUDE ${CMAKE_CURRENT_LIST_DIR}/tfn/colormaps)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tfn/colormaps)
-add_library(tfnmodule ${embedded_colormap})
+add_library(tfnmodule STATIC ${embedded_colormap})
 target_include_directories(tfnmodule PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/tfn/colormaps>
 )
-set_target_properties(tfnmodule PROPERTIES 
-  POSITION_INDEPENDENT_CODE ON
-)
+if (UNIX)
+  set_target_properties(tfnmodule PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
 # ------------------------------------------------------------------
 # import CUDA
@@ -118,7 +94,6 @@ set_target_properties(tfnmodule PROPERTIES
 if(OVR_BUILD_CUDA)  
   include(configure_cuda)
   mark_as_advanced(CUDA_SDK_ROOT_DIR)
-  # add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cukd EXCLUDE_FROM_ALL)
 endif()
 
 # ------------------------------------------------------------------
@@ -147,4 +122,12 @@ endif(OVR_BUILD_OSPRAY)
 # ------------------------------------------------------------------
 if(OVR_BUILD_SCENE_USD)
   find_package(pxr REQUIRED)
+endif()
+
+
+# ------------------------------------------------------------------
+# import pybind11
+# ------------------------------------------------------------------
+if(OVR_BUILD_PYTHON_BINDINGS)
+  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/pybind11)
 endif()

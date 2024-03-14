@@ -405,6 +405,8 @@ DeviceOSPRay::Impl::~Impl() {
     ospRelease(ospray.framebuffer);
   }
 
+  if (ospray.tonemapper) ospRelease(ospray.tonemapper);
+
   ospShutdown();
 }
 
@@ -515,13 +517,28 @@ DeviceOSPRay::Impl::commit_framebuffer() {
     recreate = true;
   }
 
-  if (recreate) {
+  if (parent->params.tonemapping.update()) {
+    if (ospray.tonemapper) {
+      ospRelease(ospray.tonemapper);
+      ospray.tonemapper = nullptr;
+    }
+    if (parent->params.tonemapping.get()) {
+      ospray.tonemapper = ospNewImageOperation("tonemapper");
+    }
+    recreate = true;
+  }
+
+  if (recreate && framebuffer_size_latest.long_product() > 0) {
     if (ospray.framebuffer) {
       ospUnmapFrameBuffer(framebuffer_rgba_ptr, ospray.framebuffer);
       ospRelease(ospray.framebuffer);
     }
 
     ospray.framebuffer = ospNewFrameBuffer(framebuffer_size_latest.x, framebuffer_size_latest.y, OSP_FB_RGBA32F, framebuffer_channels);
+    if (ospray.tonemapper) { 
+      ospSetObjectAsData(ospray.framebuffer, "imageOperation", OSP_IMAGE_OPERATION, ospray.tonemapper);
+    }
+    ospCommit(ospray.framebuffer);
 
     framebuffer_rgba_ptr = ospMapFrameBuffer(ospray.framebuffer, OSP_FB_COLOR);
     framebuffer_should_reset_accum = true;
@@ -543,7 +560,7 @@ DeviceOSPRay::Impl::commit_camera() {
 
     const Camera& camera = parent->params.camera.ref();
     // std::cout << "camera update" << std::endl;
-    // std::cout << "  from: " << camera.from << std::endl;
+    // std::cout << "  from: " << camera.eye << std::endl;
     // std::cout << "  at:   " << camera.at << std::endl;
     // std::cout << "  up:   " << camera.up << std::endl;
 
@@ -558,9 +575,9 @@ DeviceOSPRay::Impl::commit_camera() {
       ospSetFloat(ospray.camera, "height", camera.orthographic.height);
     }
 
-    const vec3f dir = camera.at - camera.from;
+    const vec3f dir = camera.at - camera.eye;
     ospSetFloat(ospray.camera, "aspect", framebuffer_size_latest.x / (float)framebuffer_size_latest.y);
-    ospSetParam(ospray.camera, "position", OSP_VEC3F, &camera.from);
+    ospSetParam(ospray.camera, "position", OSP_VEC3F, &camera.eye);
     ospSetParam(ospray.camera, "direction", OSP_VEC3F, &dir);
     ospSetParam(ospray.camera, "up", OSP_VEC3F, &camera.up);
     ospCommit(ospray.camera); // commit each object to indicate modifications are done
@@ -735,7 +752,7 @@ DeviceOSPRay::Impl::build_scene() {
 
 void
 DeviceOSPRay::Impl::swap() {
-  framebuffer_index = (framebuffer_index + 1) % 2;
+  // TODO we only have one framebuffer for now, so not doing any double buffering
 }
 
 void
@@ -777,6 +794,8 @@ DeviceOSPRay::Impl::commit() {
 
 void
 DeviceOSPRay::Impl::render() {
+  if (framebuffer_size_latest.long_product() == 0) return;
+
   frame_index++;
 
   if (parent->params.sparse_sampling.ref()) {
@@ -791,6 +810,10 @@ DeviceOSPRay::Impl::render() {
     // TODO throw if launch_size is too large.
 
     OSPFrameBuffer fb = ospNewFrameBuffer((int)launch_size, 1, OSP_FB_RGBA32F, OSP_FB_COLOR);
+    if (ospray.tonemapper) {
+      ospSetObjectAsData(fb, "imageOperation", OSP_IMAGE_OPERATION, ospray.tonemapper);
+    }
+    ospCommit(fb);
 
     parent->variance = ospRenderFrameBlocking(fb, ospray.renderer, ospray.camera, ospray.world);
 
@@ -815,6 +838,7 @@ void
 DeviceOSPRay::Impl::mapframe(FrameBufferData* fb) {
   const size_t num_bytes = framebuffer_size_latest.long_product();
   fb->rgba->set_data((void*)framebuffer_rgba_ptr, num_bytes * sizeof(vec4f), CrossDeviceBuffer::DEVICE_CPU);
+  fb->size = framebuffer_size_latest;
 }
 
 } // namespace ovr::ospray

@@ -1,0 +1,107 @@
+{
+  "dataSource" : [
+    {
+      "dimensions" : {
+        "x" : 2048,
+        "y" : 2048,
+        "z" : 2048
+      },
+      "endian" : "LITTLE_ENDIAN",
+      "fileName" : [
+        "/media/data/qadwu/volume/openscivis/woodbranch_2048x2048x2048_uint16.raw"
+      ],
+      "fileUpperLeft" : false,
+      "format" : "REGULAR_GRID_RAW_BINARY",
+      "id" : 1,
+      "name" : "woodbranch_2048x2048x2048_uint16.dat",
+      "offset" : 0,
+      "type" : "UNSIGNED_SHORT"
+    }
+  ],
+  "cache": {
+    "config" : "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/config/config_woodbranch.cfg",
+    "capacity": {
+      "x": 16,
+      "y": 16,
+      "z": 16
+    },
+    "numLevels": 1
+  },
+  "macrocell": {
+    "fileName": [
+      "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/data/woodbranch_2048x2048x2048_uint16/woodbranch_mc_16_2x128x128x128_float32.bin"
+    ],
+    "mcSize" : {
+      "x": 16,
+      "y": 16,
+      "z": 16
+    }
+  },
+  "view" : {
+    "dataId" : 1,
+    "backgroundColor" : {
+      "a" : 1,
+      "b" : 0,
+      "g" : 0,
+      "r" : 0
+    },
+    "globalAmbient" : {
+      "a" : 0,
+      "b" : 0,
+      "g" : 0,
+      "r" : 0
+    },
+    "globalLighting" : true,
+    "lightSource" : {
+      "ambient" : {
+        "a" : 1,
+        "b" : 1,
+        "g" : 1,
+        "r" : 1
+      },
+      "diffuse" : {
+        "a" : 1,
+        "b" : 1,
+        "g" : 1,
+        "r" : 1
+      },
+      "position" : {
+        "w" : 0,
+        "x" : 169.88572310549335,
+        "y" : -168.0262182267316,
+        "z" : 97.328469272278994
+      },
+      "specular" : {
+        "a" : 1,
+        "b" : 1,
+        "g" : 1,
+        "r" : 1
+      },
+      "type" : "DIRECTIONAL_LIGHT"
+    },
+    "lighting" : true,
+    "lightingSide" : "FRONT_SIDE",
+    "method" : "REGULAR_GRID_VOLUME_RAY_CASTING",
+    "tfPreIntegration" : false,
+    "volume" : {
+      "boundingBoxColor" : {
+        "a" : 1,
+        "b" : 0.5,
+        "g" : 0.5,
+        "r" : 0.5
+      },
+      "boundingBoxVisible" : true,
+      "interpolationType" : "LINEAR_INTERPOLATION",
+      "material" : {
+        "ambient" : 0.30000001192092896,
+        "diffuse" : 1,
+        "shininess" : 16,
+        "specular" : 0.25
+      },
+      "scalarMappingRangeUnnormalized" : {
+        "minimum" : 0,
+        "maximum" : 57147
+      }
+    }
+  }
+}

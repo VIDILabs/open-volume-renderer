@@ -46,6 +46,7 @@ namespace gdt {
 
     inline __both__ bool contains(const T &t) const { return t >= lower && t <= upper; }
     inline __both__ bool is_empty() const { return begin > end; }
+    inline __both__ bool empty() const { return begin > end; }
     inline __both__ T center() const { return (begin+end)/2; }
     inline __both__ T span() const { return end - begin; }
     inline __both__ T diagonal() const { return end - begin; }
@@ -61,11 +62,11 @@ namespace gdt {
   };
 
   template<typename T>
-  inline __both__ std::ostream &operator<<(std::ostream &o, const interval<T> &b)
+  inline std::ostream &operator<<(std::ostream &o, const interval<T> &b)
   {
-#ifndef __CUDACC__
+// #ifndef __CUDACC__
     o << "[" << b.lower << ":" << b.upper << "]";
-#endif
+// #endif
     return o;
   }
   
@@ -154,7 +155,8 @@ namespace gdt {
 
     inline __both__ typename long_type_of<typename T::scalar_t>::type volume() const
     { return gdt::volume(size()); }
-    
+
+    inline __both__ bool is_empty() const { return any_less_than(upper,lower); }
     inline __both__ bool empty() const { return any_less_than(upper,lower); }
 
     vec_t lower, upper;
@@ -185,11 +187,11 @@ namespace gdt {
   }
 
   template<typename T>
-  inline __both__ std::ostream &operator<<(std::ostream &o, const box_t<T> &b)
+  inline std::ostream &operator<<(std::ostream &o, const box_t<T> &b)
   {
-#ifndef __CUDACC__
+// #ifndef __CUDACC__
     o << "[" << b.lower << ":" << b.upper << "]";
-#endif
+// #endif
     return o;
   }
 

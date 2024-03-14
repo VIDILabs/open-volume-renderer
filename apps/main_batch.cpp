@@ -20,13 +20,11 @@
 #include "common/vidi_fps_counter.h"
 #include "common/vidi_highperformance_timer.h"
 #include "renderer.h"
+#include "serializer/serializer.h"
 
-// #include <ovr/common/json/json.hpp>
 #include <json/json.hpp>
 
 #include <glfwapp/camera_frame.h>
-
-#include <colormap.h>
 
 #include <algorithm>
 #include <atomic>
@@ -249,7 +247,7 @@ main(int ac, char** av)
   } : scene.camera;
 
   auto camera_frame = glfwapp::CameraFrame(100.f);
-  camera_frame.setOrientation(camera.from, camera.at, camera.up);
+  camera_frame.setOrientation(camera.eye, camera.at, camera.up);
 
   auto ren = create_renderer(args.device());
   ren->set_fbsize(args.fbsize());
@@ -288,6 +286,7 @@ main(int ac, char** av)
       printf("fps = %f\n", 25 / tot);
     }
 
+    ren->swap();
     ren->mapframe(&fbdata);
     auto* frame = (vec4f*)fbdata.rgba->to_cpu()->data();
     ovr::save_image(expname + timestamp(0) + ".png", frame, fbsize.x, fbsize.y);

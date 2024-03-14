@@ -32,43 +32,42 @@ namespace ovr {
 enum ValueType {
   VALUE_TYPE_UINT8 = 100,
   VALUE_TYPE_INT8,
-
   VALUE_TYPE_UINT16 = 200,
   VALUE_TYPE_INT16,
-
   VALUE_TYPE_UINT32 = 300,
   VALUE_TYPE_INT32,
-
-  VALUE_TYPE_FLOAT = 400,
+  VALUE_TYPE_UINT64 = 400,
+  VALUE_TYPE_INT64,
+  VALUE_TYPE_FLOAT = 500,
   VALUE_TYPE_FLOAT2,
   VALUE_TYPE_FLOAT3,
   VALUE_TYPE_FLOAT4,
-
-  VALUE_TYPE_DOUBLE = 500,
+  VALUE_TYPE_DOUBLE = 600,
   VALUE_TYPE_DOUBLE2,
   VALUE_TYPE_DOUBLE3,
   VALUE_TYPE_DOUBLE4,
-
   VALUE_TYPE_VOID = 1000,
 };
 
 inline int
-value_type_size(ValueType type)
-{
+value_type_size(ValueType type) {
   switch (type) {
-  case VALUE_TYPE_UINT8: return sizeof(uint8_t);
-  case VALUE_TYPE_INT8: return sizeof(int8_t);
-  case VALUE_TYPE_UINT16: return sizeof(uint16_t);
-  case VALUE_TYPE_INT16: return sizeof(int16_t);
-  case VALUE_TYPE_UINT32: return sizeof(uint32_t);
-  case VALUE_TYPE_INT32: return sizeof(int32_t);
-  case VALUE_TYPE_FLOAT: return sizeof(float);
-  case VALUE_TYPE_DOUBLE: return sizeof(double);
-
-  case VALUE_TYPE_FLOAT2: return sizeof(vec2f);
-  case VALUE_TYPE_FLOAT3: return sizeof(vec3f);
-  case VALUE_TYPE_FLOAT4: return sizeof(vec4f);
-
+  case VALUE_TYPE_UINT8:   return sizeof(uint8_t);
+  case VALUE_TYPE_INT8:    return sizeof(int8_t);
+  case VALUE_TYPE_UINT16:  return sizeof(uint16_t);
+  case VALUE_TYPE_INT16:   return sizeof(int16_t);
+  case VALUE_TYPE_UINT32:  return sizeof(uint32_t);
+  case VALUE_TYPE_INT32:   return sizeof(int32_t);
+  case VALUE_TYPE_UINT64:  return sizeof(uint64_t);
+  case VALUE_TYPE_INT64:   return sizeof(int64_t);
+  case VALUE_TYPE_FLOAT:   return sizeof(float);
+  case VALUE_TYPE_FLOAT2:  return sizeof(vec2f);
+  case VALUE_TYPE_FLOAT3:  return sizeof(vec3f);
+  case VALUE_TYPE_FLOAT4:  return sizeof(vec4f);
+  case VALUE_TYPE_DOUBLE:  return sizeof(double);
+  case VALUE_TYPE_DOUBLE2: return sizeof(double)*2;
+  case VALUE_TYPE_DOUBLE3: return sizeof(double)*3;
+  case VALUE_TYPE_DOUBLE4: return sizeof(double)*4;
   default: throw std::runtime_error("unknown type encountered");
   }
 }
@@ -90,11 +89,16 @@ ovr_instantiate_value_type_function(VALUE_TYPE_UINT16, uint16_t);
 ovr_instantiate_value_type_function(VALUE_TYPE_INT16,  int16_t);
 ovr_instantiate_value_type_function(VALUE_TYPE_UINT32, uint32_t);
 ovr_instantiate_value_type_function(VALUE_TYPE_INT32,  int32_t);
+ovr_instantiate_value_type_function(VALUE_TYPE_UINT64, uint64_t);
+ovr_instantiate_value_type_function(VALUE_TYPE_INT64,  int64_t);
 ovr_instantiate_value_type_function(VALUE_TYPE_FLOAT,  float);
 ovr_instantiate_value_type_function(VALUE_TYPE_FLOAT2, vec2f);
 ovr_instantiate_value_type_function(VALUE_TYPE_FLOAT3, vec3f);
 ovr_instantiate_value_type_function(VALUE_TYPE_FLOAT4, vec4f);
 ovr_instantiate_value_type_function(VALUE_TYPE_DOUBLE, double);
+ovr_instantiate_value_type_function(VALUE_TYPE_DOUBLE2, vec2d);
+ovr_instantiate_value_type_function(VALUE_TYPE_DOUBLE3, vec3d);
+ovr_instantiate_value_type_function(VALUE_TYPE_DOUBLE4, vec4d);
 /* clang-format on */
 // #undef ovr_instantiate_value_type_function
 
@@ -172,7 +176,7 @@ struct Array {
 
 private:
   char* buffer{ nullptr };
-  std::shared_ptr<char[]> owned_buffer;
+  std::shared_ptr<char[]> owned_buffer; // NOTE: should be unique pointer?
 };
 
 using Array1DScalar = Array<1>;
@@ -200,7 +204,7 @@ namespace scene {
 
 struct Camera {
   // camera position - *from* where we are looking
-  vec3f from;
+  vec3f eye;
   vec3f at; // which point we are looking *at*
   vec3f up; // up direction of the camera
 
@@ -368,6 +372,8 @@ struct Scene {
   int use_dda = 0;
   bool parallel_view = false;
   bool simple_path_tracing = false;
+
+  void* user_data { nullptr };
 };
 
 } // namespace scene
