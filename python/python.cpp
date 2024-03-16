@@ -11,19 +11,49 @@ PYBIND11_MODULE(ovrpy, m)
  */ 
 OVR_PY_NAMED_STRUCT(ovr::vec3f, "vec3f")
 .def_init()
+.def_init(float)
+.def_init(float,float,float)
 .def_class_field(ovr::vec3f, x)
 .def_class_field(ovr::vec3f, y)
-.def_class_field(ovr::vec3f, z);
+.def_class_field(ovr::vec3f, z)
+.def_class_copy(ovr::vec3f)
+.def_class_lambda(ovr::vec3f, __repr__, [](const ovr::vec3f& self) { 
+        return "(" + std::to_string(self.x) + ", " + std::to_string(self.y) + ", " + std::to_string(self.z) + ")"; 
+});
 
 OVR_PY_NAMED_STRUCT(ovr::vec2f, "vec2f")
 .def_init()
+.def_init(float)
+.def_init(float,float)
 .def_class_field(ovr::vec2f, x)
-.def_class_field(ovr::vec2f, y);
+.def_class_field(ovr::vec2f, y)
+.def_class_copy(ovr::vec2f)
+.def_class_lambda(ovr::vec2f, __repr__, [](const ovr::vec2f& self) { 
+        return "(" + std::to_string(self.x) + ", " + std::to_string(self.y) + ")"; 
+});
 
 OVR_PY_NAMED_STRUCT(ovr::vec2i, "vec2i")
 .def_init()
+.def_init(int)
+.def_init(int,int)
 .def_class_field(ovr::vec2i, x)
-.def_class_field(ovr::vec2i, y);
+.def_class_field(ovr::vec2i, y)
+.def_class_copy(ovr::vec2i)
+.def_class_lambda(ovr::vec2i, __repr__, [](const ovr::vec2i& self) { 
+        return "(" + std::to_string(self.x) + ", " + std::to_string(self.y) + ")"; 
+});
+
+OVR_PY_NAMED_STRUCT(ovr::box3f, "box3f")
+.def_init()
+.def_init(float, float)
+.def_init(ovr::vec3f, ovr::vec3f)
+.def_class_field(ovr::box3f, lower)
+.def_class_field(ovr::box3f, upper)
+.def_class_copy(ovr::box3f)
+.def_class_lambda(ovr::box3f, __repr__, [](const ovr::box3f& self) { 
+        return "[(" + std::to_string(self.lower.x) + ", " + std::to_string(self.lower.y) + ", " + std::to_string(self.lower.z) + ")\n" +
+               " (" + std::to_string(self.upper.x) + ", " + std::to_string(self.upper.y) + ", " + std::to_string(self.upper.z) + ")]";
+});
 
 /*
  * Scene
@@ -38,7 +68,8 @@ OVR_PY_NAMED_STRUCT(ovr::scene::Scene, "Scene")
 .def_class_field(ovr::scene::Scene, max_path_length)
 .def_class_field(ovr::scene::Scene, use_dda)
 .def_class_field(ovr::scene::Scene, parallel_view)
-.def_class_field(ovr::scene::Scene, simple_path_tracing);
+.def_class_field(ovr::scene::Scene, simple_path_tracing)
+.def_class_copy(ovr::scene::Scene);
 
 def_named_method(create_scene_device, "create_scene");
 
@@ -60,7 +91,8 @@ OVR_PY_NAMED_STRUCT(ovr::scene::Camera, "Camera")
 .def_class_field(ovr::scene::Camera, up)
 .def_class_field(ovr::scene::Camera, type)
 .def_class_field(ovr::scene::Camera, perspective)
-.def_class_field(ovr::scene::Camera, orthographic);
+.def_class_field(ovr::scene::Camera, orthographic)
+.def_class_copy(ovr::scene::Camera);
 
 
 /*
