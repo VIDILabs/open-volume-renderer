@@ -40,7 +40,7 @@ OVR_PY_NAMED_STRUCT(ovr::scene::Scene, "Scene")
 .def_class_field(ovr::scene::Scene, parallel_view)
 .def_class_field(ovr::scene::Scene, simple_path_tracing);
 
-def_named_method(ovr::scene::create_scene, "create_scene");
+def_named_method(create_scene_device, "create_scene");
 
 /*
  * Camera
@@ -96,21 +96,11 @@ OVR_PY_STRUCT_PTR(ovr::MainRenderer, "Renderer")
 .def_class_method(ovr::MainRenderer, set_transfer_function)
 .def_class_method(ovr::MainRenderer, set_focus)
 .def_class_method(ovr::MainRenderer, set_sample_per_pixel)
-.def_class_method(ovr::MainRenderer, set_add_lights)
 .def_class_method(ovr::MainRenderer, set_sparse_sampling)
 .def_class_method(ovr::MainRenderer, set_path_tracing)
-.def_class_method(ovr::MainRenderer, set_photonmapping)
 .def_class_method(ovr::MainRenderer, set_frame_accumulation)
 .def_class_method(ovr::MainRenderer, set_volume_sampling_rate)
-.def_class_method(ovr::MainRenderer, set_volume_density_scale)
-.def_class_method(ovr::MainRenderer, set_mat_ambient)
-.def_class_method(ovr::MainRenderer, set_mat_diffuse)
-.def_class_method(ovr::MainRenderer, set_mat_specular)
-.def_class_method(ovr::MainRenderer, set_mat_shininess)
-.def_class_method(ovr::MainRenderer, set_light_phi)
-.def_class_method(ovr::MainRenderer, set_light_theta)
-.def_class_method(ovr::MainRenderer, set_light_radius)
-.def_class_method(ovr::MainRenderer, set_light_intensity);
+.def_class_method(ovr::MainRenderer, set_volume_density_scale);
 
 def_named_method(create_renderer, "create_renderer");
 
