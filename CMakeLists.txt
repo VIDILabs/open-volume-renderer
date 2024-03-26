@@ -44,7 +44,7 @@ option(OVR_BUILD_PYTHON_BINDINGS "Build Python Bindings" OFF)
 ###############################################################################
 # Python setup
 ###############################################################################
-if(DOVR_BUILD_PYTHON_BINDINGS)
+if(OVR_BUILD_PYTHON_BINDINGS)
   # Find where `python` is by executing command `which python`
   execute_process(
     COMMAND "which" "python" OUTPUT_VARIABLE PYTHON_EXECUTABLE
