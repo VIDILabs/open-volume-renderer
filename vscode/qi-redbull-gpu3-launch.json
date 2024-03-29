@@ -97,10 +97,12 @@
             "args": [
                 "--rendering-mode", "0",
                 // "--simple-volume", "configs/scene_bonsai.json", 
-                "--neural-volume=mechhand-20220926010852-params.json", 
+                // "--neural-volume=mechhand-20220926010852-params.json", 
                 // "--neural-volume=1atmheatrelease-20220916175751-params.json"
                 // "--neural-volume=/mnt/scratch/fast0/qadwu/dvnr/build/Debug/model.json"
                 // "--neural-volume=/opt/nfs/home/qadwu/Work/instant-vnr-pytorch/output.json"
+                "--simple-volume=configs/scene_heatrelease_1atm.json", 
+                "--tfn=configs/scene_heatrelease_1atm.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/data",
