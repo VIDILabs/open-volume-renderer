@@ -154,3 +154,6 @@ dependencies:
   # - pip:
   #     - tinycudann==1.6
 prefix: /mnt/scratch/ssd/qadwu/miniconda3/envs/ovrpy
+
+# Additional packages
+#   pip install git+https://github.com/wilsonCernWq/tiny-cuda-nn/#subdirectory=bindings/torch
