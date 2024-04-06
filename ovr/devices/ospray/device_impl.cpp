@@ -404,7 +404,8 @@ DeviceOSPRay::Impl::~Impl() {
     ospUnmapFrameBuffer(framebuffer_rgba_ptr, ospray.framebuffer);
     ospRelease(ospray.framebuffer);
   }
-
+  
+  
   ospShutdown();
 }
 
@@ -415,38 +416,30 @@ DeviceOSPRay::Impl::init(int argc, const char** argv, DeviceOSPRay* p) {
   } 
   else {
     parent = p;
-
-    OSPError init_error = ospInit(&argc, argv);
-    if (init_error != OSP_NO_ERROR)
-      throw std::runtime_error("OSPRay not initialized correctly!");
-
-#if 1
-    OSPDevice device = ospGetCurrentDevice();
+    // Initialize ospray device
+    ospLoadModule("cpu");
+    OSPDevice device = ospNewDevice("cpu");
     if (!device)
       throw std::runtime_error("OSPRay device could not be fetched!");
-
-    ospDeviceSetErrorCallback(
-      device,
+    ospDeviceSetErrorCallback(device,
       [](void*, OSPError error, const char* what) {
         std::cerr << "OSPRay error: " << what << std::endl;
         std::runtime_error(std::string("OSPRay error: ") + what);
-      },
-      nullptr);
+      }, nullptr
+    );
     ospDeviceSetStatusCallback(
-      device, [](void*, const char* msg) { std::cout << msg; }, nullptr);
-
-    bool warnAsErrors = true;
+      device, [](void*, const char* msg) { std::cout << msg; }, nullptr
+    );
+    auto warnAsErrors = true;
     auto logLevel = OSP_LOG_WARNING;
     ospDeviceSetParam(device, "warnAsError", OSP_BOOL, &warnAsErrors);
     ospDeviceSetParam(device, "logLevel", OSP_INT, &logLevel);
     ospDeviceCommit(device);
+    ospSetCurrentDevice(device);
     ospDeviceRelease(device);
-#endif
-
   }
 
   build_scene();
-
   commit_framebuffer();
   commit_renderer();
   commit_camera();
