@@ -134,7 +134,7 @@ namespace glfwapp
         std::cout << "(C)urrent camera:" << std::endl;
         std::cout << "- from :" << fc.get_position() << std::endl;
         std::cout << "- poi  :" << fc.get_poi() << std::endl;
-        std::cout << "- upVec:" << fc.get_up() << std::endl;
+        std::cout << "- upVec:" << fc.get_accurate_up() << std::endl;
         std::cout << "- frame:" << fc.get_frame() << std::endl;
         break;
       case 'x':
