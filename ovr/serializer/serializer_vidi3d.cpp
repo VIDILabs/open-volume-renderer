@@ -270,7 +270,9 @@ create_scene_tfn(const json& jsview, ValueType type)
 
   else {
     /* calculate the volume value range ... */
-    throw std::runtime_error("unknown data range");
+    // throw std::runtime_error("unknown data range");
+    ret.value_range.x =  std::numeric_limits<float>::max();
+    ret.value_range.y = -std::numeric_limits<float>::max();
   }
 
   return ret;
