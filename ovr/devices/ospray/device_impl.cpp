@@ -248,6 +248,18 @@ DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometryTriangles ha
   return mesh;
 }
 
+OSPGeometry 
+DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometrySpheres handler) {
+  OSPGeometry sphere = ospNewGeometry("sphere");
+  assert(handler.position->type == ovr::VALUE_TYPE_FLOAT3);
+  auto position = ospNewSharedData1D(handler.position->data(), OSP_VEC3F, handler.position->dims.v);
+  ospSetObject(sphere, "sphere.position", position);
+  ospSetFloat(sphere, "radius", handler.radius);
+  ospCommit(sphere);
+  ospRelease(position);
+  return sphere;
+}
+
 OSPGeometry
 DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometryIsosurfaces handler) {
   OSPGeometry geom = ospNewGeometry("isosurface");
@@ -262,6 +274,7 @@ OSPGeometry
 DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry handler) {
   switch (handler.type) {
   case scene::Geometry::TRIANGLES_GEOMETRY:  return create_ospray_geometry(handler.triangles);
+  case scene::Geometry::SPHERES_GEOMETRY:    return create_ospray_geometry(handler.spheres);
   case scene::Geometry::ISOSURFACE_GEOMETRY: return create_ospray_geometry(handler.isosurfaces);
   default: throw std::runtime_error("unknown geometry type");
   }

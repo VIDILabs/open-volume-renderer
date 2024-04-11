@@ -62,6 +62,7 @@ protected:
 
   OSPGeometry create_ospray_geometry(scene::Geometry::GeometryTriangles handler);
   OSPGeometry create_ospray_geometry(scene::Geometry::GeometryIsosurfaces handler);
+  OSPGeometry create_ospray_geometry(scene::Geometry::GeometrySpheres handler);
   OSPGeometry create_ospray_geometry(scene::Geometry handler);
   
   OSPTexture create_ospray_texture(scene::Texture::TransferFunctionTexture handler);
