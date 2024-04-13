@@ -8,6 +8,7 @@
       },
       "endian" : "LITTLE_ENDIAN",
       "fileName" : [
+        "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/data/woodbranch_2048x2048x2048_uint16/woodbranch_2048x2048x2048_uint16.raw",
         "/media/data/qadwu/volume/openscivis/woodbranch_2048x2048x2048_uint16.raw"
       ],
       "fileUpperLeft" : false,
@@ -28,9 +29,9 @@
     "numLevels": 1
   },
   "macrocell": {
-    "fileName": [
-      "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/data/woodbranch_2048x2048x2048_uint16/woodbranch_mc_16_2x128x128x128_float32.bin"
-    ],
+    // "fileName": [
+    //   "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/data/woodbranch_2048x2048x2048_uint16/woodbranch_mc_16_2x128x128x128_float32.bin"
+    // ],
     "mcSize" : {
       "x": 16,
       "y": 16,
