@@ -8,19 +8,43 @@
       },
       "endian" : "LITTLE_ENDIAN",
       "fileName" : [
+        "/home/deralik/GitHub/open-volume-renderer/data/data/beechnut_1024x1024x1546_uint16/beechnut_1024x1024x1546_uint16.raw",
+        "/mnt/scratch/slow0/deralik/beechnut_1024x1024x1546_uint16/beechnut_1024x1024x1546_uint16.raw",
         "/media/data/qadwu/volume/openscivis/beechnut_1024x1024x1546_uint16.raw",
         "/home/deralik/GitHub/Instant-vnr-clean/data/data/beechnut_1024x1024x1546_uint16.raw"
       ],
       "fileUpperLeft" : false,
       "format" : "REGULAR_GRID_RAW_BINARY",
       "id" : 1,
-      "name" : "beechnut.data",
+      "name" : "beechnut_1024x1024x1546_uint16.raw",
       "offset" : 0,
       "type" : "UNSIGNED_SHORT"
     }
   ],
   "snapshot" : [
   ],
+  "cache": {
+    "config" : [
+      "/home/deralik/GitHub/open-volume-renderer/data/configs/config_beechnut.cfg"
+    ],
+    "capacity": {
+      "x": 16,
+      "y": 16,
+      "z": 16
+    },
+    "numLevels": 1
+  },
+  "macrocell": {
+    // "fileName": [
+    //   "/home/deralik/GitHub/open-volume-renderer/data/mechhand_mc_16_2x2x40x14_float32.bin",
+    //   "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/data/mechhand_640x220x229_float32/mechhand_mc_16_2x40x14x15_float32.bin"
+    // ],
+    "mcSize" : {
+      "x": 16,
+      "y": 16,
+      "z": 16
+    }
+  },
   "view" : {
     "backgroundColor" : {
       "a" : 1,
