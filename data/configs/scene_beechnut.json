@@ -8,8 +8,8 @@
       },
       "endian": "LITTLE_ENDIAN",
       "fileName": [
-        "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/data/beechnut_1024x1024x1546_uint16/beechnut_1024x1024x1546_uint16.raw",
-        // "/media/data/qadwu/volume/openscivis/beechnut_1024x1024x1546_uint16.raw",
+        // "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/data/beechnut_1024x1024x1546_uint16/beechnut_1024x1024x1546_uint16.raw",
+        "/media/data/qadwu/volume/openscivis/beechnut_1024x1024x1546_uint16.raw",
         "/home/deralik/GitHub/Instant-vnr-clean/data/data/beechnut_1024x1024x1546_uint16.raw"
       ],
       "fileUpperLeft": false,
@@ -26,14 +26,14 @@
       "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/config/config_beechnut.cfg"
     ],
     "capacity": {
-      "x": 16,
-      "y": 16,
-      "z": 16
+      "x": 5,
+      "y": 5,
+      "z": 5
     },
     "numLevels": 1
   },
   "macrocell": {
-    "fileName": "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/data/beechnut_1024x1024x1546_uint16/beechnut_mc_16_2x64x64x97_float32.bin",
+    // "fileName": "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/data/beechnut_1024x1024x1546_uint16/beechnut_mc_16_2x64x64x97_float32.bin",
     "mcSize": {
       "x": 16,
       "y": 16,
@@ -54,16 +54,16 @@
         "z": 772.5
       },
       "eye": {
-        "x": 511.5,
-        "y": 511.5,
-        "z": 1800
+        "x": 1521.32,
+        "y": 1601.87,
+        "z": 649.927
       },
       "fovy": 45,
       "projectionMode": "PERSPECTIVE",
       "up": {
-        "x": 0,
-        "y": 1,
-        "z": 0
+        "x": -0.0175501,
+        "y": -0.0952497,
+        "z": -0.991906
       },
       "zFar": 1800,
       "zNear": 1
