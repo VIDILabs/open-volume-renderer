@@ -1,11 +1,11 @@
 {
+    // cmake ../../ -DCMAKE_PREFIX_PATH=/home/qadwu/Software/ospray-2.11.0.x86_64.linux_sparse_sampling -DGDT_CUDA_ARCHITECTURES=89 -DOVR_BUILD_DEVICE_OSPRAY=ON -DOVR_BUILD_MODULE_NNCACHE=ON -DOVR_BUILD_PYTHON_BINDINGS=ON -G Ninja
     "cmake.configureSettings": {
         "CMAKE_PREFIX_PATH": [
             "/home/qadwu/Software/ospray-2.11.0.x86_64.linux_sparse_sampling"
         ],
         "CMAKE_CUDA_COMPILER": "/usr/local/cuda-12/bin/nvcc",
         "CUDA_TOOLKIT_ROOT_DIR": "/usr/local/cuda-12",
-        
         "GDT_CUDA_ARCHITECTURES": 89,
         "OVR_BUILD_SCENE_USD": false,
         "OVR_BUILD_OPENGL": true,
@@ -17,6 +17,7 @@
         "OVR_BUILD_MODULE_NNCACHE":  true,
         "OVR_BUILD_MODULE_VULKAN":   false,
         "OVR_BUILD_MODULE_FOVOLNET": false,
+        "OVR_BUILD_PYTHON_BINDINGS": true
     },
     "cmake.buildDirectory": "${workspaceFolder}/build/${command:cmake.buildType}",
     "cmake.configureOnEdit": false,

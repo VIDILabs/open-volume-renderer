@@ -41,6 +41,34 @@ option(OVR_BUILD_SCENE_USD "Build USDA Scene Reader" OFF)
 
 option(OVR_BUILD_PYTHON_BINDINGS "Build Python Bindings" OFF)
 
+###############################################################################
+# Python setup
+###############################################################################
+if(OVR_BUILD_PYTHON_BINDINGS)
+  # Find where `python` is by executing command `which python`
+  execute_process(
+    COMMAND "which" "python" OUTPUT_VARIABLE PYTHON_EXECUTABLE
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if("${PYTHON_EXECUTABLE}" STREQUAL "")
+    message(FATAL_ERROR "Python not found")
+  else()
+    message(STATUS "PYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}")
+  endif()
+  # Check if CXX11 ABI should be enabled. Must match Python.
+  execute_process(
+    COMMAND "${PYTHON_EXECUTABLE}" -c 
+      "import torch; print(torch._C._GLIBCXX_USE_CXX11_ABI)"
+    OUTPUT_VARIABLE PYTHON_GLIBCXX_USE_CXX11_ABI
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if(PYTHON_GLIBCXX_USE_CXX11_ABI STREQUAL "True")
+    add_definitions(-D_GLIBCXX_USE_CXX11_ABI=1)
+  else()
+    add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
+  endif()
+endif()
+
 # ------------------------------------------------------------------
 # toggles
 # ------------------------------------------------------------------
@@ -117,6 +145,9 @@ else()
 endif()
 list(APPEND CUDA_NVCC_FLAGS "--extended-lambda")
 list(APPEND CUDA_NVCC_FLAGS "--expt-relaxed-constexpr")
+list(APPEND CUDA_NVCC_FLAGS "-U__CUDA_NO_HALF_OPERATORS__")
+list(APPEND CUDA_NVCC_FLAGS "-U__CUDA_NO_HALF_CONVERSIONS__")
+list(APPEND CUDA_NVCC_FLAGS "-U__CUDA_NO_HALF2_OPERATORS__")
 
 if(OVR_BUILD_CUDA)
   # adapted from https://stackoverflow.com/a/69353718

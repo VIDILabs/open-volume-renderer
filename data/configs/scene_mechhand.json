@@ -8,11 +8,12 @@
       },
       "endian" : "LITTLE_ENDIAN",
       "fileName" : [
-        "/home/deralik/GitHub/open-volume-renderer/data/data/MechHand_f_640x220x229_float32/MechHand_f_640x220x229_float32.raw",
-        "F:/mechhand/MechHand_f_640x220x229.raw",
-        "/media/data/qadwu/volume/others/MechHand_f_640x220x229.raw",
-        "/home/davbauer/Downloads/MechHand_f_640x220x229.raw",
-        "F:/mechhand/MechHand_f_640x220x229.raw"
+        // "/home/deralik/GitHub/open-volume-renderer/data/data/MechHand_f_640x220x229_float32/MechHand_f_640x220x229_float32.raw",
+        // "F:/mechhand/MechHand_f_640x220x229.raw",
+        // "/media/data/qadwu/volume/others/MechHand_f_640x220x229.raw",
+        // "/home/davbauer/Downloads/MechHand_f_640x220x229.raw",
+        // "F:/mechhand/MechHand_f_640x220x229.raw",
+        "/home/deralik/Github/open-volume-renderer/data/data/MechHand_f_640x220x229_float32/MechHand_f_640x220x229_float32.raw"
       ],
       "fileUpperLeft" : false,
       "format" : "REGULAR_GRID_RAW_BINARY",
@@ -26,7 +27,7 @@
   ],
   "cache": {
     "config" : [
-      "/home/deralik/GitHub/open-volume-renderer/data/configs/config_mechhand.cfg",
+      "/home/deralik/Github/open-volume-renderer/data/configs/config_mechhand.cfg",
       "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/config/config_mechhand.cfg"
     ],
     "capacity": {
@@ -37,10 +38,10 @@
     "numLevels": 1
   },
   "macrocell": {
-    // "fileName": [
-    //   "/home/deralik/GitHub/open-volume-renderer/data/mechhand_mc_16_2x2x40x14_float32.bin",
-    //   "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/data/mechhand_640x220x229_float32/mechhand_mc_16_2x40x14x15_float32.bin"
-    // ],
+    "fileName": [
+      "/home/deralik/GitHub/open-volume-renderer/data/mechhand_mc_16_2x2x40x14_float32.bin",
+      "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/data/mechhand_640x220x229_float32/mechhand_mc_16_2x40x14x15_float32.bin"
+    ],
     "mcSize" : {
       "x": 16,
       "y": 16,

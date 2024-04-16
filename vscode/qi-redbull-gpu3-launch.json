@@ -90,6 +90,45 @@
             ]
         },
         {
+            "name": "(gdb) vnr_int_single",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/${command:cmake.buildType}/vnr_int_single",
+            "args": [
+                "--rendering-mode", "0",
+                // "--simple-volume", "configs/scene_bonsai.json", 
+                // "--neural-volume=mechhand-20220926010852-params.json", 
+                // "--neural-volume=1atmheatrelease-20220916175751-params.json"
+                // "--neural-volume=/mnt/scratch/fast0/qadwu/dvnr/build/Debug/model.json"
+                // "--neural-volume=/opt/nfs/home/qadwu/Work/instant-vnr-pytorch/output.json"
+                "--simple-volume=configs/scene_heatrelease_1atm.json", 
+                "--tfn=configs/scene_heatrelease_1atm.json"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/data",
+            "environment": [
+                {
+                    "name": "DISPLAY",
+                    "value": ":2"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/home/qadwu/vglgdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
             "name": "(gdb) Render Batch",
             "type": "cppdbg",
             "request": "launch",
@@ -144,7 +183,7 @@
                 },
                 {
                     "name": "DISPLAY",
-                    "value": ":2"
+                    "value": ":1"
                 },
                 {
                     "name": "CUDA_VISIBLE_DEVICES",
@@ -153,7 +192,7 @@
             ],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerPath": "/home/qadwu/vglgdb",
+            // "miDebuggerPath": "/home/qadwu/vglgdb",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
