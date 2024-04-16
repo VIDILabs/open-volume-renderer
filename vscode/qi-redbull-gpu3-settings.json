@@ -17,7 +17,7 @@
         "OVR_BUILD_MODULE_NNCACHE":  true,
         "OVR_BUILD_MODULE_VULKAN":   false,
         "OVR_BUILD_MODULE_FOVOLNET": false,
-        "OVR_BUILD_PYTHON_BINDINGS": true
+        "OVR_BUILD_PYTHON_BINDINGS": false
     },
     "cmake.buildDirectory": "${workspaceFolder}/build/${command:cmake.buildType}",
     "cmake.configureOnEdit": false,

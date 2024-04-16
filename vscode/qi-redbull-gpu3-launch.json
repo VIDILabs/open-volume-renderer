@@ -59,11 +59,11 @@
                 // "--pause-inference",
                 // "--pause-training",
                 "--volume", 
-                "configs/scene_chameleon.json",
-                // "configs/scene_beechnut.json",
+                // "configs/scene_chameleon.json",
+                "configs/scene_beechnut.json",
                 // "configs/scene_mechhand.json",
                 "--network",
-                "${workspaceFolder}/build/${command:cmake.buildType}/example-model.json"
+                "${workspaceFolder}/data/example-model.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/data",
@@ -169,8 +169,8 @@
             "args": [
                 // "configs/scene_mechhand.json",
                 // "configs/scene_chameleon.json",
-                "configs/scene_woodbranch.json",
-                // "configs/scene_beechnut.json",
+                // "configs/scene_woodbranch.json",
+                "configs/scene_beechnut.json",
                 // "${input:device}",
                 "nncache"
             ],
@@ -183,7 +183,7 @@
                 },
                 {
                     "name": "DISPLAY",
-                    "value": ":1"
+                    "value": ":2"
                 },
                 {
                     "name": "CUDA_VISIBLE_DEVICES",
