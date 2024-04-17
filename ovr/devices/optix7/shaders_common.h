@@ -78,6 +78,7 @@ struct PathTracingPayload {
   /* radiance output */
   float alpha = 0.f;
   vec3f color = 0.f;
+  vec3f color_direct = 0.f;
 
   /* by path tracing */
   void* rng = nullptr;

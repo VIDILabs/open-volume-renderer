@@ -118,6 +118,7 @@ protected:
   bool framebuffer_should_reset_accum{ true };
   const void* framebuffer_rgba_ptr{ 0 };
   const void* framebuffer_grad_ptr{ 0 }; // TODO gradient layer is not calculated //
+  std::vector<RenderStats> framebuffer_renderstats;
 
   bool camera_should_update_aspect_ratio{ 0 };
 

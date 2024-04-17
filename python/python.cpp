@@ -69,6 +69,7 @@ OVR_PY_NAMED_STRUCT(ovr::scene::Scene, "Scene")
 .def_class_field(ovr::scene::Scene, use_dda)
 .def_class_field(ovr::scene::Scene, parallel_view)
 .def_class_field(ovr::scene::Scene, simple_path_tracing)
+.def_class_method(ovr::scene::Scene, get_bounds)
 .def_class_copy(ovr::scene::Scene);
 
 def_named_method(create_scene_device, "create_scene");
@@ -99,6 +100,12 @@ OVR_PY_NAMED_STRUCT(ovr::scene::Camera, "Camera")
  * Renderer
  *
  */ 
+OVR_PY_NAMED_STRUCT(ovr::RenderStats, "RenderStats")
+.def_class_field(ovr::RenderStats, pixel_index)
+.def_class_field(ovr::RenderStats, ray_direction)
+.def_class_field(ovr::RenderStats, illumination_direct)
+.def_class_field(ovr::RenderStats, illumination_indirect);
+
 OVR_PY_NAMED_STRUCT(ovr::MainRenderer::FrameBufferData, "FrameBufferData")
 .def_init()
 .def_class_lambda(ovr::MainRenderer:FrameBufferData, rgba, [](ovr::MainRenderer::FrameBufferData& self) {
@@ -110,6 +117,17 @@ OVR_PY_NAMED_STRUCT(ovr::MainRenderer::FrameBufferData, "FrameBufferData")
         float* frame = (float*)self.grad->to_cpu()->data();
         auto size = self.grad->get_size<float>();
         return py::array_t<float>(size, frame);
+})
+.def_class_lambda(ovr::MainRenderer::FrameBufferData, stats, [](ovr::MainRenderer::FrameBufferData& self) {
+        ovr::RenderStats* frame = (ovr::RenderStats*)self.stats->to_cpu()->data();
+        auto size = self.stats->get_size<ovr::RenderStats>();
+        std::vector<ovr::RenderStats> result (frame, frame+size);
+        return result;
+})
+.def_class_lambda(ovr::MainRenderer::FrameBufferData, stats_as_memoryview, [](ovr::MainRenderer::FrameBufferData& self) {
+        uint8_t* frame = (uint8_t*)self.stats->to_cpu()->data();
+        auto size = self.stats->get_size_in_bytes();
+        return py::memoryview::from_memory(frame, size);
 });
 
 OVR_PY_STRUCT_PTR(ovr::MainRenderer, "Renderer")

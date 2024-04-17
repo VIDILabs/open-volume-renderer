@@ -161,6 +161,12 @@ StructuredRegularVolume::set_sampling_rate(float r, float b)
     base = b;
 }
 
+void
+StructuredRegularVolume::set_density_scale(float d)
+{
+  self.density_scale = d;
+}
+
 void*
 StructuredRegularVolume::get_sbt_pointer(cudaStream_t stream)
 {

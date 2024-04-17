@@ -535,6 +535,9 @@ DeviceOSPRay::Impl::commit_framebuffer() {
     framebuffer_rgba_ptr = ospMapFrameBuffer(ospray.framebuffer, OSP_FB_COLOR);
     framebuffer_should_reset_accum = true;
 
+    // update renderstats buffer
+    framebuffer_renderstats.resize(framebuffer_size_latest.long_product());
+
     // update sparse sampling buffer
     sparse_sampling_xs_ys.resize(framebuffer_size_latest.long_product() * 2ULL);
     ospray.sparse_samples = ospNewSharedData(sparse_sampling_xs_ys.data(), OSP_VEC2I, sparse_sampling_xs_ys.size()/2ULL);
@@ -816,6 +819,8 @@ DeviceOSPRay::Impl::render() {
       int x = sparse_sampling_xs_ys[2 * i + 0];
       int y = sparse_sampling_xs_ys[2 * i + 1];
       ((vec4f*)framebuffer_rgba_ptr)[y * framebuffer_size_latest.x + x] = data[i];
+      framebuffer_renderstats[y * framebuffer_size_latest.x + x].pixel_index = i;
+      // TODO: Write ray_direction to renderstats
     });
     ospUnmapFrameBuffer(data, fb);
 
@@ -830,6 +835,7 @@ void
 DeviceOSPRay::Impl::mapframe(FrameBufferData* fb) {
   const size_t num_bytes = framebuffer_size_latest.long_product();
   fb->rgba->set_data((void*)framebuffer_rgba_ptr, num_bytes * sizeof(vec4f), CrossDeviceBuffer::DEVICE_CPU);
+  fb->stats->set_data(framebuffer_renderstats.data(), num_bytes * sizeof(RenderStats), CrossDeviceBuffer::DEVICE_CPU);
   fb->size = framebuffer_size_latest;
 }
 

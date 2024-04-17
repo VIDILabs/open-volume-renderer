@@ -209,6 +209,14 @@ DeviceOptix7::Impl::commit()
     framebuffer_reset = true;
   }
 
+  if (parent->params.volume_density_scale.update()) {
+    for (auto& v : volumes) {
+      v.set_density_scale(parent->params.volume_density_scale.get());
+    }
+    volumes_changed = true;
+    framebuffer_reset = true;
+  }
+
   if (volumes_changed) {
     for (auto& v : volumes) {
       v.commit(framebuffer_stream);
@@ -226,6 +234,7 @@ DeviceOptix7::Impl::commit()
     framebuffer.back_reset();
   }
   framebuffer_size_updated = false;
+
 }
 
 void
@@ -241,6 +250,7 @@ DeviceOptix7::Impl::render()
   /* layout has to match the framebuffer definition in params.h */
   params.frame.rgba = (vec4f*)framebuffer.back_dpointer(/*layout=*/0);
   params.frame.grad = (vec3f*)framebuffer.back_dpointer(/*layout=*/1);
+  params.frame.stats = (RenderStats*)framebuffer.back_dpointer(/*layout=*/2);
   params.frame_accum_rgba = (vec4f*)framebuffer_accum_rgba.d_pointer();
   params.frame_accum_grad = (vec3f*)framebuffer_accum_grad.d_pointer();
 
@@ -274,11 +284,10 @@ void
 DeviceOptix7::Impl::mapframe(FrameBufferData* fb)
 {
   /* layout has to match the framebuffer definition in params.h */
-  // fb->rgba = (vec4f*)framebuffer.host_pointer(0);
-  // fb->grad = (vec3f*)framebuffer.host_pointer(1);
   const size_t num_bytes = framebuffer.size().long_product();
   fb->rgba->set_data(framebuffer.front_dpointer(0), num_bytes * sizeof(vec4f), CrossDeviceBuffer::DEVICE_CUDA);
   fb->grad->set_data(framebuffer.front_dpointer(1), num_bytes * sizeof(vec3f), CrossDeviceBuffer::DEVICE_CUDA);
+  fb->stats->set_data(framebuffer.front_dpointer(2), num_bytes * sizeof(RenderStats), CrossDeviceBuffer::DEVICE_CUDA);
   fb->size = framebuffer.size();
 }
 

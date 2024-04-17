@@ -102,6 +102,17 @@ endif()
 # configure
 # ------------------------------------------------------------------
 
+# set library output path
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+# if(PYTHON_GLIBCXX_USE_CXX11_ABI STREQUAL "True")
+#   add_definitions(-D_GLIBCXX_USE_CXX11_ABI=1)
+# else()
+#   add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
+# endif()
+
 if(APPLE) # MacOS is not supported ...
 	set(CMAKE_MACOSX_RPATH ON)
 endif()
@@ -139,9 +150,9 @@ else()
 	list(APPEND CUDA_NVCC_FLAGS "-Xcompiler=-mf16c")
 	list(APPEND CUDA_NVCC_FLAGS "-Xcompiler=-Wno-float-conversion")
 	list(APPEND CUDA_NVCC_FLAGS "-Xcompiler=-fno-strict-aliasing")
-	if(BUILD_SHARED_LIBS)
-		list(APPEND CUDA_NVCC_FLAGS "-fPIC")
-	endif()
+	# if(BUILD_SHARED_LIBS)
+	# 	list(APPEND CUDA_NVCC_FLAGS "-fPIC")
+	# endif()
 endif()
 list(APPEND CUDA_NVCC_FLAGS "--extended-lambda")
 list(APPEND CUDA_NVCC_FLAGS "--expt-relaxed-constexpr")

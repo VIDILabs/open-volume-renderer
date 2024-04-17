@@ -279,7 +279,7 @@ delta_tracking(const DeviceStructuredRegularVolume& self,
                int& mip_level)
 {
   const auto wto = get_xfm_wto();
-  const auto density_scale = 1.f;
+  const auto density_scale = self.density_scale;
   const auto max_opacity = 1.f;
   const auto mu_max = density_scale * max_opacity;
 
@@ -499,13 +499,14 @@ pathtracing(const DeviceStructuredRegularVolume& self,
   if (!delta_tracking(self, rng, ray_org, ray_dir, t_min, t_max, in_world_space, t, albedo, mip_level)) {
     if (scatter_index != 0) {
       Le = Le + vec3f(optix_launch_params.light_ambient_intensity); // ambient light
+      if (scatter_index == 1) payload.color_direct = Le;
     }
   }
 
   // new scattering event at sample point
   else {
-    scatter_index++;
-    if (scatter_index <= optix_launch_params.max_num_scatters) {
+    // scatter_index++;
+    if (scatter_index < optix_launch_params.max_num_scatters) {
 
       const vec3f _org = ray_org + t * ray_dir;
       const vec3f _dir = uniform_sample_sphere(1.f, rng->get_floats());
@@ -534,6 +535,7 @@ pathtracing(const DeviceStructuredRegularVolume& self,
 
       const vec3f sigma_s_sample = 1.f * albedo;
       Le = Le + sigma_s_sample * scattering.color;
+      payload.color_direct = sigma_s_sample * scattering.color_direct;
     }
   }
 
@@ -607,10 +609,12 @@ render_pathtracing(vec3f org,
                    float& _alpha,
                    vec3f& _color,
                    vec3f& _gradient,
-                   vec2f& _optical_flow)
+                   vec2f& _optical_flow,
+                   RenderStats& _stats)
 {
   PathTracingPayload payload;
   payload.rng = rng;
+  payload.scatter_index = 0;
 
   uint32_t u0, u1;
   pack_pointer(&payload, u0, u1);
@@ -626,6 +630,8 @@ render_pathtracing(vec3f org,
 
   _alpha += payload.alpha;
   _color += payload.color;
+  _stats.illumination_direct += payload.color_direct;
+  _stats.illumination_indirect += payload.color - payload.color_direct;
 }
 
 extern "C" __global__ void
@@ -648,11 +654,16 @@ __raygen__render_frame()
     vec3f color = 0.f;
     vec3f gradient = 0.f;
     vec2f optical_flow = 0.f;
+    RenderStats stats;
   } output;
   output.alpha = 0.f;
   output.color = 0.f;
   output.gradient = 0.f;
   output.optical_flow = 0.f;
+  output.stats.illumination_direct = vec3f(0.f);
+  output.stats.illumination_indirect = vec3f(0.f);
+  output.stats.ray_direction = vec3f(0.f);
+  output.stats.pixel_index = pixel_index;
 
   int spp = optix_launch_params.sample_per_pixel;
   assert(optix_launch_params.sample_per_pixel > 0 && "'sample_per_pixel' should always be positive");
@@ -668,13 +679,14 @@ __raygen__render_frame()
     vec3f ray_dir = normalize(camera.direction +                      /* -z axis */
                               (screen.x - 0.5f) * camera.horizontal + /* x shift */
                               (screen.y - 0.5f) * camera.vertical);   /* y shift */
+    output.stats.ray_direction += ray_dir;
 
     /* the values we store the PRD pointer in: */
     // uint32_t u0, u1;
 
     /* our per-ray data for this example. initialization matters! */
     render_pathtracing(camera.position, ray_dir, &rng_state, //
-                       output.alpha, output.color, output.gradient, output.optical_flow);
+                       output.alpha, output.color, output.gradient, output.optical_flow, output.stats);
   }
 
   float rspp = 1.f / spp;
@@ -682,6 +694,9 @@ __raygen__render_frame()
   output.color *= rspp;
   output.gradient *= rspp;
   output.optical_flow *= vec2f(rspp);
+  output.stats.ray_direction *= rspp;
+  output.stats.illumination_direct *= rspp;
+  output.stats.illumination_indirect *= rspp;
 
   /* and write to frame buffer ... */
   // {
@@ -727,6 +742,9 @@ __raygen__render_frame()
 
   /* to visualize sparse sampling results */
   // optix_launch_params.frame.grad[pixel_index] = vec3f(1.f);
+
+  /* render stats */
+  optix_launch_params.frame.stats[pixel_index] = output.stats;
 }
 
 } // namespace optix7

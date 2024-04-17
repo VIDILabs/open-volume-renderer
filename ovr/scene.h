@@ -361,6 +361,8 @@ struct Scene {
   std::vector<scene::Light> lights;
   scene::Camera camera;
 
+  box3f get_bounds();
+
   int ao_samples = 0;
   int spp = 1;
   /* volume rendering */
