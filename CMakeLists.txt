@@ -55,18 +55,18 @@ if(OVR_BUILD_PYTHON_BINDINGS)
   else()
     message(STATUS "PYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}")
   endif()
-  # Check if CXX11 ABI should be enabled. Must match Python.
-  execute_process(
-    COMMAND "${PYTHON_EXECUTABLE}" -c 
-      "import torch; print(torch._C._GLIBCXX_USE_CXX11_ABI)"
-    OUTPUT_VARIABLE PYTHON_GLIBCXX_USE_CXX11_ABI
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-  )
-  if(PYTHON_GLIBCXX_USE_CXX11_ABI STREQUAL "True")
-    add_definitions(-D_GLIBCXX_USE_CXX11_ABI=1)
-  else()
-    add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
-  endif()
+  # # Check if CXX11 ABI should be enabled. Must match Python.
+  # execute_process(
+  #   COMMAND "${PYTHON_EXECUTABLE}" -c 
+  #     "import torch; print(torch._C._GLIBCXX_USE_CXX11_ABI)"
+  #   OUTPUT_VARIABLE PYTHON_GLIBCXX_USE_CXX11_ABI
+  #   OUTPUT_STRIP_TRAILING_WHITESPACE
+  # )
+  # if(PYTHON_GLIBCXX_USE_CXX11_ABI STREQUAL "True")
+  #   add_definitions(-D_GLIBCXX_USE_CXX11_ABI=1)
+  # else()
+  #   add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
+  # endif()
 endif()
 
 # ------------------------------------------------------------------
@@ -106,12 +106,6 @@ endif()
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-
-# if(PYTHON_GLIBCXX_USE_CXX11_ABI STREQUAL "True")
-#   add_definitions(-D_GLIBCXX_USE_CXX11_ABI=1)
-# else()
-#   add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
-# endif()
 
 if(APPLE) # MacOS is not supported ...
 	set(CMAKE_MACOSX_RPATH ON)
