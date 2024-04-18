@@ -409,10 +409,10 @@ array_1d_float4_t
 CreateArray1DFloat4(const vec4f* input, size_t len, bool shared = false);
 
 array_1d_float4_t
-CreateColorMap(const std::string& name);
+CreateColorMap(const char* name);
 
 array_3d_scalar_t
-CreateArray3DScalarFromFile(const std::string& filename, vec3i dims, ValueType type, size_t offset, bool is_big_endian);
+CreateArray3DScalarFromFile(const char* filename, vec3i dims, ValueType type, size_t offset, bool is_big_endian);
 
 // ------------------------------------------------------------------
 //

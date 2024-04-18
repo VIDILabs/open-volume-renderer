@@ -291,7 +291,7 @@ create_scene_volume(const json& jsdata, std::string workdir)
     auto is_big_endian = scalar_from_json<Endianness>(jsdata, ENDIAN, OVR_LITTLE_ENDIAN) == OVR_BIG_ENDIAN;
 
     volume.type = ovr::scene::Volume::STRUCTURED_REGULAR_VOLUME;
-    volume.structured_regular.data = CreateArray3DScalarFromFile(filename, dims, type, offset, is_big_endian);
+    volume.structured_regular.data = CreateArray3DScalarFromFile(filename.c_str(), dims, type, offset, is_big_endian);
 
     if (jsdata.contains(SCALES)) {
       auto scales = scalar_from_json<vec3f>(jsdata[SCALES]);

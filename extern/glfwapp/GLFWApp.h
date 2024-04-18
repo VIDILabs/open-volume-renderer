@@ -39,7 +39,7 @@ namespace glfwapp
 
   struct GLFWindow
   {
-    GLFWindow(const std::string &title, int w, int h);
+    GLFWindow(const char* title, int w, int h);
     ~GLFWindow();
 
     void disableResizing()
@@ -219,7 +219,7 @@ namespace glfwapp
                     const vec3f &camera_up,
                     const float worldScale,
                     int w = 800, int h = 800)
-        : GLFWindow(title, w, h),
+        : GLFWindow(title.c_str(), w, h),
           cameraFrame(worldScale)
     {
       cameraFrame.setOrientation(camera_from, camera_at, camera_up);

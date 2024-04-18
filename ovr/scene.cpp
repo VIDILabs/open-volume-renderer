@@ -102,19 +102,19 @@ array_1d_float4_t CreateArray1DFloat4(const std::vector<vec4f>& input, bool shar
 array_1d_float4_t CreateArray1DFloat4(const vec4f* input, size_t len,  bool shared) { return CreateArray1DScalar(input, len, shared); }
 
 array_1d_float4_t
-CreateColorMap(const std::string& name)
+CreateColorMap(const char* name)
 {
   if (colormap::has(name)) {
     const std::vector<vec4f>& arr = (const std::vector<vec4f>&)colormap::get(name);
     return CreateArray1DFloat4(arr, false);
   }
   else {
-    throw std::runtime_error("Unexpected colormap name: " + name);
+    throw std::runtime_error("Unexpected colormap name: " + std::string(name));
   }
 }
 
 array_3d_scalar_t
-CreateArray3DScalarFromFile(const std::string& filename, vec3i dims, ValueType type, size_t offset, bool is_big_endian)
+CreateArray3DScalarFromFile(const char* filename, vec3i dims, ValueType type, size_t offset, bool is_big_endian)
 {
   // data geometry
   assert(dims.x > 0 && dims.y > 0 && dims.z > 0);
@@ -129,7 +129,7 @@ CreateArray3DScalarFromFile(const std::string& filename, vec3i dims, ValueType t
     desc.type = (vidi::VoxelType)type;
     desc.offset = offset;
     desc.is_big_endian = is_big_endian;
-    data_buffer = vidi::read_volume_structured_regular(filename, desc);
+    data_buffer = vidi::read_volume_structured_regular(std::string(filename), desc);
   }
 
   // finalize

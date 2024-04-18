@@ -61,7 +61,7 @@ namespace glfwapp
     glfwTerminate();
   }
 
-  GLFWindow::GLFWindow(const std::string &title, int w, int h)
+  GLFWindow::GLFWindow(const char* title, int w, int h)
   {
     glfwSetErrorCallback(glfw_error_callback);
 #if __APPLE__
@@ -82,7 +82,7 @@ namespace glfwapp
     glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
 #endif
 
-    handle = glfwCreateWindow(w, h, title.c_str(), NULL, NULL);
+    handle = glfwCreateWindow(w, h, title, NULL, NULL);
     if (!handle)
     {
       glfwTerminate();
