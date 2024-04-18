@@ -170,7 +170,8 @@
                 // "configs/scene_mechhand.json",
                 // "configs/scene_chameleon.json",
                 // "configs/scene_woodbranch.json",
-                "configs/scene_beechnut.json",
+                // "configs/scene_beechnut.json",
+                "configs/scene_rotstrat_temperature.json",
                 // "${input:device}",
                 "nncache"
             ],
@@ -187,7 +188,7 @@
                 },
                 {
                     "name": "CUDA_VISIBLE_DEVICES",
-                    "value": "0"
+                    "value": "1"
                 }
             ],
             "externalConsole": false,
