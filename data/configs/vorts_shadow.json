@@ -10,7 +10,8 @@
       "fileName" : [
         "data/data/vorts1.data",
         "/home/davidbau/repos/open-volume-renderer/data/volume/vorts1.data",
-        "/media/data/qadwu/volume/vortices/vorts1.data"
+        "/media/data/qadwu/volume/vortices/vorts1.data",
+        "/datasets/vortices/vorts1.data"
       ],
       "fileUpperLeft" : false,
       "format" : "REGULAR_GRID_RAW_BINARY",
