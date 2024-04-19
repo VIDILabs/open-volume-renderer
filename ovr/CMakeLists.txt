@@ -43,9 +43,15 @@ add_library(rendercommon SHARED
 )
 target_link_libraries(rendercommon PUBLIC gdt tfnmodule TBB::tbb Threads::Threads)
 target_link_libraries(rendercommon PRIVATE ${CMAKE_DL_LIBS})
-target_include_directories(rendercommon PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/..)
-target_include_directories(rendercommon PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/common)
-target_include_directories(rendercommon PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(rendercommon 
+PUBLIC  
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../extern>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/common>
+PRIVATE 
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
 
 if(OVR_BUILD_CUDA)
   target_sources(rendercommon PRIVATE 
@@ -55,7 +61,17 @@ if(OVR_BUILD_CUDA)
   target_link_libraries(rendercommon PUBLIC CUDA::cudart_static) # this is useful for including CUDABuffer in C++ code
   target_compile_options(rendercommon PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>)
   target_compile_definitions(rendercommon PUBLIC OVR_BUILD_CUDA_DEVICES=1)
-  target_include_directories(rendercommon PUBLIC ${CMAKE_CURRENT_LIST_DIR}/common/cuda)
+  target_include_directories(rendercommon PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common/cuda>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/common/cuda>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/common>
+  )
+  # TODO: this is just a temporary hack to get the code to compile
+  # Copy cuda/cuda_utils.h to cuda_misc.h 
+  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${CMAKE_CURRENT_SOURCE_DIR}/common/cuda/cuda_utils.h
+    ${CMAKE_CURRENT_BINARY_DIR}/common/cuda/cuda_misc.h
+  )
 endif()
 
 # embed data into source

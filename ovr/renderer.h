@@ -77,6 +77,13 @@ count_tfn(const scene::Scene& scene, scene::TransferFunction& scene_tfn)
   return count;
 }
 
+struct RenderStats {
+  uint32_t pixel_index;
+  vec3f ray_direction;
+  vec3f illumination_direct;
+  vec3f illumination_indirect;
+};
+
 /*! a sample OptiX-7 renderer that demonstrates how to set up
     context, module, programs, pipeline, SBT, etc, and perform a
     valid launch that renders some pixel (using a simple test
@@ -92,10 +99,12 @@ public:
     vec2i size{ 0 };
     std::shared_ptr<CrossDeviceBuffer> rgba;
     std::shared_ptr<CrossDeviceBuffer> grad;
+    std::shared_ptr<CrossDeviceBuffer> stats;
 
     FrameBufferData() {
       rgba = std::make_shared<CrossDeviceBuffer>();
       grad = std::make_shared<CrossDeviceBuffer>();
+      stats = std::make_shared<CrossDeviceBuffer>();
     }
   };
 

@@ -82,7 +82,7 @@ class RendererTestCase(unittest.TestCase):
         except Exception:
             self.fail("Renderer render failed")
 
-    def test_mapframe(self):
+    def test_mapframe_rgba(self):
         try:
             framebufferdata = ovrpy.FrameBufferData()
 
@@ -103,7 +103,33 @@ class RendererTestCase(unittest.TestCase):
                             "Mapped frame is not empty")
 
         except Exception:
-            self.fail("Renderer mapframe failed")
+            self.fail("Renderer mapframe RGBA failed")
+    
+    def test_mapframe_stats(self):
+        try:
+            framebufferdata = ovrpy.FrameBufferData()
+
+            # Uninitialized framebufferdata should be invalid
+            self.assertRaises(RuntimeError, framebufferdata.stats)
+
+            self.renderer.init(self.args, self.scene, self.scene.camera)
+            self.renderer.commit()
+            self.renderer.render()
+            self.renderer.mapframe(framebufferdata)
+
+            # Mapped framebufferdata should match the size of the renderer's framebuffer size
+            pixeldata = framebufferdata.stats()
+            self.assertEqual(len(pixeldata),
+                             self.fbsize.x * self.fbsize.y,
+                             "Mapped framebuffer does not match renderer framebuffer size")
+            # Without having called render(), the framebuffer should be completely empty
+            self.assertEqual(pixeldata[0].pixel_index, 0,
+                            "Mapped frame does not match pixel_index layout")
+            self.assertEqual(pixeldata[-1].pixel_index, len(pixeldata)-1,
+                            "Mapped frame does not match pixel_index layout")
+
+        except Exception:
+            self.fail("Renderer mapframe renderstats failed")
 
 
 if __name__ == "__main__":

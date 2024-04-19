@@ -41,6 +41,34 @@ option(OVR_BUILD_SCENE_USD "Build USDA Scene Reader" OFF)
 
 option(OVR_BUILD_PYTHON_BINDINGS "Build Python Bindings" OFF)
 
+###############################################################################
+# Python setup
+###############################################################################
+if(OVR_BUILD_PYTHON_BINDINGS)
+  # Find where `python` is by executing command `which python`
+  execute_process(
+    COMMAND "which" "python" OUTPUT_VARIABLE PYTHON_EXECUTABLE
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if("${PYTHON_EXECUTABLE}" STREQUAL "")
+    message(FATAL_ERROR "Python not found")
+  else()
+    message(STATUS "PYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}")
+  endif()
+  # # Check if CXX11 ABI should be enabled. Must match Python.
+  # execute_process(
+  #   COMMAND "${PYTHON_EXECUTABLE}" -c 
+  #     "import torch; print(torch._C._GLIBCXX_USE_CXX11_ABI)"
+  #   OUTPUT_VARIABLE PYTHON_GLIBCXX_USE_CXX11_ABI
+  #   OUTPUT_STRIP_TRAILING_WHITESPACE
+  # )
+  # if(PYTHON_GLIBCXX_USE_CXX11_ABI STREQUAL "True")
+  #   add_definitions(-D_GLIBCXX_USE_CXX11_ABI=1)
+  # else()
+  #   add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
+  # endif()
+endif()
+
 # ------------------------------------------------------------------
 # toggles
 # ------------------------------------------------------------------
@@ -56,7 +84,7 @@ endif()
 # force to pull subdirectories, credit to Nate :)
 find_package(Git)
 set(WORKDIR ${CMAKE_CURRENT_SOURCE_DIR})
-if(GIT_FOUND AND EXISTS "${WORKDIR}/.git")
+if(GIT_FOUND AND IS_DIRECTORY "${WORKDIR}/.git")
   option(GIT_SUBMODULE "Check submodules during build" ON)
   if(GIT_SUBMODULE)
     message(STATUS "Submodule update")
@@ -73,6 +101,11 @@ endif()
 # ------------------------------------------------------------------
 # configure
 # ------------------------------------------------------------------
+
+# set library output path
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 if(APPLE) # MacOS is not supported ...
 	set(CMAKE_MACOSX_RPATH ON)
@@ -111,12 +144,15 @@ else()
 	list(APPEND CUDA_NVCC_FLAGS "-Xcompiler=-mf16c")
 	list(APPEND CUDA_NVCC_FLAGS "-Xcompiler=-Wno-float-conversion")
 	list(APPEND CUDA_NVCC_FLAGS "-Xcompiler=-fno-strict-aliasing")
-	if(BUILD_SHARED_LIBS)
-		list(APPEND CUDA_NVCC_FLAGS "-fPIC")
-	endif()
+	# if(BUILD_SHARED_LIBS)
+	# 	list(APPEND CUDA_NVCC_FLAGS "-fPIC")
+	# endif()
 endif()
 list(APPEND CUDA_NVCC_FLAGS "--extended-lambda")
 list(APPEND CUDA_NVCC_FLAGS "--expt-relaxed-constexpr")
+list(APPEND CUDA_NVCC_FLAGS "-U__CUDA_NO_HALF_OPERATORS__")
+list(APPEND CUDA_NVCC_FLAGS "-U__CUDA_NO_HALF_CONVERSIONS__")
+list(APPEND CUDA_NVCC_FLAGS "-U__CUDA_NO_HALF2_OPERATORS__")
 
 if(OVR_BUILD_CUDA)
   # adapted from https://stackoverflow.com/a/69353718

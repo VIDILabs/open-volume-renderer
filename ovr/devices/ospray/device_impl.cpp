@@ -417,38 +417,30 @@ DeviceOSPRay::Impl::init(int argc, const char** argv, DeviceOSPRay* p) {
   } 
   else {
     parent = p;
-
-    OSPError init_error = ospInit(&argc, argv);
-    if (init_error != OSP_NO_ERROR)
-      throw std::runtime_error("OSPRay not initialized correctly!");
-
-#if 1
-    OSPDevice device = ospGetCurrentDevice();
+    // Initialize ospray device
+    ospLoadModule("cpu");
+    OSPDevice device = ospNewDevice("cpu");
     if (!device)
       throw std::runtime_error("OSPRay device could not be fetched!");
-
-    ospDeviceSetErrorCallback(
-      device,
+    ospDeviceSetErrorCallback(device,
       [](void*, OSPError error, const char* what) {
         std::cerr << "OSPRay error: " << what << std::endl;
         std::runtime_error(std::string("OSPRay error: ") + what);
-      },
-      nullptr);
+      }, nullptr
+    );
     ospDeviceSetStatusCallback(
-      device, [](void*, const char* msg) { std::cout << msg; }, nullptr);
-
-    bool warnAsErrors = true;
+      device, [](void*, const char* msg) { std::cout << msg; }, nullptr
+    );
+    auto warnAsErrors = true;
     auto logLevel = OSP_LOG_WARNING;
     ospDeviceSetParam(device, "warnAsError", OSP_BOOL, &warnAsErrors);
     ospDeviceSetParam(device, "logLevel", OSP_INT, &logLevel);
     ospDeviceCommit(device);
+    ospSetCurrentDevice(device);
     ospDeviceRelease(device);
-#endif
-
   }
 
   build_scene();
-
   commit_framebuffer();
   commit_renderer();
   commit_camera();
@@ -542,6 +534,9 @@ DeviceOSPRay::Impl::commit_framebuffer() {
 
     framebuffer_rgba_ptr = ospMapFrameBuffer(ospray.framebuffer, OSP_FB_COLOR);
     framebuffer_should_reset_accum = true;
+
+    // update renderstats buffer
+    framebuffer_renderstats.resize(framebuffer_size_latest.long_product());
 
     // update sparse sampling buffer
     sparse_sampling_xs_ys.resize(framebuffer_size_latest.long_product() * 2ULL);
@@ -824,6 +819,8 @@ DeviceOSPRay::Impl::render() {
       int x = sparse_sampling_xs_ys[2 * i + 0];
       int y = sparse_sampling_xs_ys[2 * i + 1];
       ((vec4f*)framebuffer_rgba_ptr)[y * framebuffer_size_latest.x + x] = data[i];
+      framebuffer_renderstats[y * framebuffer_size_latest.x + x].pixel_index = i;
+      // TODO: Write ray_direction to renderstats
     });
     ospUnmapFrameBuffer(data, fb);
 
@@ -838,6 +835,7 @@ void
 DeviceOSPRay::Impl::mapframe(FrameBufferData* fb) {
   const size_t num_bytes = framebuffer_size_latest.long_product();
   fb->rgba->set_data((void*)framebuffer_rgba_ptr, num_bytes * sizeof(vec4f), CrossDeviceBuffer::DEVICE_CPU);
+  fb->stats->set_data(framebuffer_renderstats.data(), num_bytes * sizeof(RenderStats), CrossDeviceBuffer::DEVICE_CPU);
   fb->size = framebuffer_size_latest;
 }
 

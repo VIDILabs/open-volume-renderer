@@ -128,7 +128,6 @@ private:
     bool frame_accumulation{ true };
     float volume_sampling_rate{ 1.f };
     float volume_density_scale{ 1.f };
-    // float camera_path_speed{ 0.5f };
     int spp{ 1 };
     std::atomic<bool> denoise{ false };
   } config;

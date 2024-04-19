@@ -81,8 +81,8 @@
 #include <unordered_map>
 namespace colormap {
 struct color_t { float r, g, b, a; };
-bool has(const std::string& name);
-const std::vector<color_t>& get(const std::string& name);
+bool has(const char* name);
+const std::vector<color_t>& get(const char* name);
 }
 
 #endif // TFN_COLORMAP_H

@@ -6,14 +6,14 @@
 //.                                                                          //
 //. ======================================================================== //
 #pragma once
+#ifndef DVNR_CUDA_UTILS_H
+#define DVNR_CUDA_UTILS_H
 
-#define _USE_MATH_DEFINES
-#include <cmath>
+#include <cuda_runtime.h>
 
 #include <stdexcept>
 #include <atomic>
-
-#include <cuda_runtime.h>
+#include <cmath>
 
 #ifndef MAX
 #define MAX(a, b) ((a > b) ? a : b)
@@ -148,7 +148,7 @@ inline void linear_kernel(K kernel, uint32_t shmem_size, cudaStream_t stream, T 
 	if (n_elements <= 0) {
 		return;
 	}
-	kernel<<<(uint32_t)n_blocks_linear(n_elements), n_threads_linear, shmem_size, stream>>>(n_elements, args...);
+	kernel<<<n_blocks_linear(n_elements), n_threads_linear, shmem_size, stream>>>(n_elements, args...);
 }
 
 //. ======================================================================== //
@@ -162,28 +162,17 @@ n_blocks_bilinear(T n_elements)
   return ((uint32_t)n_elements + n_threads_bilinear - 1) / n_threads_bilinear;
 }
 
-
-template <typename K, typename T, typename ... Types>
-inline void bilinear_kernel(K kernel, uint32_t shmem_size, cudaStream_t stream, T width, T height, Types ... args) {
-	if (width <= 0 || height <= 0) {
-		return;
-	}
-	dim3 block_size(n_threads_bilinear, n_threads_bilinear, 1);
-    dim3 grid_size(n_blocks_bilinear(width), n_blocks_bilinear(height), 1);
-	kernel<<<grid_size, block_size, shmem_size, stream>>>((uint32_t)width, (uint32_t)height, args...);
-}
-
-template<typename K, typename... Types>
-inline void bilinear_kernel(K kernel, uint32_t shmem_size, cudaStream_t stream, int2 dims, Types... args)
+template<typename K, typename T, typename... Types>
+inline void
+bilinear_kernel(K kernel, uint32_t shmem_size, cudaStream_t stream, T width, T height, Types... args)
 {
-  if (dims.x <= 0 || dims.y <= 0) {
+  if (width <= 0 || height <= 0) {
     return;
   }
   dim3 block_size(n_threads_bilinear, n_threads_bilinear, 1);
-  dim3 grid_size(n_blocks_bilinear(dims.x), n_blocks_bilinear(dims.y), 1);
-  kernel<<<grid_size, block_size, shmem_size, stream>>>(dims, args...);
+  dim3 grid_size(n_blocks_bilinear(width), n_blocks_bilinear(height), 1);
+  kernel<<<grid_size, block_size, shmem_size, stream>>>((uint32_t)width, (uint32_t)height, args...);
 }
-
 
 //. ======================================================================== //
 // trilinear version 
@@ -200,7 +189,7 @@ template<typename K, typename T, typename... Types>
 inline void
 trilinear_kernel(K kernel, uint32_t shmem_size, cudaStream_t stream, T width, T height, T depth, Types... args)
 {
-  if (width <= 0 || height <= 0 || depth <= 0) {
+  if (width <= 0 || height <= 0) {
     return;
   }
   dim3 block_size(n_threads_trilinear, n_threads_trilinear, n_threads_trilinear);
@@ -219,7 +208,6 @@ trilinear_kernel(K kernel, uint32_t shmem_size, cudaStream_t stream, int3 dims, 
   dim3 grid_size(n_blocks_trilinear(dims.x), n_blocks_trilinear(dims.y), n_blocks_trilinear(dims.z));
   kernel<<<grid_size, block_size, shmem_size, stream>>>(dims, args...);
 }
-
 
 //. ======================================================================== //
 //
@@ -497,7 +485,8 @@ inline cudaError_t cudaTrackedMalloc3DArray(cudaArray_t *array, const struct cud
   return cudaMalloc3DArray(array, desc, extent, flags);
 }
 
-
 namespace ovr {
-namespace misc = ::util;
+namespace misc = util;
 }
+
+#endif // DVNR_CUDA_UTILS_H

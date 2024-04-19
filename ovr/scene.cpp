@@ -102,19 +102,19 @@ array_1d_float4_t CreateArray1DFloat4(const std::vector<vec4f>& input, bool shar
 array_1d_float4_t CreateArray1DFloat4(const vec4f* input, size_t len,  bool shared) { return CreateArray1DScalar(input, len, shared); }
 
 array_1d_float4_t
-CreateColorMap(const std::string& name)
+CreateColorMap(const char* name)
 {
   if (colormap::has(name)) {
     const std::vector<vec4f>& arr = (const std::vector<vec4f>&)colormap::get(name);
     return CreateArray1DFloat4(arr, false);
   }
   else {
-    throw std::runtime_error("Unexpected colormap name: " + name);
+    throw std::runtime_error("Unexpected colormap name: " + std::string(name));
   }
 }
 
 array_3d_scalar_t
-CreateArray3DScalarFromFile(const std::string& filename, vec3i dims, ValueType type, size_t offset, bool is_big_endian)
+CreateArray3DScalarFromFile(const char* filename, vec3i dims, ValueType type, size_t offset, bool is_big_endian)
 {
   // data geometry
   assert(dims.x > 0 && dims.y > 0 && dims.z > 0);
@@ -129,7 +129,7 @@ CreateArray3DScalarFromFile(const std::string& filename, vec3i dims, ValueType t
     desc.type = (vidi::VoxelType)type;
     desc.offset = offset;
     desc.is_big_endian = is_big_endian;
-    data_buffer = vidi::read_volume_structured_regular(filename, desc);
+    data_buffer = vidi::read_volume_structured_regular(std::string(filename), desc);
   }
 
   // finalize
@@ -140,5 +140,63 @@ CreateArray3DScalarFromFile(const std::string& filename, vec3i dims, ValueType t
 
   return output;
 }
+
+namespace scene {
+
+box3f
+Scene::get_bounds() 
+{
+  auto volume_bounds = [](Volume& volume) {
+    box3f bounds { vec3f(float_large), vec3f(float_small) };
+    if (volume.type == Volume::STRUCTURED_REGULAR_VOLUME) {
+      auto& sr = volume.structured_regular;
+      auto origin = sr.grid_origin;
+      auto spacing = sr.grid_spacing;
+      auto dims = vec3f(sr.data->dims);
+
+      dims = dims * spacing;
+
+      box3f volume_bounds { origin, origin+dims };
+      bounds.extend(volume_bounds);
+    }
+    return bounds;
+  };
+
+  box3f bounds { vec3f(float_large), vec3f(float_small) };
+  for (auto& instance : instances) {
+    auto& transform = instance.transform;
+    for (auto& model : instance.models) {
+      if (model.type == Model::GEOMETRIC_MODEL) {
+        auto& geometry = model.geometry_model.geometry;
+        if (geometry.type == Geometry::TRIANGLES_GEOMETRY) {
+          auto& positions = geometry.triangles.position;
+          for (int i = 0; i < positions->size(); i++) {
+            auto p = xfmPoint(transform, positions->data_typed<vec3f>()[i]);
+            bounds.extend(p);
+          }
+        } else if (geometry.type == Geometry::ISOSURFACE_GEOMETRY) {
+          if (geometry.isosurfaces.volume_texture >= 0) {
+            auto& volume = textures[geometry.isosurfaces.volume_texture].volume.volume;
+            auto b = volume_bounds(volume);
+            b.lower = xfmPoint(transform, b.lower);
+            b.upper = xfmPoint(transform, b.upper);
+            bounds.extend(b);
+          }
+        }
+      } else if (model.type == Model::VOLUMETRIC_MODEL) {
+        if (model.volume_model.volume_texture >= 0) {
+          auto& volume = textures[model.volume_model.volume_texture].volume.volume;
+          auto b = volume_bounds(volume);
+          b.lower = xfmPoint(transform, b.lower);
+          b.upper = xfmPoint(transform, b.upper);
+          bounds.extend(b);
+        }
+      }
+    }
+  }
+
+  return bounds;
+}
+} // namespace scene
 
 } // namespace ovr

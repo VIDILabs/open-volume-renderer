@@ -175,7 +175,9 @@ namespace gdt {
 #else
 #  define osp_snprintf snprintf
 #endif
-  
+
+#ifdef GDT_ENABLE_STRING_OPERATIONS
+
   /*! added pretty-print function for large numbers, printing 10000000 as "10M" instead */
   inline std::string prettyDouble(const double val) {
     const double absVal = abs(val);
@@ -229,4 +231,6 @@ namespace gdt {
   {
     return s.substr(s.size()-suffix.size()) == suffix;
   }
+
+#endif // GDT_ENABLE_STRING_OPERATIONS
 }

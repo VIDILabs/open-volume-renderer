@@ -1,55 +1,31 @@
 {
   "dataSource": [
     {
-      "dimensions" : {
-        "x" : 1024,
-        "y" : 1024,
-        "z" : 1546
+      "dimensions": {
+        "x": 1024,
+        "y": 1024,
+        "z": 1546
       },
-      "endian" : "LITTLE_ENDIAN",
-      "fileName" : [
-        "/mnt/scratch/slow0/deralik/beechnut_1024x1024x1546_uint16/beechnut_1024x1024x1546_uint16.raw",
+      "endian": "LITTLE_ENDIAN",
+      "fileName": [
         "/media/data/qadwu/volume/openscivis/beechnut_1024x1024x1546_uint16.raw",
         "/home/deralik/GitHub/Instant-vnr-clean/data/data/beechnut_1024x1024x1546_uint16.raw"
       ],
-      "fileUpperLeft" : false,
-      "format" : "REGULAR_GRID_RAW_BINARY",
-      "id" : 1,
-      "name" : "beechnut_1024x1024x1546_uint16.raw",
-      "offset" : 0,
-      "type" : "UNSIGNED_SHORT"
+      "fileUpperLeft": false,
+      "format": "REGULAR_GRID_RAW_BINARY",
+      "id": 1,
+      "name": "beechnut.data",
+      "offset": 0,
+      "type": "UNSIGNED_SHORT"
     }
   ],
-  "snapshot" : [
-  ],
-  "cache": {
-    "config" : [
-      "/home/deralik/Github/open-volume-renderer/data/configs/config_beechnut.cfg"
-    ],
-    "capacity": {
-      "x": 5,
-      "y": 5,
-      "z": 5
-    },
-    "numLevels": 1
-  },
-  "macrocell": {
-    // "fileName": [
-    //   "/home/deralik/GitHub/open-volume-renderer/data/mechhand_mc_16_2x2x40x14_float32.bin",
-    //   "/mnt/scratch/fast0/qadwu/open-volume-renderer/projects/nncache/stream/data/mechhand_640x220x229_float32/mechhand_mc_16_2x40x14x15_float32.bin"
-    // ],
-    "mcSize" : {
-      "x": 16,
-      "y": 16,
-      "z": 16
-    }
-  },
-  "view" : {
-    "backgroundColor" : {
-      "a" : 1,
-      "b" : 0,
-      "g" : 0,
-      "r" : 0
+  "snapshot": [],
+  "view": {
+    "backgroundColor": {
+      "a": 1,
+      "b": 0,
+      "g": 0,
+      "r": 0
     },
     "camera": {
       "center": {
@@ -58,16 +34,16 @@
         "z": 772.5
       },
       "eye": {
-        "x": 1521.32,
-        "y": 1601.87,
-        "z": 649.927
+        "x": 511.5,
+        "y": 511.5,
+        "z": 1800
       },
       "fovy": 45,
       "projectionMode": "PERSPECTIVE",
       "up": {
-        "x": -0.0175501,
-        "y": -0.0952497,
-        "z": -0.991906
+        "x": 0,
+        "y": 1,
+        "z": 0
       },
       "zFar": 1800,
       "zNear": 1
@@ -111,10 +87,6 @@
     "method": "REGULAR_GRID_VOLUME_RAY_CASTING",
     "tfPreIntegration": false,
     "volume": {
-      // "scalarMappingRangeUnnormalized": {
-      //   "minimum": 0,
-      //   "maximum": 65535
-      // },
       "boundingBox": {
         "maximum": {
           "x": 1023,
@@ -156,9 +128,9 @@
       },
       "opacityUnitDistance": 0.000001,
       "sampleDistance": 0.25,
-      "scalarMappingRange" : {
-        "maximum" : 1,
-        "minimum" : 0.1
+      "scalarMappingRange": {
+        "maximum": 1,
+        "minimum": 0.1
       },
       "slice": {
         "x": {
@@ -222,7 +194,7 @@
               "g": 1.0,
               "r": 0.0
             },
-            "position": 0.1006689965724945
+            "position": 0.1206689965724945
           },
           {
             "color": {
@@ -230,7 +202,7 @@
               "g": 0.0,
               "r": 1.0
             },
-            "position": 0.11469005048274994
+            "position": 0.13469005048274994
           },
           {
             "color": {
@@ -238,7 +210,7 @@
               "g": 1.0,
               "r": 1.0
             },
-            "position": 0.13450361788272858
+            "position": 0.14450361788272858
           },
           {
             "color": {
@@ -448,8 +420,14 @@
           },
           {
             "position": {
+              "x": 0.11,
+              "y": 0.0
+            }
+          },
+          {
+            "position": {
               "x": 0.18298359215259552,
-              "y": 0.13636372983455658
+              "y": 0.83636372983455658
             }
           },
           {
