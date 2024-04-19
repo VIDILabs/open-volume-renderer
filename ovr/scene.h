@@ -277,7 +277,7 @@ struct Material {
     vec3f kd = vec3f(0.8f); // diffuse reflectivity
     vec3f ks = vec3f(0.0f); // specular reflectivity
     float ns = 10.f; // specular exponent
-    float d = 1.f; // opacity
+    float d = 2.f; // opacity
     vec3f tf = vec3f(1.f); // transparency filter
     // texture maps
     int32_t map_kd = -1;
@@ -288,6 +288,7 @@ struct Material {
 struct Geometry {
   enum {
     TRIANGLES_GEOMETRY,
+    SPHERES_GEOMETRY,
     ISOSURFACE_GEOMETRY,
   } type;
 
@@ -300,6 +301,11 @@ struct Geometry {
       array_1d_float4_t color;
     } verts, faces;
   } triangles;
+
+  struct GeometrySpheres {
+    array_1d_float3_t position;
+    float radius = 0.01f;
+  } spheres;
 
   struct GeometryIsosurfaces {
     int32_t volume_texture;
