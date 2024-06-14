@@ -41,3 +41,5 @@ pixeldata = pixeldata.reshape(fbsize.y, fbsize.x, 4)
 from PIL import Image  
 im = Image.fromarray(pixeldata)
 im.save("your_file.png")
+
+# LD_PRELOAD=/mnt/scratch/ssd/qadwu/miniconda3/envs/ovrpy/lib/libstdc++.so.6 PYTHONPATH=/mnt/scratch/fast0/qadwu/open-volume-renderer/build/Release python ./test_rendering.py ../data/configs/scene_heatrelease_1atm.json 
