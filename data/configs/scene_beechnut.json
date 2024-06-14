@@ -8,6 +8,7 @@
       },
       "endian" : "LITTLE_ENDIAN",
       "fileName" : [
+        "/home/deralik/GitHub/open-volume-renderer/data/data/beechnut_1024x1024x1546_uint16/beechnut_1024x1024x1546_uint16.raw",
         "/mnt/scratch/slow0/deralik/beechnut_1024x1024x1546_uint16/beechnut_1024x1024x1546_uint16.raw",
         "/media/data/qadwu/volume/openscivis/beechnut_1024x1024x1546_uint16.raw",
         "/home/deralik/GitHub/Instant-vnr-clean/data/data/beechnut_1024x1024x1546_uint16.raw"
@@ -24,12 +25,12 @@
   ],
   "cache": {
     "config" : [
-      "/home/deralik/Github/open-volume-renderer/data/configs/config_beechnut.cfg"
+      "/home/deralik/GitHub/open-volume-renderer/data/configs/config_beechnut.cfg"
     ],
     "capacity": {
-      "x": 5,
-      "y": 5,
-      "z": 5
+      "x": 16,
+      "y": 16,
+      "z": 16
     },
     "numLevels": 1
   },
@@ -58,16 +59,16 @@
         "z": 772.5
       },
       "eye": {
-        "x": 1521.32,
-        "y": 1601.87,
-        "z": 649.927
+        "x": 511.5,
+        "y": 511.5,
+        "z": 2500
       },
       "fovy": 45,
       "projectionMode": "PERSPECTIVE",
       "up": {
-        "x": -0.0175501,
-        "y": -0.0952497,
-        "z": -0.991906
+        "x": 0,
+        "y": 1,
+        "z": 0
       },
       "zFar": 1800,
       "zNear": 1
