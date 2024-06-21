@@ -9,9 +9,9 @@
       "endian" : "LITTLE_ENDIAN",
       "fileName" : [
         "/home/deralik/GitHub/open-volume-renderer/data/data/MechHand_f_640x220x229_float32/MechHand_f_640x220x229_float32.raw",
-        "F:/mechhand/MechHand_f_640x220x229.raw",
         "/media/data/qadwu/volume/others/MechHand_f_640x220x229.raw",
         "/home/davbauer/Downloads/MechHand_f_640x220x229.raw",
+        "H:/mechhand/MechHand_f_640x220x229.raw",
         "F:/mechhand/MechHand_f_640x220x229.raw",
         "/home/deralik/Github/open-volume-renderer/data/data/MechHand_f_640x220x229_float32/MechHand_f_640x220x229_float32.raw"
       ],
