@@ -7,7 +7,10 @@
         "z" : 128
       },
       "endian" : "LITTLE_ENDIAN",
-      "fileName" : "F:/simple/engine.raw",
+      "fileName" : [
+        "F:/simple/engine.raw",
+        "/media/data/qadwu/volume/simple/engine.raw"
+      ],
       "fileUpperLeft" : false,
       "format" : "REGULAR_GRID_RAW_BINARY",
       "id" : 1,
