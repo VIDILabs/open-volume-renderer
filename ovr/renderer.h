@@ -198,11 +198,11 @@ MainRenderer::set_scene(const Scene& scene)
   scene::TransferFunction scene_tfn;
   int count = count_tfn(scene, scene_tfn);
   if (count > 1) {
-    std::cerr << "ERROR: found multiple transfer functions, they will be treated as one" << std::endl;
+    std::cerr << "ERROR: found multiple transfer functions, they are treated as one transfer function during interactive rendering" << std::endl;
   }
 
   // TODO: find a better way to set transfer function //
-  if (count > 0) {
+  if (count == 1) {
     const float* data_o = scene_tfn.opacity->data_typed<float>();
     const size_t size_o = scene_tfn.opacity->dims.v;
 
@@ -214,8 +214,6 @@ MainRenderer::set_scene(const Scene& scene)
     vec2f tfn_value_range = { 1, -1 };
 
     for (size_t i = 0; i < size_c; ++i) {
-      // float p = (float)i / (size_c - 1);
-      // tfn_colors.push_back(p);
       tfn_colors.push_back(data_c[i].x);
       tfn_colors.push_back(data_c[i].y);
       tfn_colors.push_back(data_c[i].z);

@@ -317,8 +317,9 @@ DeviceOSPRay::Impl::create_ospray_material(scene::Material::ObjMaterial handler)
   ospSetVec3f(mtl, "kd", handler.kd.x, handler.kd.y, handler.kd.z);
   ospSetVec3f(mtl, "ks", handler.ks.x, handler.ks.y, handler.ks.z);
   ospSetFloat(mtl, "ns", handler.ns);
-  ospSetFloat(mtl, "d", handler.d);
-  ospSetVec3f(mtl, "tf", handler.tf.x, handler.tf.y, handler.tf.z);
+  /* NOTE: comment out the following lines to ensure opaque material */
+  // ospSetFloat(mtl, "d", handler.d);
+  // ospSetVec3f(mtl, "tf", handler.tf.x, handler.tf.y, handler.tf.z);
   if (handler.map_kd != -1) {
     ospSetObject(mtl, "map_kd", ospray.get_texture(handler.map_kd));
   }
@@ -330,10 +331,19 @@ DeviceOSPRay::Impl::create_ospray_material(scene::Material::ObjMaterial handler)
 }
 
 OSPMaterial
+DeviceOSPRay::Impl::create_ospray_material(scene::Material::PrincipledMaterial handler) {
+  OSPMaterial mtl = ospNewMaterial(NULL, "principled");
+  ospSetVec3f(mtl, "baseColor", handler.baseColor.x, handler.baseColor.y, handler.baseColor.z);
+  ospCommit(mtl);
+  return mtl;
+}
+
+OSPMaterial
 DeviceOSPRay::Impl::create_ospray_material(scene::Material handler) {
   using namespace scene;
   switch (handler.type) {
   case Material::OBJ_MATERIAL: return create_ospray_material(handler.obj);
+  case Material::PRINCIPLED_MATERIAL: return create_ospray_material(handler.principled);
   default: throw std::runtime_error("unknown material type");
   }
 }
@@ -358,12 +368,19 @@ OSPGeometricModel
 DeviceOSPRay::Impl::create_ospray_geometric_model(scene::Model::GeometricModel handler) {
   auto geometry = create_ospray_geometry(handler.geometry);
   OSPGeometricModel model = ospNewGeometricModel(geometry);
-  if (handler.mtl == -1) {
-    OSPMaterial mtl = ospNewMaterial(NULL, "obj");
-    ospSetObject(model, "material", mtl);
+  if (!handler.mtls.empty()) {
+    std::vector<OSPMaterial> mtls;
+    for (auto mtl : handler.mtls) {
+      mtls.push_back(ospray.materials[mtl]);
+    }
+    ospSetVectorAsData(model, "material", OSP_MATERIAL, mtls);
+  }
+  else if (handler.mtl >= 0) {
+    ospSetObject(model, "material", ospray.materials[handler.mtl]);
   }
   else {
-    ospSetObject(model, "material", ospray.materials[handler.mtl]);
+    OSPMaterial mtl = ospNewMaterial(NULL, "obj");
+    ospSetObject(model, "material", mtl);
   }
   ospCommit(model);
   ospRelease(geometry);
@@ -476,7 +493,6 @@ DeviceOSPRay::Impl::commit_renderer() {
       ospray.renderer = ospNewRenderer("scivis");
       ospSetFloat(ospray.renderer, "volumeSamplingRate", scene.volume_sampling_rate);
       ospSetInt(ospray.renderer, "aoSamples", scene.ao_samples);
-      // ospSetInt(ospray.renderer, "aoSamples", 1);
       // ospSetBool(ospray.renderer, "shadows", false);
     }
     ospSetInt(ospray.renderer, "pixelSamples", scene.spp);
@@ -742,7 +758,7 @@ DeviceOSPRay::Impl::build_scene() {
   }
 
   auto ambLight = ospNewLight("ambient");
-  ospSetFloat(ambLight, "intensity", 0.2f);
+  ospSetFloat(ambLight, "intensity", 1.f);
   ospSetVec3f(ambLight, "color", 1.f, 1.f, 1.f);
   ospCommit(ambLight);
   {
@@ -752,10 +768,10 @@ DeviceOSPRay::Impl::build_scene() {
   ospSetVectorAsData(ospray.world, "light", OSP_LIGHT, lights);
   ospCommit(ospray.world);
 
-  // // release instances
-  // for (auto& i : instances) ospRelease(i);
-  // // release lights!
-  // for (auto& l : lights) ospRelease(l);
+  // release instances
+  for (auto& i : instances) ospRelease(i);
+  // release lights!
+  for (auto& l : lights) ospRelease(l);
 }
 
 void

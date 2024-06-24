@@ -47,6 +47,10 @@ using json = nlohmann::json;
 #define ADDITIONAL_LIGHT_SOURCES "additionalLightSources"
 #define SAMPLING_DISTANCE "sampleDistance"
 #define DIRECTIONAL_LIGHT "DIRECTIONAL_LIGHT"
+#define ISOSUFRACES "isosurfaces"
+#define ISOVALUES "isovalues"
+#define VISIBLE "visible"
+#define DATA_ID "dataId"
 
 namespace ovr {
 
@@ -142,9 +146,6 @@ range_from_json(json jsrange)
   if (!jsrange.contains("minimum") || !jsrange.contains("maximum")) return vec2f(0.0, 0.0);
   return vec2f(jsrange["minimum"].get<float>(), jsrange["maximum"].get<float>());
 }
-
-// using namespace ovr::math;
-// using namespace ovr::scene;
 
 static bool
 file_exists_test(std::string name)
@@ -347,14 +348,12 @@ ovr::scene::create_json_scene_vidi(json root, std::string workdir)
 {
   using namespace ovr::vidi;
 
-  Scene scene;
+  std::vector<scene::Volume> volumes;
+  std::vector<scene::TransferFunction> tfns;
 
-  Instance instance;
-  instance.transform = affine3f::translate(vec3f(0));
-
+  // Parse All Volumes
   for (auto& ds : root[DATA_SOURCE]) {
     auto volume = vidi::create_scene_volume(ds, workdir);
-
     auto tfn = vidi::create_scene_tfn(root[VIEW], volume.structured_regular.data->type);
 
     if (!root[VIEW][VOLUME].contains(SCALAR_MAPPING_RANGE_UNNORMALIZED)) {
@@ -366,20 +365,67 @@ ovr::scene::create_json_scene_vidi(json root, std::string workdir)
       }
     }
 
-    Texture texture;
-    texture.type = Texture::VOLUME_TEXTURE;
-    texture.volume.volume = volume;
-    scene.textures.push_back(texture);
-
-    Model model;
-    model.type = Model::VOLUMETRIC_MODEL;
-    model.volume_model.volume_texture = scene.textures.size() - 1;
-    model.volume_model.transfer_function = tfn;
-
-    instance.models.push_back(model);
+    volumes.push_back(volume);
+    tfns.push_back(tfn);
   }
 
-  scene.instances.push_back(instance);
+  if (!root[VIEW].contains(VOLUME)) {
+    throw std::runtime_error("tag \"view/volume\" found in the scene");
+  }
+
+  // -------- // 
+
+  Volume main_volume;
+  TransferFunction main_tfn;
+
+  std::vector<float> contours_values;
+  Volume contours_volume;
+  Volume contours_cmap_volume;
+  TransferFunction contours_cmap_tfn;
+
+  std::vector<vec4f> points_data;
+  std::vector<vec4f> points_color;
+  Volume points_cmap_volume;
+  TransferFunction points_cmap_tfn;
+
+  // -------- // 
+
+  auto visible = [] (const json& js) {
+    return js.contains(VISIBLE) ? js[VISIBLE].get<bool>() : true;
+  };
+
+  auto dataid = [] (const json& js) {
+    return js.contains(DATA_ID) ? (js[DATA_ID].get<int>() - 1) : 0;
+  };
+
+  const bool main_volume_visible = visible(root[VIEW][VOLUME]);
+  if (main_volume_visible) {
+    const int ID = dataid(root[VIEW][VOLUME]);
+    main_volume = volumes[ID];
+    main_tfn = tfns[ID];
+    std::cout << "main volume visible, data ID = " << ID << std::endl;
+  }
+
+  // Add Isosurfaces
+  if (root[VIEW].contains(ISOSUFRACES)) {
+    const bool isosurfaces_visible = visible(root[VIEW][ISOSUFRACES]);
+    const int ID = dataid(root[VIEW][ISOSUFRACES]);
+    if (isosurfaces_visible) {
+      const std::vector<float> values = root[VIEW][ISOSUFRACES][ISOVALUES];
+      contours_values = values;
+      contours_volume = volumes[ID];
+      contours_cmap_volume = volumes[ID];
+      contours_cmap_tfn = tfns[ID];
+    }
+  }
+
+  Scene scene = create_scene_visualization(
+    main_volume, main_tfn,
+    contours_volume, contours_values,
+    contours_cmap_volume, contours_cmap_tfn,
+    points_data, points_color,
+    points_cmap_volume, points_cmap_tfn
+  );
 
   if (root[VIEW].contains(LIGHT_SOURCE)) {
     assert(root[VIEW][LIGHT_SOURCE][TYPE] == DIRECTIONAL_LIGHT);
@@ -409,14 +455,9 @@ ovr::scene::create_json_scene_vidi(json root, std::string workdir)
     scene.lights.push_back(light);
   }
 
-  // std::cout << "scene.lights = " << scene.lights.size() << std::endl;
-
+  // scene.ao_samples = 32;
   scene.camera = vidi::create_scene_camera(root[VIEW]);
   scene.volume_sampling_rate = 1.f / (float)scalar_from_json<double>(root[VIEW][VOLUME][SAMPLING_DISTANCE]);
-
-  // if (scene.volume_sampling_rate > 1) {
-  //   std::cout << "scene.volume_sampling_rate = " << scene.volume_sampling_rate << std::endl;
-  // }
 
   return scene;
 }
@@ -453,4 +494,119 @@ create_scene_default(std::string filename)
   if (ext == "usda") return ovr::scene::create_usda_scene(filename);
 #endif
   throw std::runtime_error("unknown scene format");
+}
+
+static ovr::scene::TransferFunction
+copy_scene_tfn(const ovr::scene::TransferFunction& tfn)
+{
+  using namespace ovr;
+  ovr::scene::TransferFunction ret{};
+  std::vector<vec4f> color(tfn.color->size());
+  std::vector<float> opacity(tfn.opacity->size());
+  for (int i = 0; i < tfn.color->size(); ++i) {
+    color[i] = tfn.color->data_typed<vec4f>()[i];
+  }
+  for (int i = 0; i < tfn.opacity->size(); ++i) {
+    opacity[i] = tfn.opacity->data_typed<float>()[i];
+  }
+  ret.color   = CreateArray1DFloat4(color);
+  ret.opacity = CreateArray1DScalar(opacity);
+  ret.value_range = tfn.value_range;
+  return ret;
+}
+
+ovr::scene::Scene
+ovr::scene::create_scene_visualization(
+  Volume main_volume, TransferFunction main_tfn,
+  Volume contours_volume, std::vector<float> contours_values,
+  Volume contours_cmap_volume, TransferFunction contours_cmap_tfn,
+  std::vector<vec4f> points_data, std::vector<vec4f> points_color,
+  Volume points_cmap_volume, TransferFunction points_cmap_tfn
+)
+{
+  Scene scene;
+
+  Instance instance;
+  instance.transform = affine3f::translate(vec3f(0));
+
+  // 1. Main Volume
+  if (main_volume.type != Volume::INVALID) {
+    if (main_volume.type != Volume::STRUCTURED_REGULAR_VOLUME) {
+      throw std::runtime_error("main volume is not a structured regular volume");
+    }
+
+    Texture texture;
+    texture.type = Texture::VOLUME_TEXTURE;
+    texture.volume.volume = main_volume;
+    scene.textures.push_back(texture);
+    const int32_t main_volume_tex = scene.textures.size() - 1;
+
+    // Create a model for the main volume
+    Model model;
+    model.type = Model::VOLUMETRIC_MODEL;
+    model.volume_model.volume_texture = main_volume_tex;
+    model.volume_model.transfer_function = main_tfn;
+    instance.models.push_back(model);
+  }
+
+  // 2. Contours
+  if (!contours_values.empty()) {
+    Texture texture;
+
+    // Create a material for the contours
+    if (contours_cmap_volume.type == Volume::INVALID) {
+      throw std::runtime_error("contours color map volume is invalid");
+    }
+
+    contours_cmap_tfn = copy_scene_tfn(contours_cmap_tfn);
+    for (int i = 0; i < contours_cmap_tfn.opacity->size(); ++i) {
+      ((float*)contours_cmap_tfn.opacity->data())[i] = 1.f;
+    }
+
+    memset(&texture, 0, sizeof(texture));
+    texture.type = Texture::VOLUME_TEXTURE;
+    texture.volume.volume = contours_cmap_volume;
+    scene.textures.push_back(texture);
+    const int32_t contours_cmap_volume_tex = scene.textures.size() - 1;
+
+    memset(&texture, 0, sizeof(texture));
+    texture.type = Texture::TRANSFER_FUNCTION_TEXTURE;
+    texture.transfer_function.transfer_function = contours_cmap_tfn;
+    texture.transfer_function.volume_texture = contours_cmap_volume_tex;
+    scene.textures.push_back(texture);
+    const int32_t contours_cmap_tex = scene.textures.size() - 1;
+
+    Material material;
+    material.type = Material::OBJ_MATERIAL;
+    material.obj.map_kd = contours_cmap_tex;
+    scene.materials.push_back(material);
+    const int32_t contours_cmap_mtl = scene.materials.size() - 1;
+
+    // Create a model for the contours
+    if (contours_volume.type == Volume::INVALID) {
+      throw std::runtime_error("contours volume is invalid");
+    }
+
+    memset(&texture, 0, sizeof(texture));
+    texture.type = Texture::VOLUME_TEXTURE;
+    texture.volume.volume = contours_volume;
+    scene.textures.push_back(texture);
+    const int32_t contours_volume_tex = scene.textures.size() - 1;
+
+    Model model;
+    model.type = ovr::scene::Model::GEOMETRIC_MODEL;
+    model.geometry_model.geometry.type = ovr::scene::Geometry::ISOSURFACE_GEOMETRY;
+    model.geometry_model.geometry.isosurfaces.volume_texture = contours_volume_tex;
+    model.geometry_model.geometry.isosurfaces.isovalues = contours_values;
+    model.geometry_model.mtl = contours_cmap_mtl;
+    // model.geometry_model.mtls = scene.add_materials_for_isosurfaces(contours_values, contours_cmap_tfn);
+    instance.models.push_back(model);
+  }
+
+  // 3. Points
+
+
+  // 4. Finalize
+  scene.instances.push_back(instance);
+  return scene;
 }

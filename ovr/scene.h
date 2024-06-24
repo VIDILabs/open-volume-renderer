@@ -240,8 +240,11 @@ struct TransferFunction {
   vec2f value_range;
 };
 
+vec4f AccessTransferFunction(const ovr::scene::TransferFunction& self, float value);
+
 struct Volume {
   enum VolumeType {
+    INVALID = 0,
     STRUCTURED_REGULAR_VOLUME,
   } type;
 
@@ -271,18 +274,24 @@ struct Texture {
 struct Material {
   enum {
     OBJ_MATERIAL,
+    PRINCIPLED_MATERIAL,
   } type;
 
   struct ObjMaterial {
     vec3f kd = vec3f(0.8f); // diffuse reflectivity
-    vec3f ks = vec3f(0.0f); // specular reflectivity
-    float ns = 10.f; // specular exponent
-    float d = 2.f; // opacity
-    vec3f tf = vec3f(1.f); // transparency filter
+    vec3f ks = vec3f(0.2f); // specular reflectivity
+    float ns = 20.f; // specular exponent
+    // float d = 1.f; // opacity
+    // vec3f tf = vec3f(0.0f); // transparency filter
     // texture maps
     int32_t map_kd = -1;
     int32_t map_bump = -1;
   } obj;
+
+  struct PrincipledMaterial {
+    vec3f baseColor = vec3f(0.8f); // diffuse reflectivity
+    // ...
+  } principled;
 };
 
 struct Geometry {
@@ -328,6 +337,7 @@ struct Model {
   struct GeometricModel {
     Geometry geometry;
     int32_t mtl = -1;
+    std::vector<uint32_t> mtls;
   } geometry_model;
 };
 
@@ -368,6 +378,10 @@ struct Scene {
   scene::Camera camera;
 
   box3f get_bounds();
+  std::vector<uint32_t> add_materials_for_isosurfaces(
+    std::vector<float> isovalues, 
+    const TransferFunction& self
+  );
 
   int ao_samples = 0;
   int spp = 1;

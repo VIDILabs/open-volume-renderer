@@ -223,6 +223,11 @@
       },
       "transferFunctionType" : "TRANSFER_FUNCTION",
       "visible" : true
+    },
+    "isosurfaces": {
+      "dataId" : 1,
+      "visible" : false,
+      "isovalues": [ 5, 8 ]
     }
   }
 }

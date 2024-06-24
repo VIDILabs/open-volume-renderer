@@ -13,25 +13,26 @@ renderername = "ospray"
 filename = sys.argv[1]
 
 scene = ovrpy.create_scene(filename)
+scene.spp = 1
 renderer = ovrpy.create_renderer(renderername)
 
 fbsize = ovrpy.vec2i()
 # fbsize.x = 640
 # fbsize.y = 480
 
-fbsize.x = 640*4
-fbsize.y = 480*4
+fbsize.x = 640 * 2
+fbsize.y = 480 * 2
 
 renderer.set_fbsize(fbsize)
 
 framebufferdata = ovrpy.FrameBufferData()
 
 renderer.init([], scene, scene.camera)
+renderer.set_path_tracing(0)
 renderer.commit()
 
-for i in range(16):
-    renderer.render()
-    renderer.swap()
+renderer.render()
+renderer.swap()
 
 renderer.mapframe(framebufferdata)
 
@@ -48,4 +49,4 @@ im = Image.fromarray(pixeldata)
 im.save("test_rendering.png")
 print("done saving test_rendering.png...")
 
-# LD_PRELOAD=/mnt/scratch/ssd/qadwu/miniconda3/envs/ovrpy/lib/libstdc++.so.6 PYTHONPATH=/mnt/scratch/fast0/qadwu/open-volume-renderer/build/Release python ./test_rendering.py ../data/configs/scene_heatrelease_1atm.json 
+# PYTHONPATH=/mnt/scratch/fast0/qadwu/open-volume-renderer/build/Release python ./test_rendering.py ../data/configs/scene_heatrelease_1atm.json 

@@ -197,6 +197,55 @@ Scene::get_bounds()
 
   return bounds;
 }
-} // namespace scene
 
+template<typename T> T 
+lerp(float t, T a, T b) { return a + t * (b - a); }
+
+vec4f 
+AccessTransferFunction(const ovr::scene::TransferFunction& self, float value)
+{
+  using namespace ovr;
+
+  // remap to [0.0, 1.0]
+  value = (value - self.value_range.x) / (self.value_range.y - self.value_range.x);
+  // clamp to [0.0, 1.0)
+  const float nextBefore1 = 0x1.fffffep-1f;
+  value = clamp(value, 0.0f, nextBefore1);
+
+  const int maxIdxC = self.color->size() - 1;
+  const float idxCf = value * maxIdxC;
+  float intC;
+  const float fracC = std::modf(idxCf, &intC);
+  const int idxC = idxCf;
+
+  vec4f* cdata = (vec4f*)self.color->data();
+  const vec4f col = lerp(fracC, cdata[idxC], cdata[std::min(maxIdxC, idxC + 1)]);
+
+  const int maxIdxO = self.opacity->size() - 1;
+  const float idxOf = value * maxIdxO;
+  float intO;
+  const float fracO = std::modf(idxOf, &intO);
+  const int idxO = idxOf;
+
+  float* odata = (float*)self.opacity->data();
+  const float opacity = lerp(fracO, odata[idxO], odata[std::min(maxIdxO, idxO + 1)]);
+
+  return vec4f(col.xyz(), opacity);
+}
+
+std::vector<uint32_t> 
+Scene::add_materials_for_isosurfaces(std::vector<float> isovalues, const ovr::scene::TransferFunction& transfer_function)
+{
+  std::vector<uint32_t> mtls;
+  for (int i = 0; i < isovalues.size(); ++i) {
+    ovr::scene::Material volume_mtl;
+    volume_mtl.type = ovr::scene::Material::OBJ_MATERIAL;
+    volume_mtl.obj.kd = AccessTransferFunction(transfer_function, isovalues[i]).xyz();
+    this->materials.push_back(volume_mtl);
+    mtls.push_back(this->materials.size() - 1);
+  }
+  return mtls;
+}
+
+} // namespace scene
 } // namespace ovr
