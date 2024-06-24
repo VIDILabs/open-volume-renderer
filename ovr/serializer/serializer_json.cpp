@@ -20,7 +20,8 @@ using json = nlohmann::json;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-
+#define MINIMUM "minimum"
+#define MAXIMUM "maximum"
 #define VOLUME "volume"
 #define TRANSFER_FUNCTION "transferFunction"
 #define SCALAR_MAPPING_RANGE_UNNORMALIZED "scalarMappingRangeUnnormalized"
@@ -51,6 +52,8 @@ using json = nlohmann::json;
 #define ISOVALUES "isovalues"
 #define VISIBLE "visible"
 #define DATA_ID "dataId"
+#define AO_SAMPLES "aoSamples"
+#define TRANSFER_FUNCTION_DATA_ID "transferFunctionDataId"
 
 namespace ovr {
 
@@ -143,8 +146,8 @@ scalar_from_json(const json& in, const std::string& key, const ScalarT& value)
 inline vec2f
 range_from_json(json jsrange)
 {
-  if (!jsrange.contains("minimum") || !jsrange.contains("maximum")) return vec2f(0.0, 0.0);
-  return vec2f(jsrange["minimum"].get<float>(), jsrange["maximum"].get<float>());
+  if (!jsrange.contains(MINIMUM)  || !jsrange.contains(MAXIMUM)) { return vec2f(0.0, 0.0); }
+  return vec2f (jsrange[MINIMUM].get<float>(), jsrange[MAXIMUM].get<float>());
 }
 
 static bool
@@ -199,12 +202,12 @@ valid_filename(const json& in, std::string dir, const std::string& key)
 }
 
 ovr::scene::TransferFunction
-create_scene_tfn(const json& jsview, ValueType type)
+create_scene_tfn(const json& jsvolume, ValueType type)
 {
   ovr::scene::TransferFunction ret{};
 
-  const auto& jstfn = jsview[VOLUME][TRANSFER_FUNCTION];
-  const auto& jsvolume = jsview[VOLUME];
+  // const auto& jsvolume = jsview[VOLUME];
+  const auto& jstfn = jsvolume[TRANSFER_FUNCTION];
 
   tfn::TransferFunctionCore tf;
   tfn::loadTransferFunction(jstfn, tf);
@@ -334,7 +337,7 @@ ovr::scene::create_tfn(std::string filename)
   std::ifstream file(filename);
   std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
   json root = json::parse(text, nullptr, true, true);
-  return ovr::vidi::create_scene_tfn(root[VIEW], ovr::ValueType::VALUE_TYPE_DOUBLE);
+  return ovr::vidi::create_scene_tfn(root[VIEW][VOLUME], ovr::ValueType::VALUE_TYPE_DOUBLE);
 }
 
 ovr::scene::Scene
@@ -349,13 +352,11 @@ ovr::scene::create_json_scene_vidi(json root, std::string workdir)
   using namespace ovr::vidi;
 
   std::vector<scene::Volume> volumes;
-  std::vector<scene::TransferFunction> tfns;
+  int ao_samples = 0;
 
   // Parse All Volumes
   for (auto& ds : root[DATA_SOURCE]) {
     auto volume = vidi::create_scene_volume(ds, workdir);
-    auto tfn = vidi::create_scene_tfn(root[VIEW], volume.structured_regular.data->type);
-
     if (!root[VIEW][VOLUME].contains(SCALAR_MAPPING_RANGE_UNNORMALIZED)) {
       auto type = scalar_from_json<ValueType>(ds[TYPE]);
       if (type != VALUE_TYPE_FLOAT && type != VALUE_TYPE_DOUBLE) {
@@ -364,9 +365,7 @@ ovr::scene::create_json_scene_vidi(json root, std::string workdir)
                   << std::endl;
       }
     }
-
     volumes.push_back(volume);
-    tfns.push_back(tfn);
   }
 
   if (!root[VIEW].contains(VOLUME)) {
@@ -399,24 +398,34 @@ ovr::scene::create_json_scene_vidi(json root, std::string workdir)
   };
 
   const bool main_volume_visible = visible(root[VIEW][VOLUME]);
+  const int main_volume_ID = dataid(root[VIEW][VOLUME]);
+  main_tfn = create_scene_tfn(root[VIEW][VOLUME], volumes[main_volume_ID].structured_regular.data->type);
   if (main_volume_visible) {
-    const int ID = dataid(root[VIEW][VOLUME]);
-    main_volume = volumes[ID];
-    main_tfn = tfns[ID];
-    std::cout << "main volume visible, data ID = " << ID << std::endl;
+    main_volume = volumes[main_volume_ID];
+    // std::cout << "main volume visible, data ID = " << main_volume_ID << std::endl;
   }
 
   // Add Isosurfaces
   if (root[VIEW].contains(ISOSUFRACES)) {
     const bool isosurfaces_visible = visible(root[VIEW][ISOSUFRACES]);
     const int ID = dataid(root[VIEW][ISOSUFRACES]);
+    const int TFN_ID = root[VIEW][ISOSUFRACES].contains(TRANSFER_FUNCTION_DATA_ID) 
+      ? (root[VIEW][ISOSUFRACES][TRANSFER_FUNCTION_DATA_ID].get<int>() - 1) 
+      : ID;
+
     if (isosurfaces_visible) {
       const std::vector<float> values = root[VIEW][ISOSUFRACES][ISOVALUES];
       contours_values = values;
       contours_volume = volumes[ID];
-      contours_cmap_volume = volumes[ID];
-      contours_cmap_tfn = tfns[ID];
+      contours_cmap_volume = volumes[TFN_ID];
+      contours_cmap_tfn = root[VIEW][ISOSUFRACES].contains(TRANSFER_FUNCTION)
+        ? create_scene_tfn(root[VIEW][ISOSUFRACES], volumes[TFN_ID].structured_regular.data->type)
+        : main_tfn;
     }
+
+    ao_samples = root[VIEW][ISOSUFRACES].contains(AO_SAMPLES) 
+      ? root[VIEW][ISOSUFRACES][AO_SAMPLES].get<int>() 
+      : 0;
   }
 
   Scene scene = create_scene_visualization(
@@ -455,7 +464,7 @@ ovr::scene::create_json_scene_vidi(json root, std::string workdir)
     scene.lights.push_back(light);
   }
 
-  // scene.ao_samples = 32;
+  scene.ao_samples = ao_samples;
   scene.camera = vidi::create_scene_camera(root[VIEW]);
   scene.volume_sampling_rate = 1.f / (float)scalar_from_json<double>(root[VIEW][VOLUME][SAMPLING_DISTANCE]);
 

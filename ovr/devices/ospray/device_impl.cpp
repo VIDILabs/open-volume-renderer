@@ -740,7 +740,7 @@ DeviceOSPRay::Impl::build_scene() {
 
   // create some default lights if there is no scene light
   auto sun1 = ospNewLight("sunSky");  
-  ospSetFloat(sun1, "intensity", 0.9f);
+  ospSetFloat(sun1, "intensity", 0.8f);
   ospSetVec3f(sun1, "color", 2.6f, 2.5f, 2.3f);
   ospSetVec3f(sun1, "direction", 0, -1, 0);
   ospCommit(sun1);
@@ -749,7 +749,7 @@ DeviceOSPRay::Impl::build_scene() {
   }
 
   auto sun2 = ospNewLight("sunSky");  
-  ospSetFloat(sun2, "intensity", 0.9f);
+  ospSetFloat(sun2, "intensity", 0.8f);
   ospSetVec3f(sun2, "color", 2.6f, 2.5f, 2.3f);
   ospSetVec3f(sun2, "direction", 0, 1, 0);
   ospCommit(sun2);
@@ -758,7 +758,7 @@ DeviceOSPRay::Impl::build_scene() {
   }
 
   auto ambLight = ospNewLight("ambient");
-  ospSetFloat(ambLight, "intensity", 1.f);
+  ospSetFloat(ambLight, "intensity", 0.2f);
   ospSetVec3f(ambLight, "color", 1.f, 1.f, 1.f);
   ospCommit(ambLight);
   {

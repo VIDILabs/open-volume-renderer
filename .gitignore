@@ -41,3 +41,4 @@ params.json
 projects/
 *.obj
 *.mpi
+*.raw

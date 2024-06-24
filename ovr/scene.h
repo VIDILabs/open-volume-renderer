@@ -280,7 +280,7 @@ struct Material {
   struct ObjMaterial {
     vec3f kd = vec3f(0.8f); // diffuse reflectivity
     vec3f ks = vec3f(0.2f); // specular reflectivity
-    float ns = 20.f; // specular exponent
+    float ns = 7.f; // specular exponent
     // float d = 1.f; // opacity
     // vec3f tf = vec3f(0.0f); // transparency filter
     // texture maps
@@ -290,6 +290,7 @@ struct Material {
 
   struct PrincipledMaterial {
     vec3f baseColor = vec3f(0.8f); // diffuse reflectivity
+    int32_t map_baseColor = -1;
     // ...
   } principled;
 };
