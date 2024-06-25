@@ -70,6 +70,7 @@ OVR_PY_NAMED_STRUCT(ovr::scene::Scene, "Scene")
 .def_class_field(ovr::scene::Scene, parallel_view)
 .def_class_field(ovr::scene::Scene, simple_path_tracing)
 .def_class_method(ovr::scene::Scene, get_bounds)
+.def_class_method(ovr::scene::Scene, print)
 .def_class_copy(ovr::scene::Scene);
 
 def_named_method(create_scene_default, "create_scene");

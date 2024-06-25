@@ -202,6 +202,8 @@ using array_3d_t = std::shared_ptr<Array<3>>;
 
 namespace scene {
 
+struct Scene;
+
 struct Camera {
   // camera position - *from* where we are looking
   vec3f eye;
@@ -236,23 +238,60 @@ struct Camera {
 
 struct TransferFunction {
   array_1d_float4_t color;
-  array_1d_scalar_t opacity;
+  array_1d_scalar_t opacity; // float //
   vec2f value_range;
+  void print(std::ostream&, int indent = 0) const;
 };
-
-vec4f AccessTransferFunction(const ovr::scene::TransferFunction& self, float value);
 
 struct Volume {
   enum VolumeType {
     INVALID = 0,
     STRUCTURED_REGULAR_VOLUME,
-  } type;
+  } type{};
 
   struct VolumeStructuredRegular {
     vec3f grid_origin  = vec3f(0, 0, 0);
     vec3f grid_spacing = vec3f(1, 1, 1);
     array_3d_scalar_t data;
   } structured_regular;
+
+  box3f get_bounds(const Scene&) const;
+  void print(const Scene&, std::ostream&, int indent = 0) const;
+};
+
+struct Geometry {
+  enum {
+    INVALID = 0,
+    TRIANGLES_GEOMETRY,
+    SPHERES_GEOMETRY,
+    ISOSURFACE_GEOMETRY,
+  } type{};
+
+  struct GeometryTriangles { /* TODO */ 
+    array_1d_float3_t position;
+    array_1d_scalar_t index; // uint32_t //
+    struct { /* data */
+      array_1d_float2_t texcoord;
+      array_1d_float3_t normal;
+      array_1d_float4_t color;
+    } verts, faces;
+  } triangles;
+
+  struct GeometrySpheres {
+    struct {
+      array_1d_float3_t position;
+      array_1d_scalar_t radius; // float //
+    } sphere;
+    float radius = 0.01f;
+  } spheres;
+
+  struct GeometryIsosurfaces {
+    int32_t volume_texture;
+    array_1d_scalar_t isovalues; // float //
+  } isosurfaces;
+
+  box3f get_bounds(const Scene&) const;
+  void print(const Scene&, std::ostream&, int indent = 0) const;
 };
 
 struct Texture {
@@ -280,9 +319,10 @@ struct Material {
   struct ObjMaterial {
     vec3f kd = vec3f(0.8f); // diffuse reflectivity
     vec3f ks = vec3f(0.2f); // specular reflectivity
-    float ns = 7.f; // specular exponent
+    float ns = 5.f; // specular exponent
     // float d = 1.f; // opacity
     // vec3f tf = vec3f(0.0f); // transparency filter
+
     // texture maps
     int32_t map_kd = -1;
     int32_t map_bump = -1;
@@ -295,34 +335,6 @@ struct Material {
   } principled;
 };
 
-struct Geometry {
-  enum {
-    TRIANGLES_GEOMETRY,
-    SPHERES_GEOMETRY,
-    ISOSURFACE_GEOMETRY,
-  } type;
-
-  struct GeometryTriangles { /* TODO */ 
-    array_1d_float3_t position;
-    array_1d_scalar_t index;
-    struct { /* data */
-      array_1d_float2_t texcoord;
-      array_1d_float3_t normal;
-      array_1d_float4_t color;
-    } verts, faces;
-  } triangles;
-
-  struct GeometrySpheres {
-    array_1d_float3_t position;
-    float radius = 0.01f;
-  } spheres;
-
-  struct GeometryIsosurfaces {
-    int32_t volume_texture;
-    std::vector<float> isovalues;
-  } isosurfaces;
-};
-
 struct Model {
   enum {
     VOLUMETRIC_MODEL,
@@ -332,19 +344,24 @@ struct Model {
   struct VolumetricModel {
     TransferFunction transfer_function;
     int32_t volume_texture;
-    // Volume volume;
   } volume_model;
 
   struct GeometricModel {
     Geometry geometry;
     int32_t mtl = -1;
-    std::vector<uint32_t> mtls;
+    std::vector<uint32_t> mtls; // keep this as a vector for now
   } geometry_model;
+
+  box3f get_bounds(const Scene&) const;
+  void print(const Scene& self, std::ostream& os, int indent = 0) const;
 };
 
 struct Instance {
   std::vector<Model> models;
   affine3f transform;
+
+  box3f get_bounds(const Scene&) const;
+  void print(const Scene&, std::ostream&, int indent = 0) const;
 };
 
 struct Light {
@@ -378,7 +395,9 @@ struct Scene {
   std::vector<scene::Light> lights;
   scene::Camera camera;
 
-  box3f get_bounds();
+  box3f get_bounds() const;
+  void print() const;
+
   std::vector<uint32_t> add_materials_for_isosurfaces(
     std::vector<float> isovalues, 
     const TransferFunction& self

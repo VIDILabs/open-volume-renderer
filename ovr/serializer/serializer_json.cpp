@@ -43,6 +43,7 @@ using json = nlohmann::json;
 #define DATA_SOURCE "dataSource"
 #define VIEW "view"
 #define POSITION "position"
+#define POSITIONS "positions"
 #define DIFFUSE "diffuse"
 #define LIGHT_SOURCE "lightSource"
 #define ADDITIONAL_LIGHT_SOURCES "additionalLightSources"
@@ -54,6 +55,7 @@ using json = nlohmann::json;
 #define DATA_ID "dataId"
 #define AO_SAMPLES "aoSamples"
 #define TRANSFER_FUNCTION_DATA_ID "transferFunctionDataId"
+#define SPHERES "spheres"
 
 namespace ovr {
 
@@ -326,7 +328,9 @@ create_scene_camera(const json& jsview)
   return camera;
 }
 
-} // namespace ovr::vidi3d
+} // namespace ovr::vidi
+
+using namespace ovr::vidi;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -337,7 +341,7 @@ ovr::scene::create_tfn(std::string filename)
   std::ifstream file(filename);
   std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
   json root = json::parse(text, nullptr, true, true);
-  return ovr::vidi::create_scene_tfn(root[VIEW][VOLUME], ovr::ValueType::VALUE_TYPE_DOUBLE);
+  return create_scene_tfn(root[VIEW][VOLUME], ovr::ValueType::VALUE_TYPE_DOUBLE);
 }
 
 ovr::scene::Scene
@@ -349,14 +353,13 @@ ovr::scene::create_json_scene_diva(json root, std::string workdir)
 ovr::scene::Scene
 ovr::scene::create_json_scene_vidi(json root, std::string workdir)
 {
-  using namespace ovr::vidi;
 
   std::vector<scene::Volume> volumes;
   int ao_samples = 0;
 
   // Parse All Volumes
   for (auto& ds : root[DATA_SOURCE]) {
-    auto volume = vidi::create_scene_volume(ds, workdir);
+    auto volume = create_scene_volume(ds, workdir);
     if (!root[VIEW][VOLUME].contains(SCALAR_MAPPING_RANGE_UNNORMALIZED)) {
       auto type = scalar_from_json<ValueType>(ds[TYPE]);
       if (type != VALUE_TYPE_FLOAT && type != VALUE_TYPE_DOUBLE) {
@@ -428,6 +431,21 @@ ovr::scene::create_json_scene_vidi(json root, std::string workdir)
       : 0;
   }
 
+  // Add Spheres
+  if (root[VIEW].contains(SPHERES)) {
+    const bool spheres_visible = visible(root[VIEW][SPHERES]);
+    if (spheres_visible) {
+      auto& positions = root[VIEW][SPHERES][POSITIONS];
+      size_t n_spheres = positions.size();
+      points_data.resize(n_spheres);
+      for (size_t i = 0; i < n_spheres; ++i) {
+        auto xyz = scalar_from_json<vec3f>(positions[i]);
+        float radius = 1.f;
+        points_data[i] = vec4f(xyz, radius);
+      }
+    }
+  }
+
   Scene scene = create_scene_visualization(
     main_volume, main_tfn,
     contours_volume, contours_values,
@@ -465,7 +483,7 @@ ovr::scene::create_json_scene_vidi(json root, std::string workdir)
   }
 
   scene.ao_samples = ao_samples;
-  scene.camera = vidi::create_scene_camera(root[VIEW]);
+  scene.camera = create_scene_camera(root[VIEW]);
   scene.volume_sampling_rate = 1.f / (float)scalar_from_json<double>(root[VIEW][VOLUME][SAMPLING_DISTANCE]);
 
   return scene;
@@ -560,42 +578,12 @@ ovr::scene::create_scene_visualization(
 
   // 2. Contours
   if (!contours_values.empty()) {
-    Texture texture;
-
-    // Create a material for the contours
-    if (contours_cmap_volume.type == Volume::INVALID) {
-      throw std::runtime_error("contours color map volume is invalid");
-    }
-
-    contours_cmap_tfn = copy_scene_tfn(contours_cmap_tfn);
-    for (int i = 0; i < contours_cmap_tfn.opacity->size(); ++i) {
-      ((float*)contours_cmap_tfn.opacity->data())[i] = 1.f;
-    }
-
-    memset(&texture, 0, sizeof(texture));
-    texture.type = Texture::VOLUME_TEXTURE;
-    texture.volume.volume = contours_cmap_volume;
-    scene.textures.push_back(texture);
-    const int32_t contours_cmap_volume_tex = scene.textures.size() - 1;
-
-    memset(&texture, 0, sizeof(texture));
-    texture.type = Texture::TRANSFER_FUNCTION_TEXTURE;
-    texture.transfer_function.transfer_function = contours_cmap_tfn;
-    texture.transfer_function.volume_texture = contours_cmap_volume_tex;
-    scene.textures.push_back(texture);
-    const int32_t contours_cmap_tex = scene.textures.size() - 1;
-
-    Material material;
-    material.type = Material::OBJ_MATERIAL;
-    material.obj.map_kd = contours_cmap_tex;
-    scene.materials.push_back(material);
-    const int32_t contours_cmap_mtl = scene.materials.size() - 1;
-
-    // Create a model for the contours
     if (contours_volume.type == Volume::INVALID) {
       throw std::runtime_error("contours volume is invalid");
     }
 
+    // Create a model for the contours
+    Texture texture;
     memset(&texture, 0, sizeof(texture));
     texture.type = Texture::VOLUME_TEXTURE;
     texture.volume.volume = contours_volume;
@@ -606,14 +594,65 @@ ovr::scene::create_scene_visualization(
     model.type = ovr::scene::Model::GEOMETRIC_MODEL;
     model.geometry_model.geometry.type = ovr::scene::Geometry::ISOSURFACE_GEOMETRY;
     model.geometry_model.geometry.isosurfaces.volume_texture = contours_volume_tex;
-    model.geometry_model.geometry.isosurfaces.isovalues = contours_values;
-    model.geometry_model.mtl = contours_cmap_mtl;
-    // model.geometry_model.mtls = scene.add_materials_for_isosurfaces(contours_values, contours_cmap_tfn);
+    model.geometry_model.geometry.isosurfaces.isovalues = CreateArray1DScalar(contours_values);
+
+    // Create a volume OBJ material for the contours
+    if (contours_cmap_volume.type != Volume::INVALID) {
+
+      contours_cmap_tfn = copy_scene_tfn(contours_cmap_tfn);
+      for (int i = 0; i < contours_cmap_tfn.opacity->size(); ++i) {
+        ((float*)contours_cmap_tfn.opacity->data())[i] = 1.f;
+      }
+
+      memset(&texture, 0, sizeof(texture));
+      texture.type = Texture::VOLUME_TEXTURE;
+      texture.volume.volume = contours_cmap_volume;
+      scene.textures.push_back(texture);
+      const int32_t contours_cmap_volume_tex = scene.textures.size() - 1;
+
+      memset(&texture, 0, sizeof(texture));
+      texture.type = Texture::TRANSFER_FUNCTION_TEXTURE;
+      texture.transfer_function.transfer_function = contours_cmap_tfn;
+      texture.transfer_function.volume_texture = contours_cmap_volume_tex;
+      scene.textures.push_back(texture);
+      const int32_t contours_cmap_tex = scene.textures.size() - 1;
+
+      Material material;
+      material.type = Material::OBJ_MATERIAL;
+      material.obj.map_kd = contours_cmap_tex;
+      scene.materials.push_back(material);
+      const int32_t contours_cmap_mtl = scene.materials.size() - 1;
+
+      // Set the material for the contours
+      model.geometry_model.mtl = contours_cmap_mtl;
+      // model.geometry_model.mtls = scene.add_materials_for_isosurfaces(contours_values, contours_cmap_tfn);
+    }
+
+    // Finalize
     instance.models.push_back(model);
   }
 
   // 3. Points
+  if (!points_data.empty()) {
+    const size_t n_points = points_data.size();
+    std::vector<vec3f> points_position(n_points);
+    std::vector<float> points_radius(n_points);
+    for (int i = 0; i < n_points; ++i) {
+      points_position[i] = points_data[i].xyz();
+      points_radius[i] = points_data[i].w;
+    }
 
+    Model model;
+    model.type = ovr::scene::Model::GEOMETRIC_MODEL;
+    model.geometry_model.geometry.type = ovr::scene::Geometry::SPHERES_GEOMETRY;
+
+    auto& spheres = model.geometry_model.geometry.spheres;
+    spheres.sphere.position = CreateArray1DFloat3(points_position);
+    spheres.sphere.radius = CreateArray1DScalar(points_radius);
+
+    // Finalize
+    instance.models.push_back(model);
+  }
 
   // 4. Finalize
   scene.instances.push_back(instance);

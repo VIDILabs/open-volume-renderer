@@ -18,11 +18,11 @@
 
 #include <generate_mask.h>
 
+#include <vidi_parallel_algorithm.h>
+
 #include <ospray/ospray_cpp.h>
 #include <ospray/ospray_util.h>
 #include <ospray/OSPEnums.h>
-
-#include <tbb/parallel_for.h>
 
 namespace ospray {
 OSPTYPEFOR_SPECIALIZATION(gdt::vec2uc, OSP_VEC2UC);
@@ -252,11 +252,12 @@ OSPGeometry
 DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometrySpheres handler) {
   OSPGeometry sphere = ospNewGeometry("sphere");
   assert(handler.position->type == ovr::VALUE_TYPE_FLOAT3);
-  auto position = ospNewSharedData1D(handler.position->data(), OSP_VEC3F, handler.position->dims.v);
+  auto position = create_ospray_array1d_scalar(handler.sphere.position);
   ospSetObject(sphere, "sphere.position", position);
-  ospSetFloat(sphere, "radius", handler.radius);
+  ospSetFloat(sphere, "radius", 5.f);
   ospCommit(sphere);
   ospRelease(position);
+  printf("sphere created\n");
   return sphere;
 }
 
@@ -264,9 +265,12 @@ OSPGeometry
 DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometryIsosurfaces handler) {
   OSPGeometry geom = ospNewGeometry("isosurface");
   OSPVolume volume = ospray.get_volume(handler.volume_texture);
-  ospSetVectorAsData(geom, "isovalue", OSP_FLOAT, handler.isovalues);
+  OSPData isovalues = create_ospray_array1d_scalar(handler.isovalues);
+  ospSetObject(geom, "isovalue", isovalues);
   ospSetObject(geom, "volume", volume);
   ospCommit(geom);
+  ospRelease(isovalues);
+  // no need to release volume, as it is not created here
   return geom;
 }
 
@@ -844,7 +848,7 @@ DeviceOSPRay::Impl::render() {
     // split rendered data to the actual framebuffer
     memset((void*)framebuffer_rgba_ptr, 0, sizeof(vec4f) * framebuffer_size_latest.long_product());
     const vec4f* data = (vec4f*)ospMapFrameBuffer(fb, OSP_FB_COLOR);
-    tbb::parallel_for(int64_t(0), launch_size, [&] (int64_t i) {
+    vidi::parallel::parallel_for(launch_size, [&] (int64_t i) {
       int x = sparse_sampling_xs_ys[2 * i + 0];
       int y = sparse_sampling_xs_ys[2 * i + 1];
       ((vec4f*)framebuffer_rgba_ptr)[y * framebuffer_size_latest.x + x] = data[i];
@@ -857,6 +861,8 @@ DeviceOSPRay::Impl::render() {
   }
   else {
     parent->variance = ospRenderFrameBlocking(ospray.framebuffer, ospray.renderer, ospray.camera, ospray.world);
+
+    // TODO fill in renderstats
   }
 }
 

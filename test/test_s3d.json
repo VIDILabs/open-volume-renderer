@@ -248,7 +248,7 @@
     },
     "isosurfaces": {
       "isovalues": [
-        // 0.0
+        // 0.0,
         // 0.001
         0.0016
         // 0.002
@@ -260,18 +260,19 @@
     "spheres": {
       "positions": [
         {
-          "x": 31.5,
+          "x": 0.5,
           "y": 127.5,
-          "z": 31.5,
+          "z": 0.5,
           "radius": 1.0
         }
       ],
+      // "colors": [],
       "color": {
         "r": 1.0,
         "g": 0.0,
         "b": 0.0
       },
-      "visible" : false
+      "visible" : true
     }
   }
 }

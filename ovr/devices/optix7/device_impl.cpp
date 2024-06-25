@@ -306,6 +306,8 @@ DeviceOptix7::Impl::buildScene(const Scene& scene)
   v.set_sampling_rate(scene.volume_sampling_rate);
   volumes.emplace_back(std::move(v));
 
+  parent->set_sample_per_pixel(scene.spp);
+
   commit();
 }
 

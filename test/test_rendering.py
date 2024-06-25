@@ -14,8 +14,11 @@ renderername = "ospray"
 filename = sys.argv[1]
 
 scene = ovrpy.create_scene(filename)
-# scene.spp = 16
+scene.spp = 128
 renderer = ovrpy.create_renderer(renderername)
+
+print(scene.get_bounds())
+scene.print()
 
 fbsize = ovrpy.vec2i()
 # fbsize.x = 640
@@ -29,7 +32,7 @@ renderer.set_fbsize(fbsize)
 framebufferdata = ovrpy.FrameBufferData()
 
 renderer.init([], scene, scene.camera)
-renderer.set_path_tracing(0)
+renderer.set_path_tracing(1)
 renderer.commit()
 
 renderer.render()
