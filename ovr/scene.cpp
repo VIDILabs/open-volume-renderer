@@ -18,6 +18,8 @@
 
 #include <colormap.h>
 
+#include <vidi_parallel_algorithm.h>
+
 namespace vidi {
 enum VoxelType {
   VOXEL_UINT8   = ovr::VALUE_TYPE_UINT8,
@@ -118,7 +120,6 @@ CreateArray3DScalarFromFile(const char* filename, vec3i dims, ValueType type, si
 {
   // data geometry
   assert(dims.x > 0 && dims.y > 0 && dims.z > 0);
-
   // load data from file
   std::shared_ptr<char[]> data_buffer;
   {
@@ -131,72 +132,260 @@ CreateArray3DScalarFromFile(const char* filename, vec3i dims, ValueType type, si
     desc.is_big_endian = is_big_endian;
     data_buffer = vidi::read_volume_structured_regular(std::string(filename), desc);
   }
-
   // finalize
   array_3d_scalar_t output = std::make_shared<Array<3>>();
   output->dims = dims;
   output->type = type;
   output->acquire_data(std::move(data_buffer));
-
   return output;
 }
 
+#define INDENT std::string(indent, ' ')
+
 namespace scene {
 
-box3f
-Scene::get_bounds() 
+template<typename T>
+static void 
+print_array(std::ostream& os, const array_1d_t& array, size_t max_n_items)
 {
-  auto volume_bounds = [](Volume& volume) {
-    box3f bounds { vec3f(float_large), vec3f(float_small) };
-    if (volume.type == Volume::STRUCTURED_REGULAR_VOLUME) {
-      auto& sr = volume.structured_regular;
-      auto origin = sr.grid_origin;
-      auto spacing = sr.grid_spacing;
-      auto dims = vec3f(sr.data->dims);
-
-      dims = dims * spacing;
-
-      box3f volume_bounds { origin, origin+dims };
-      bounds.extend(volume_bounds);
-    }
-    return bounds;
-  };
-
-  box3f bounds { vec3f(float_large), vec3f(float_small) };
-  for (auto& instance : instances) {
-    auto& transform = instance.transform;
-    for (auto& model : instance.models) {
-      if (model.type == Model::GEOMETRIC_MODEL) {
-        auto& geometry = model.geometry_model.geometry;
-        if (geometry.type == Geometry::TRIANGLES_GEOMETRY) {
-          auto& positions = geometry.triangles.position;
-          for (int i = 0; i < positions->size(); i++) {
-            auto p = xfmPoint(transform, positions->data_typed<vec3f>()[i]);
-            bounds.extend(p);
-          }
-        } else if (geometry.type == Geometry::ISOSURFACE_GEOMETRY) {
-          if (geometry.isosurfaces.volume_texture >= 0) {
-            auto& volume = textures[geometry.isosurfaces.volume_texture].volume.volume;
-            auto b = volume_bounds(volume);
-            b.lower = xfmPoint(transform, b.lower);
-            b.upper = xfmPoint(transform, b.upper);
-            bounds.extend(b);
-          }
-        }
-      } else if (model.type == Model::VOLUMETRIC_MODEL) {
-        if (model.volume_model.volume_texture >= 0) {
-          auto& volume = textures[model.volume_model.volume_texture].volume.volume;
-          auto b = volume_bounds(volume);
-          b.lower = xfmPoint(transform, b.lower);
-          b.upper = xfmPoint(transform, b.upper);
-          bounds.extend(b);
-        }
-      }
-    }
+  if (!array) {
+    os << "nullptr\n";
+    return;
   }
 
+  os << "{ ";
+  for (int i = 0; i < std::min(array->size(), max_n_items); i++) {
+    os << array->data_typed<T>()[i] << " ";
+  }
+  if (array->size() > max_n_items) {
+    os << "... skipped " << array->size() - max_n_items << " items ";
+  }
+  os << "}\n";
+}
+
+void 
+TransferFunction::print(std::ostream& os, int indent) const
+{
+  os << INDENT << "transfer_function\n";
+  os << INDENT << "+-> value_range = " << value_range << "\n";
+  os << INDENT << "+-> color = ";
+  print_array<vec4f>(os, color, 5);
+  os << INDENT << "+-> opacity = ";
+  print_array<float>(os, opacity, 5);
+}
+
+box3f 
+Volume::get_bounds(const Scene&) const 
+{
+  box3f bounds;
+  if (type == STRUCTURED_REGULAR_VOLUME) {
+    auto& sr = structured_regular;
+    auto& origin  = sr.grid_origin;
+    auto& spacing = sr.grid_spacing;
+    auto dims = vec3f(sr.data->dims);
+    bounds = { origin, origin+dims*spacing };
+  }
   return bounds;
 }
-} // namespace scene
 
+void
+Volume::print(const Scene& self, std::ostream& os, int indent) const
+{
+  if (type == STRUCTURED_REGULAR_VOLUME) {
+    auto& sr = structured_regular;
+    os << INDENT << "volume structured_regular\n";
+    os << INDENT << "+-> grid_origin = " << sr.grid_origin << "\n";
+    os << INDENT << "+-> grid_spacing = " << sr.grid_spacing << "\n";
+    os << INDENT << "+-> data = " << sr.data << "\n";
+  }
+}
+
+box3f 
+Geometry::get_bounds(const Scene& self) const 
+{
+  box3f bounds;
+  if (type == TRIANGLES_GEOMETRY) {
+    auto& g = triangles;
+    for (int i = 0; i < g.position->size(); i++) {  // TODO optimize this
+      bounds.extend(g.position->data_typed<vec3f>()[i]);
+    }
+  }
+  else if (type == SPHERES_GEOMETRY) {
+    auto& g = spheres;
+    for (int i = 0; i < g.sphere.position->size(); i++) {  // TODO optimize this
+      bounds.extend(g.sphere.position->data_typed<vec3f>()[i]);
+    }
+  }
+  else if (type == ISOSURFACE_GEOMETRY) {
+    auto& g = isosurfaces;
+    bounds = self.textures[g.volume_texture].volume.volume.get_bounds(self);
+  }
+  return bounds;
+}
+
+void
+Geometry::print(const Scene& self, std::ostream& os, int indent) const
+{
+  if (type == TRIANGLES_GEOMETRY) {
+    auto& g = triangles;
+    os << INDENT << "geometry triangles\n";
+    os << INDENT << "+-> position = ";
+    print_array<vec3f>(os, g.position, 5);
+    os << INDENT << "+-> index = ";
+    print_array<int>(os, g.index, 5);
+    os << INDENT << "+-> verts.normal = ";
+    print_array<vec3f>(os, g.verts.normal, 5);
+    os << INDENT << "+-> verts.texcoord = ";
+    print_array<vec2f>(os, g.verts.texcoord, 5);
+    os << INDENT << "+-> faces.normal = ";
+    print_array<vec3f>(os, g.faces.normal, 5);
+    os << INDENT << "+-> faces.texcoord = ";
+    print_array<vec2f>(os, g.faces.texcoord, 5);
+  }
+  else if (type == SPHERES_GEOMETRY) {
+    auto& g = spheres;
+    os << INDENT << "geometry spheres\n";
+    os << INDENT << "+-> sphere.position = ";
+    print_array<vec3f>(os, g.sphere.position, 5);
+    os << INDENT << "+-> sphere.radius = ";
+    print_array<float>(os, g.sphere.radius, 5);
+    os << INDENT << "+-> radius = " << g.radius << "\n";
+  }
+  else if (type == ISOSURFACE_GEOMETRY) {
+    auto& g = isosurfaces;
+    os << INDENT << "geometry isosurfaces\n";
+    os << INDENT << "+-> isovalues = ";
+    print_array<float>(os, g.isovalues, 5);
+    os << INDENT << "+-> volume_texture = " << g.volume_texture << "\n";
+    self.textures[g.volume_texture].volume.volume.print(self, os, indent + 4);
+  }
+}
+
+box3f 
+Model::get_bounds(const Scene& self) const 
+{
+  box3f bounds;
+  if (type == GEOMETRIC_MODEL) {
+    bounds = geometry_model.geometry.get_bounds(self);
+  } else if (type == VOLUMETRIC_MODEL) {
+    bounds = self.textures[volume_model.volume_texture].volume.volume.get_bounds(self);
+  }
+  return bounds;
+}
+
+void
+Model::print(const Scene& self, std::ostream& os, int indent) const
+{
+  if (type == GEOMETRIC_MODEL) {
+    os << INDENT << "model geometric\n";
+    os << INDENT << "+-> mtl = " << geometry_model.mtl << "\n";
+    os << INDENT << "+-> mtls = { ";
+    for (auto& mtl : geometry_model.mtls) {
+      os << mtl << " ";
+    }
+    os << "}\n";
+    geometry_model.geometry.print(self, os, indent + 4);
+  } else if (type == VOLUMETRIC_MODEL) {
+    os << INDENT << "model volumetric\n";
+    os << INDENT << "+-> transfer_function = ";
+    volume_model.transfer_function.print(os, indent + 4);
+    os << INDENT << "+-> volume_texture = " << volume_model.volume_texture << "\n";
+    self.textures[volume_model.volume_texture].volume.volume.print(self, os, indent + 4);
+  }
+}
+
+box3f 
+Instance::get_bounds(const Scene& self) const 
+{
+  box3f bounds;
+  for (auto& model : models) {
+    auto b = model.get_bounds(self);
+    b.lower = xfmPoint(transform, b.lower);
+    b.upper = xfmPoint(transform, b.upper);
+    bounds.extend(b);
+  }
+  return bounds;
+}
+
+void
+Instance::print(const Scene& self, std::ostream& os, int indent) const
+{
+  os << INDENT << "instance\n";
+  os << INDENT << "+-> transform: " << transform << "\n";
+  for (auto& model : models) {
+    model.print(self, os, indent + 4);
+  }
+}
+
+box3f
+Scene::get_bounds() const
+{
+  box3f bounds;
+  for (auto& instance : instances) {
+    bounds.extend(instance.get_bounds(*this));
+  }
+  return bounds;
+}
+
+void
+Scene::print() const
+{
+  std::ostream& os = std::cout;
+  os << "scene:\n";
+  for (auto& instance : instances) {
+    instance.print(*this, os, 2);
+  }
+}
+
+template<typename T> T 
+lerp(float t, T a, T b) { return a + t * (b - a); }
+
+static vec4f 
+access_transfer_function(const ovr::scene::TransferFunction& self, float value) 
+{
+  using namespace ovr;
+
+  // remap to [0.0, 1.0]
+  value = (value - self.value_range.x) / (self.value_range.y - self.value_range.x);
+  // clamp to [0.0, 1.0)
+  const float nextBefore1 = 0x1.fffffep-1f;
+  value = clamp(value, 0.0f, nextBefore1);
+
+  const int maxIdxC = self.color->size() - 1;
+  const float idxCf = value * maxIdxC;
+  float intC;
+  const float fracC = std::modf(idxCf, &intC);
+  const int idxC = idxCf;
+
+  vec4f* cdata = (vec4f*)self.color->data();
+  const vec4f col = lerp(fracC, cdata[idxC], cdata[std::min(maxIdxC, idxC + 1)]);
+
+  const int maxIdxO = self.opacity->size() - 1;
+  const float idxOf = value * maxIdxO;
+  float intO;
+  const float fracO = std::modf(idxOf, &intO);
+  const int idxO = idxOf;
+
+  float* odata = (float*)self.opacity->data();
+  const float opacity = lerp(fracO, odata[idxO], odata[std::min(maxIdxO, idxO + 1)]);
+
+  return vec4f(col.xyz(), opacity);
+}
+
+std::vector<uint32_t> 
+Scene::add_materials_for_isosurfaces(std::vector<float> isovalues, 
+  const ovr::scene::TransferFunction& transfer_function)
+{
+  std::vector<uint32_t> mtls;
+  for (int i = 0; i < isovalues.size(); ++i) {
+    ovr::scene::Material volume_mtl;
+    volume_mtl.type = ovr::scene::Material::OBJ_MATERIAL;
+    volume_mtl.obj.kd = access_transfer_function(transfer_function, isovalues[i]).xyz();
+    this->materials.push_back(volume_mtl);
+    mtls.push_back(this->materials.size() - 1);
+  }
+  return mtls;
+}
+
+} // namespace scene
 } // namespace ovr

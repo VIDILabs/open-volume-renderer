@@ -16,54 +16,14 @@
 
 #include "array.h"
 
-#include <tbb/blocked_range.h>
-#include <tbb/parallel_reduce.h>
-#include <tbb/parallel_for.h>
+#include <vidi_parallel_algorithm.h>
 
 namespace ovr::optix7 {
 
+using vidi::parallel::compute_scalar_minmax;
+using vidi::parallel::parallel_for;
+
 namespace {
-
-template<typename T>
-std::pair<T, T>
-compute_scalar_range(const void* _array, size_t count, size_t stride)
-{
-  static_assert(std::is_scalar<T>::value, "expecting a scalar type");
-
-  if (stride == 0)
-    stride = sizeof(T);
-
-  T* array = (T*)_array;
-  auto value = [array, stride](size_t index) -> T {
-    const auto begin = (const uint8_t*)array;
-    const auto curr = (T*)(begin + index * stride);
-    return static_cast<T>(*curr);
-  };
-
-  T init;
-
-  init = std::numeric_limits<T>::lowest();
-  T actual_max = tbb::parallel_reduce(
-    tbb::blocked_range<size_t>(0, count), init,
-    [value](const tbb::blocked_range<size_t>& r, T v) -> T {
-      for (auto i = r.begin(); i != r.end(); ++i)
-        v = std::max(v, value(i));
-      return v;
-    },
-    [](T x, T y) -> T { return std::max(x, y); });
-
-  init = std::numeric_limits<T>::max();
-  T actual_min = tbb::parallel_reduce(
-    tbb::blocked_range<size_t>(0, count), init,
-    [value](const tbb::blocked_range<size_t>& r, T v) -> T {
-      for (auto i = r.begin(); i != r.end(); ++i)
-        v = std::min(v, value(i));
-      return v;
-    },
-    [](T x, T y) -> T { return std::min(x, y); });
-
-  return std::make_pair(actual_min, actual_max);
-}
 
 template<typename IType, typename OType>
 std::shared_ptr<char[]>
@@ -72,7 +32,7 @@ convert_array1d(const char* idata, size_t size)
   std::shared_ptr<char[]> odata;
   odata.reset(new char[size * sizeof(OType)]);
 
-  tbb::parallel_for(size_t(0), size, [&](size_t idx) {
+  parallel_for(size, [&](size_t idx) {
     auto* i = (IType*)&idata[idx * sizeof(IType)];
     auto* o = (OType*)&odata[idx * sizeof(OType)];
     *o = static_cast<OType>(*i);
@@ -93,17 +53,16 @@ template<typename InType, typename = typename std::enable_if<std::is_integral<In
 std::pair<float, float>
 cuda_scalar_range(const void* _array, size_t count, size_t stride)
 {
-  auto p = compute_scalar_range<InType>(_array, count, stride);
+  auto p = compute_scalar_minmax<InType>(_array, count, stride);
   return std::make_pair(integer_normalize<float, InType>(p.first), integer_normalize<float, InType>(p.second));
 }
 
-template<typename InType,
-         typename = void,
+template<typename InType, typename = void,
          typename = typename std::enable_if<std::is_floating_point<InType>::value>::type>
 std::pair<float, float>
 cuda_scalar_range(const void* _array, size_t count, size_t stride)
 {
-  auto p = compute_scalar_range<InType>(_array, count, stride);
+  auto p = compute_scalar_minmax<InType>(_array, count, stride);
   return std::make_pair((float)p.first, (float)p.second);
 }
 

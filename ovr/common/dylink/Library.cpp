@@ -92,7 +92,6 @@ Library::~Library()
 #else
     dlclose(lib);
 #endif
-    // vidi::log() << "[library] closing " << libraryName << std::endl;
   }
 }
 

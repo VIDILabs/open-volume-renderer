@@ -20,7 +20,8 @@ using json = nlohmann::json;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-
+#define MINIMUM "minimum"
+#define MAXIMUM "maximum"
 #define VOLUME "volume"
 #define TRANSFER_FUNCTION "transferFunction"
 #define SCALAR_MAPPING_RANGE_UNNORMALIZED "scalarMappingRangeUnnormalized"
@@ -42,11 +43,19 @@ using json = nlohmann::json;
 #define DATA_SOURCE "dataSource"
 #define VIEW "view"
 #define POSITION "position"
+#define POSITIONS "positions"
 #define DIFFUSE "diffuse"
 #define LIGHT_SOURCE "lightSource"
 #define ADDITIONAL_LIGHT_SOURCES "additionalLightSources"
 #define SAMPLING_DISTANCE "sampleDistance"
 #define DIRECTIONAL_LIGHT "DIRECTIONAL_LIGHT"
+#define ISOSUFRACES "isosurfaces"
+#define ISOVALUES "isovalues"
+#define VISIBLE "visible"
+#define DATA_ID "dataId"
+#define AO_SAMPLES "aoSamples"
+#define TRANSFER_FUNCTION_DATA_ID "transferFunctionDataId"
+#define SPHERES "spheres"
 
 namespace ovr {
 
@@ -139,12 +148,9 @@ scalar_from_json(const json& in, const std::string& key, const ScalarT& value)
 inline vec2f
 range_from_json(json jsrange)
 {
-  if (!jsrange.contains("minimum") || !jsrange.contains("maximum")) return vec2f(0.0, 0.0);
-  return vec2f(jsrange["minimum"].get<float>(), jsrange["maximum"].get<float>());
+  if (!jsrange.contains(MINIMUM)  || !jsrange.contains(MAXIMUM)) { return vec2f(0.0, 0.0); }
+  return vec2f (jsrange[MINIMUM].get<float>(), jsrange[MAXIMUM].get<float>());
 }
-
-// using namespace ovr::math;
-// using namespace ovr::scene;
 
 static bool
 file_exists_test(std::string name)
@@ -161,11 +167,11 @@ file_exists_test(std::string name, const std::string& dir, std::string& out)
     return true;
   }
   else if (file_exists_test(dir + "/" + name)) {
-    out = name;
+    out = dir + "/" + name;
     return true;
   }
   else if (file_exists_test(dir + "\\" + name)) {
-    out = name;
+    out = dir + "/" + name;
     return true;
   }
   return false;
@@ -198,12 +204,12 @@ valid_filename(const json& in, std::string dir, const std::string& key)
 }
 
 ovr::scene::TransferFunction
-create_scene_tfn(const json& jsview, ValueType type)
+create_scene_tfn(const json& jsvolume, ValueType type)
 {
   ovr::scene::TransferFunction ret{};
 
-  const auto& jstfn = jsview[VOLUME][TRANSFER_FUNCTION];
-  const auto& jsvolume = jsview[VOLUME];
+  // const auto& jsvolume = jsview[VOLUME];
+  const auto& jstfn = jsvolume[TRANSFER_FUNCTION];
 
   tfn::TransferFunctionCore tf;
   tfn::loadTransferFunction(jstfn, tf);
@@ -322,7 +328,9 @@ create_scene_camera(const json& jsview)
   return camera;
 }
 
-} // namespace ovr::vidi3d
+} // namespace ovr::vidi
+
+using namespace ovr::vidi;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -333,7 +341,7 @@ ovr::scene::create_tfn(std::string filename)
   std::ifstream file(filename);
   std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
   json root = json::parse(text, nullptr, true, true);
-  return ovr::vidi::create_scene_tfn(root[VIEW], ovr::ValueType::VALUE_TYPE_DOUBLE);
+  return create_scene_tfn(root[VIEW][VOLUME], ovr::ValueType::VALUE_TYPE_DOUBLE);
 }
 
 ovr::scene::Scene
@@ -345,18 +353,13 @@ ovr::scene::create_json_scene_diva(json root, std::string workdir)
 ovr::scene::Scene
 ovr::scene::create_json_scene_vidi(json root, std::string workdir)
 {
-  using namespace ovr::vidi;
 
-  Scene scene;
+  std::vector<scene::Volume> volumes;
+  int ao_samples = 0;
 
-  Instance instance;
-  instance.transform = affine3f::translate(vec3f(0));
-
+  // Parse All Volumes
   for (auto& ds : root[DATA_SOURCE]) {
-    auto volume = vidi::create_scene_volume(ds, workdir);
-
-    auto tfn = vidi::create_scene_tfn(root[VIEW], volume.structured_regular.data->type);
-
+    auto volume = create_scene_volume(ds, workdir);
     if (!root[VIEW][VOLUME].contains(SCALAR_MAPPING_RANGE_UNNORMALIZED)) {
       auto type = scalar_from_json<ValueType>(ds[TYPE]);
       if (type != VALUE_TYPE_FLOAT && type != VALUE_TYPE_DOUBLE) {
@@ -365,21 +368,91 @@ ovr::scene::create_json_scene_vidi(json root, std::string workdir)
                   << std::endl;
       }
     }
-
-    Texture texture;
-    texture.type = Texture::VOLUME_TEXTURE;
-    texture.volume.volume = volume;
-    scene.textures.push_back(texture);
-
-    Model model;
-    model.type = Model::VOLUMETRIC_MODEL;
-    model.volume_model.volume_texture = scene.textures.size() - 1;
-    model.volume_model.transfer_function = tfn;
-
-    instance.models.push_back(model);
+    volumes.push_back(volume);
   }
 
-  scene.instances.push_back(instance);
+  if (!root[VIEW].contains(VOLUME)) {
+    throw std::runtime_error("tag \"view/volume\" found in the scene");
+  }
+
+  // -------- // 
+
+  Volume main_volume;
+  TransferFunction main_tfn;
+
+  std::vector<float> contours_values;
+  Volume contours_volume;
+  Volume contours_cmap_volume;
+  TransferFunction contours_cmap_tfn;
+
+  std::vector<vec4f> points_data;
+  std::vector<vec4f> points_color;
+  Volume points_cmap_volume;
+  TransferFunction points_cmap_tfn;
+
+  // -------- // 
+
+  auto visible = [] (const json& js) {
+    return js.contains(VISIBLE) ? js[VISIBLE].get<bool>() : true;
+  };
+
+  auto dataid = [] (const json& js) {
+    return js.contains(DATA_ID) ? (js[DATA_ID].get<int>() - 1) : 0;
+  };
+
+  const bool main_volume_visible = visible(root[VIEW][VOLUME]);
+  const int main_volume_ID = dataid(root[VIEW][VOLUME]);
+  main_tfn = create_scene_tfn(root[VIEW][VOLUME], volumes[main_volume_ID].structured_regular.data->type);
+  if (main_volume_visible) {
+    main_volume = volumes[main_volume_ID];
+    // std::cout << "main volume visible, data ID = " << main_volume_ID << std::endl;
+  }
+
+  // Add Isosurfaces
+  if (root[VIEW].contains(ISOSUFRACES)) {
+    const bool isosurfaces_visible = visible(root[VIEW][ISOSUFRACES]);
+    const int ID = dataid(root[VIEW][ISOSUFRACES]);
+    const int TFN_ID = root[VIEW][ISOSUFRACES].contains(TRANSFER_FUNCTION_DATA_ID) 
+      ? (root[VIEW][ISOSUFRACES][TRANSFER_FUNCTION_DATA_ID].get<int>() - 1) 
+      : ID;
+
+    if (isosurfaces_visible) {
+      const std::vector<float> values = root[VIEW][ISOSUFRACES][ISOVALUES];
+      contours_values = values;
+      contours_volume = volumes[ID];
+      contours_cmap_volume = volumes[TFN_ID];
+      contours_cmap_tfn = root[VIEW][ISOSUFRACES].contains(TRANSFER_FUNCTION)
+        ? create_scene_tfn(root[VIEW][ISOSUFRACES], volumes[TFN_ID].structured_regular.data->type)
+        : main_tfn;
+    }
+
+    ao_samples = root[VIEW][ISOSUFRACES].contains(AO_SAMPLES) 
+      ? root[VIEW][ISOSUFRACES][AO_SAMPLES].get<int>() 
+      : 0;
+  }
+
+  // Add Spheres
+  if (root[VIEW].contains(SPHERES)) {
+    const bool spheres_visible = visible(root[VIEW][SPHERES]);
+    if (spheres_visible) {
+      auto& positions = root[VIEW][SPHERES][POSITIONS];
+      size_t n_spheres = positions.size();
+      points_data.resize(n_spheres);
+      for (size_t i = 0; i < n_spheres; ++i) {
+        auto xyz = scalar_from_json<vec3f>(positions[i]);
+        float radius = 1.f;
+        points_data[i] = vec4f(xyz, radius);
+      }
+    }
+  }
+
+  Scene scene = create_scene_visualization(
+    main_volume, main_tfn,
+    contours_volume, contours_values,
+    contours_cmap_volume, contours_cmap_tfn,
+    points_data, points_color,
+    points_cmap_volume, points_cmap_tfn
+  );
 
   if (root[VIEW].contains(LIGHT_SOURCE)) {
     assert(root[VIEW][LIGHT_SOURCE][TYPE] == DIRECTIONAL_LIGHT);
@@ -409,14 +482,9 @@ ovr::scene::create_json_scene_vidi(json root, std::string workdir)
     scene.lights.push_back(light);
   }
 
-  // std::cout << "scene.lights = " << scene.lights.size() << std::endl;
-
-  scene.camera = vidi::create_scene_camera(root[VIEW]);
+  scene.ao_samples = ao_samples;
+  scene.camera = create_scene_camera(root[VIEW]);
   scene.volume_sampling_rate = 1.f / (float)scalar_from_json<double>(root[VIEW][VOLUME][SAMPLING_DISTANCE]);
-
-  // if (scene.volume_sampling_rate > 1) {
-  //   std::cout << "scene.volume_sampling_rate = " << scene.volume_sampling_rate << std::endl;
-  // }
 
   return scene;
 }
@@ -453,4 +521,140 @@ create_scene_default(std::string filename)
   if (ext == "usda") return ovr::scene::create_usda_scene(filename);
 #endif
   throw std::runtime_error("unknown scene format");
+}
+
+static ovr::scene::TransferFunction
+copy_scene_tfn(const ovr::scene::TransferFunction& tfn)
+{
+  using namespace ovr;
+  ovr::scene::TransferFunction ret{};
+  std::vector<vec4f> color(tfn.color->size());
+  std::vector<float> opacity(tfn.opacity->size());
+  for (int i = 0; i < tfn.color->size(); ++i) {
+    color[i] = tfn.color->data_typed<vec4f>()[i];
+  }
+  for (int i = 0; i < tfn.opacity->size(); ++i) {
+    opacity[i] = tfn.opacity->data_typed<float>()[i];
+  }
+  ret.color   = CreateArray1DFloat4(color);
+  ret.opacity = CreateArray1DScalar(opacity);
+  ret.value_range = tfn.value_range;
+  return ret;
+}
+
+ovr::scene::Scene
+ovr::scene::create_scene_visualization(
+  Volume main_volume, TransferFunction main_tfn,
+  Volume contours_volume, std::vector<float> contours_values,
+  Volume contours_cmap_volume, TransferFunction contours_cmap_tfn,
+  std::vector<vec4f> points_data, std::vector<vec4f> points_color,
+  Volume points_cmap_volume, TransferFunction points_cmap_tfn
+)
+{
+  Scene scene;
+
+  Instance instance;
+  instance.transform = affine3f::translate(vec3f(0));
+
+  // 1. Main Volume
+  if (main_volume.type != Volume::INVALID) {
+    if (main_volume.type != Volume::STRUCTURED_REGULAR_VOLUME) {
+      throw std::runtime_error("main volume is not a structured regular volume");
+    }
+
+    Texture texture;
+    texture.type = Texture::VOLUME_TEXTURE;
+    texture.volume.volume = main_volume;
+    scene.textures.push_back(texture);
+    const int32_t main_volume_tex = scene.textures.size() - 1;
+
+    // Create a model for the main volume
+    Model model;
+    model.type = Model::VOLUMETRIC_MODEL;
+    model.volume_model.volume_texture = main_volume_tex;
+    model.volume_model.transfer_function = main_tfn;
+    instance.models.push_back(model);
+  }
+
+  // 2. Contours
+  if (!contours_values.empty()) {
+    if (contours_volume.type == Volume::INVALID) {
+      throw std::runtime_error("contours volume is invalid");
+    }
+
+    // Create a model for the contours
+    Texture texture;
+    memset(&texture, 0, sizeof(texture));
+    texture.type = Texture::VOLUME_TEXTURE;
+    texture.volume.volume = contours_volume;
+    scene.textures.push_back(texture);
+    const int32_t contours_volume_tex = scene.textures.size() - 1;
+
+    Model model;
+    model.type = ovr::scene::Model::GEOMETRIC_MODEL;
+    model.geometry_model.geometry.type = ovr::scene::Geometry::ISOSURFACE_GEOMETRY;
+    model.geometry_model.geometry.isosurfaces.volume_texture = contours_volume_tex;
+    model.geometry_model.geometry.isosurfaces.isovalues = CreateArray1DScalar(contours_values);
+
+    // Create a volume OBJ material for the contours
+    if (contours_cmap_volume.type != Volume::INVALID) {
+
+      contours_cmap_tfn = copy_scene_tfn(contours_cmap_tfn);
+      for (int i = 0; i < contours_cmap_tfn.opacity->size(); ++i) {
+        ((float*)contours_cmap_tfn.opacity->data())[i] = 1.f;
+      }
+
+      memset(&texture, 0, sizeof(texture));
+      texture.type = Texture::VOLUME_TEXTURE;
+      texture.volume.volume = contours_cmap_volume;
+      scene.textures.push_back(texture);
+      const int32_t contours_cmap_volume_tex = scene.textures.size() - 1;
+
+      memset(&texture, 0, sizeof(texture));
+      texture.type = Texture::TRANSFER_FUNCTION_TEXTURE;
+      texture.transfer_function.transfer_function = contours_cmap_tfn;
+      texture.transfer_function.volume_texture = contours_cmap_volume_tex;
+      scene.textures.push_back(texture);
+      const int32_t contours_cmap_tex = scene.textures.size() - 1;
+
+      Material material;
+      material.type = Material::OBJ_MATERIAL;
+      material.obj.map_kd = contours_cmap_tex;
+      scene.materials.push_back(material);
+      const int32_t contours_cmap_mtl = scene.materials.size() - 1;
+
+      // Set the material for the contours
+      model.geometry_model.mtl = contours_cmap_mtl;
+      // model.geometry_model.mtls = scene.add_materials_for_isosurfaces(contours_values, contours_cmap_tfn);
+    }
+
+    // Finalize
+    instance.models.push_back(model);
+  }
+
+  // 3. Points
+  if (!points_data.empty()) {
+    const size_t n_points = points_data.size();
+    std::vector<vec3f> points_position(n_points);
+    std::vector<float> points_radius(n_points);
+    for (int i = 0; i < n_points; ++i) {
+      points_position[i] = points_data[i].xyz();
+      points_radius[i] = points_data[i].w;
+    }
+
+    Model model;
+    model.type = ovr::scene::Model::GEOMETRIC_MODEL;
+    model.geometry_model.geometry.type = ovr::scene::Geometry::SPHERES_GEOMETRY;
+
+    auto& spheres = model.geometry_model.geometry.spheres;
+    spheres.sphere.position = CreateArray1DFloat3(points_position);
+    spheres.sphere.radius = CreateArray1DScalar(points_radius);
+
+    // Finalize
+    instance.models.push_back(model);
+  }
+
+  // 4. Finalize
+  scene.instances.push_back(instance);
+  return scene;
 }

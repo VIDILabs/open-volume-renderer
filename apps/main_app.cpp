@@ -521,36 +521,7 @@ main(int ac, const char** av)
   ovr::Scene scene;
 
   // Hack for testing isosurface rendering
-  if (device == "isosurface") {
-    scene = create_scene_device(scene_file, "ospray");
-
-    const int32_t volume_raw_id = scene.instances[0].models[0].volume_model.volume_texture;
-    scene.instances[0].models[0].volume_model.volume_texture = volume_raw_id;
-
-    ovr::scene::Texture volume_tfn;
-    volume_tfn.type = ovr::scene::Texture::TRANSFER_FUNCTION_TEXTURE;
-    volume_tfn.transfer_function.transfer_function = scene.instances[0].models[0].volume_model.transfer_function;
-    volume_tfn.transfer_function.volume_texture = volume_raw_id;
-    scene.textures.push_back(volume_tfn);
-    const int32_t volume_tfn_id = scene.textures.size() - 1;
-
-    ovr::scene::Material volume_mtl;
-    volume_mtl.type = ovr::scene::Material::OBJ_MATERIAL;
-    volume_mtl.obj.map_kd = volume_tfn_id;
-    scene.materials.push_back(volume_mtl);
-    const int32_t volume_mtl_id = scene.materials.size() - 1;
-
-    ovr::scene::Model model;
-    model.type = ovr::scene::Model::GEOMETRIC_MODEL;
-    model.geometry_model.geometry.type = ovr::scene::Geometry::ISOSURFACE_GEOMETRY;
-    model.geometry_model.geometry.isosurfaces.volume_texture = volume_raw_id;
-    model.geometry_model.geometry.isosurfaces.isovalues = { 0.5f };
-    model.geometry_model.mtl = volume_mtl_id;
-    scene.instances[0].models[0] = model;
-  }
-  else {
-    scene = create_scene_device(scene_file, device);
-  }
+  scene = create_scene_device(scene_file, device);
 
   // -------------------------------------------------------
   // create renderer

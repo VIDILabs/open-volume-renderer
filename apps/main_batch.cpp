@@ -275,7 +275,7 @@ main(int ac, char** av)
 
     for (int i = 0; i <  5; ++i) ren->render();
 
-    using Timer  = vidi::details::HighPerformanceTimer;
+    using Timer = vidi::details::HighPerformanceTimer;
     {
       Timer timer;
       timer.reset();

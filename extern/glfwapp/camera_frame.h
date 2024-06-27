@@ -84,16 +84,16 @@ namespace glfwapp
       modified = true;
     }
 
-    // void rotate_frame_by_angle(float deg_u, float deg_v)
-    // {
-    //   const vec3f poi = get_poi();
-    //   float rad_u = -M_PI / 180.f * deg_u;
-    //   float rad_v = -M_PI / 180.f * deg_v;
-    //   frame = linear3f::rotate(frame.vy, rad_u) * linear3f::rotate(frame.vx, rad_v) * frame;
-    //   set_position(poi + get_focal_length() * get_frame_z());
-    //   rotation = quat3f(frame.vx, frame.vy, frame.vz);
-    //   modified = true;
-    // }
+    void rotate_frame_by_angle(float deg_u, float deg_v)
+    {
+      const vec3f poi = get_poi();
+      float rad_u = -M_PI / 180.f * deg_u;
+      float rad_v = -M_PI / 180.f * deg_v;
+      frame = linear3f::rotate(frame.vy, rad_u) * linear3f::rotate(frame.vx, rad_v) * frame;
+      set_position(poi + get_focal_length() * get_frame_z());
+      rotation = quat3f(frame.vx, frame.vy, frame.vz);
+      modified = true;
+    }
 
     void rotate_frame(vec2f curr, vec2f prev, const float &speed)
     {

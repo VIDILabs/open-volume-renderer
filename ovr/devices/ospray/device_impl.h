@@ -68,6 +68,7 @@ protected:
   OSPTexture create_ospray_texture(scene::Texture::TransferFunctionTexture handler);
   
   OSPMaterial create_ospray_material(scene::Material::ObjMaterial handler);
+  OSPMaterial create_ospray_material(scene::Material::PrincipledMaterial handler);
   OSPMaterial create_ospray_material(scene::Material handler);
 
   OSPTransferFunction create_ospray_transfer_function(scene::TransferFunction handler);

@@ -332,7 +332,7 @@ namespace gdt {
   ////////////////////////////////////////////////////////////////////////////////
 
   template<typename T> inline std::ostream& operator<<(std::ostream& cout, const LinearSpace3<T>& m) {
-    return cout << "{ vx = " << m.vx << ", vy = " << m.vy << ", vz = " << m.vz << "}";
+    return cout << "{ vx = " << m.vx << ", vy = " << m.vy << ", vz = " << m.vz << " }";
   }
 
   /*! Shortcuts for common linear spaces. */
