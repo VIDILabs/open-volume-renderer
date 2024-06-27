@@ -167,11 +167,11 @@ file_exists_test(std::string name, const std::string& dir, std::string& out)
     return true;
   }
   else if (file_exists_test(dir + "/" + name)) {
-    out = name;
+    out = dir + "/" + name;
     return true;
   }
   else if (file_exists_test(dir + "\\" + name)) {
-    out = name;
+    out = dir + "/" + name;
     return true;
   }
   return false;
