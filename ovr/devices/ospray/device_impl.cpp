@@ -251,7 +251,7 @@ DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometryTriangles ha
 OSPGeometry 
 DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometrySpheres handler) {
   OSPGeometry sphere = ospNewGeometry("sphere");
-  assert(handler.position->type == ovr::VALUE_TYPE_FLOAT3);
+  assert(handler.sphere.position->type == ovr::VALUE_TYPE_FLOAT3);
   auto position = create_ospray_array1d_scalar(handler.sphere.position);
   ospSetObject(sphere, "sphere.position", position);
   ospSetFloat(sphere, "radius", 5.f);
