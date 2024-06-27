@@ -39,6 +39,9 @@ target_link_libraries(imgui PRIVATE ${GFX_LIBRARIES})
 if(Vulkan_FOUND) 
   target_sources(imgui PRIVATE imgui/examples/imgui_impl_vulkan.cpp)
   target_link_libraries(imgui PRIVATE ${Vulkan_LIBRARY})
+  target_include_directories(imgui PUBLIC
+    $<BUILD_INTERFACE:${Vulkan_INCLUDE_DIR}>
+  )
 endif()
 
 target_include_directories(imgui PUBLIC
