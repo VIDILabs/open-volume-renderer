@@ -52,6 +52,13 @@ DeviceOptix7::mapframe(FrameBufferData* fb)
   return pimpl->mapframe(fb);
 }
 
+void
+DeviceOptix7::set_imgui_context(ImGuiContext* context) {
+#ifdef OVR_BUILD_OPENGL
+  ImGui::SetCurrentContext(context);
+#endif
+}
+
 void 
 DeviceOptix7::ui() 
 {

@@ -28,9 +28,9 @@ if (POLICY CMP0135)
 endif (POLICY CMP0135)
 
 
-project(OpenVisRenderer LANGUAGES C CXX)
-
 cmake_minimum_required(VERSION 3.18)
+project(OpenVisRenderer LANGUAGES C CXX CUDA)
+
 
 option(OVR_BUILD_OPENGL "Build with OpenGL Apps" ON)
 option(OVR_BUILD_CUDA "Build with CUDA" ON)

@@ -21,7 +21,7 @@ find_package(Vulkan)
 # Now it is important to make imgui a shared library
 # TODO: verify the correctness on windows
 # TODO: add support for Vulkan
-add_library(imgui SHARED
+add_library(imgui STATIC
   imgui/imgui.cpp
   imgui/imgui_draw.cpp
   imgui/imgui_demo.cpp

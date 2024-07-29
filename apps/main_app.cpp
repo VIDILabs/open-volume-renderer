@@ -164,6 +164,7 @@ public:
     , renderer(renderer)
     , frame_active_layer(layer)
   {
+    renderer->set_imgui_context(ImGui::GetCurrentContext());
     ImPlot::CreateContext();
 #ifdef OVR_LOGGING
     logger.initialize({"frame", "fps", "frame_time", "render_time", "inference_time"});
