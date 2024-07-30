@@ -19,8 +19,9 @@ cmake_minimum_required(VERSION 3.7.0)
 find_package(Vulkan)
 
 # Now it is important to make imgui a shared library
-# TODO: verify the correctness on windows
 # TODO: add support for Vulkan
+# TODO: see if we can build STATIC on all platforms
+if (WIN32)
 add_library(imgui STATIC
   imgui/imgui.cpp
   imgui/imgui_draw.cpp
@@ -33,6 +34,20 @@ add_library(imgui STATIC
   implot/implot_items.cpp
   implot/implot.cpp
 )
+else()
+add_library(imgui SHARED
+  imgui/imgui.cpp
+  imgui/imgui_draw.cpp
+  imgui/imgui_demo.cpp
+  imgui/imgui_widgets.cpp
+  imgui/examples/imgui_impl_glfw.cpp
+  imgui/examples/imgui_impl_opengl2.cpp
+  imgui/examples/imgui_impl_opengl3.cpp
+  implot/implot_demo.cpp
+  implot/implot_items.cpp
+  implot/implot.cpp
+)
+endif()
 
 target_link_libraries(imgui PRIVATE ${GFX_LIBRARIES})
 
