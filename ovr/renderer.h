@@ -136,8 +136,7 @@ public:
   const TransferFunctionData& unsafe_get_tfn() const { return params.tfn.ref(); }
 
   /*! thread safe: called in GUI thread */
-  virtual void ui() {}
-  virtual void set_imgui_context(ImGuiContext* context) = 0;
+  virtual void ui(ImGuiContext* context) {}
 
   /*! thread safe: setters */
   void set_fbsize(const math::vec2i& fbsize) { params.fbsize = fbsize; }

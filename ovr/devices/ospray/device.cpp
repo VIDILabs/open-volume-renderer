@@ -54,17 +54,11 @@ DeviceOSPRay::mapframe(FrameBufferData* fb)
   return pimpl->mapframe(fb);
 }
 
-void
-DeviceOSPRay::set_imgui_context(ImGuiContext* context) {
-#ifdef OVR_BUILD_OPENGL
-  ImGui::SetCurrentContext(context);
-#endif
-}
-
 void 
-DeviceOSPRay::ui() 
+DeviceOSPRay::ui(ImGuiContext* context) 
 {
 #ifdef OVR_BUILD_OPENGL
+  ImGui::SetCurrentContext(context);
   static struct {
     vec2f focus{ 0.5f, 0.5f };
     float focus_scale{ 0.06f };

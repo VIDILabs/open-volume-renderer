@@ -46,8 +46,7 @@ public:
   void commit() override;
   void render() override;
   void mapframe(FrameBufferData* fb) override;
-  void ui() override;
-  void set_imgui_context(ImGuiContext* context) override;
+  void ui(ImGuiContext* context) override;
 
 private:
   struct Impl;

@@ -114,6 +114,11 @@ namespace glfwapp
 #endif
   }
 
+  ImGuiContext* GLFWindow::GetImGuiContext()
+  {
+    return ImGui::GetCurrentContext();
+  }
+
   /*! callback for a window resizing event */
   static void glfwindow_reshape_cb(GLFWwindow *window, int width, int height)
   {
