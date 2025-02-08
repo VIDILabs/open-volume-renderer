@@ -1,0 +1,374 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2104E152-9C24-3A79-AF4E-93530B671A00}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>tfnmodule</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.6.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">tfnmodule.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">tfnmodule</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">tfnmodule.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">tfnmodule</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">tfnmodule.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">tfnmodule</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">tfnmodule.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">tfnmodule</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ProcessorNumber>24</ProcessorNumber>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NOMINMAX;__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__=1;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NOMINMAX;__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__=1;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <CudaLink>
+      <AdditionalOptions>-forward-unknown-to-host-compiler -Wno-deprecated-gpu-targets </AdditionalOptions>
+      <PerformDeviceLink>false</PerformDeviceLink>
+    </CudaLink>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ProcessorNumber>24</ProcessorNumber>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;NOMINMAX;__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__=1;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;NOMINMAX;__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__=1;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <CudaLink>
+      <AdditionalOptions>-forward-unknown-to-host-compiler -Wno-deprecated-gpu-targets </AdditionalOptions>
+      <PerformDeviceLink>false</PerformDeviceLink>
+    </CudaLink>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ProcessorNumber>24</ProcessorNumber>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;NOMINMAX;__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__=1;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;NOMINMAX;__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__=1;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <CudaLink>
+      <AdditionalOptions>-forward-unknown-to-host-compiler -Wno-deprecated-gpu-targets </AdditionalOptions>
+      <PerformDeviceLink>false</PerformDeviceLink>
+    </CudaLink>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ProcessorNumber>24</ProcessorNumber>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;NOMINMAX;__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__=1;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;NOMINMAX;__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__=1;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <CudaLink>
+      <AdditionalOptions>-forward-unknown-to-host-compiler -Wno-deprecated-gpu-targets </AdditionalOptions>
+      <PerformDeviceLink>false</PerformDeviceLink>
+    </CudaLink>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/joshc/Projects/cpp/ovr-vr/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/joshc/Projects/cpp/ovr-vr -BC:/Users/joshc/Projects/cpp/ovr-vr --check-stamp-file C:/Users/joshc/Projects/cpp/ovr-vr/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Libraries\OneAPITBB\2021.13.1.13\tbb\2021.13\lib\cmake\tbb\TBBConfig.cmake;C:\Libraries\OneAPITBB\2021.13.1.13\tbb\2021.13\lib\cmake\tbb\TBBConfigVersion.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCUDAInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVIDIA-CUDA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVIDIA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\ExternalProject\shared_internal_commands.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FetchContent.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FetchContent\CMakeLists.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\FindCUDA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindCUDA\select_compute_arch.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindCUDAToolkit.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindGit.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCUDALinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeRCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CUDA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-NVIDIA-CUDA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeCCompiler.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeCUDACompiler.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeCXXCompiler.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeRCCompiler.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeSystem.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\cmake.verify_globs;C:\Users\joshc\Projects\cpp\ovr-vr\extern\bin2c\target_add_embeded_shaders.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\configure.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\dep_glad.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\dep_glfw.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\FindOptiX.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\configure_build_type.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\configure_cuda.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\configure_optix.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/joshc/Projects/cpp/ovr-vr/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/joshc/Projects/cpp/ovr-vr -BC:/Users/joshc/Projects/cpp/ovr-vr --check-stamp-file C:/Users/joshc/Projects/cpp/ovr-vr/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Libraries\OneAPITBB\2021.13.1.13\tbb\2021.13\lib\cmake\tbb\TBBConfig.cmake;C:\Libraries\OneAPITBB\2021.13.1.13\tbb\2021.13\lib\cmake\tbb\TBBConfigVersion.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCUDAInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVIDIA-CUDA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVIDIA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\ExternalProject\shared_internal_commands.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FetchContent.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FetchContent\CMakeLists.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\FindCUDA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindCUDA\select_compute_arch.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindCUDAToolkit.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindGit.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCUDALinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeRCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CUDA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-NVIDIA-CUDA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeCCompiler.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeCUDACompiler.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeCXXCompiler.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeRCCompiler.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeSystem.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\cmake.verify_globs;C:\Users\joshc\Projects\cpp\ovr-vr\extern\bin2c\target_add_embeded_shaders.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\configure.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\dep_glad.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\dep_glfw.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\FindOptiX.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\configure_build_type.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\configure_cuda.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\configure_optix.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/joshc/Projects/cpp/ovr-vr/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/joshc/Projects/cpp/ovr-vr -BC:/Users/joshc/Projects/cpp/ovr-vr --check-stamp-file C:/Users/joshc/Projects/cpp/ovr-vr/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Libraries\OneAPITBB\2021.13.1.13\tbb\2021.13\lib\cmake\tbb\TBBConfig.cmake;C:\Libraries\OneAPITBB\2021.13.1.13\tbb\2021.13\lib\cmake\tbb\TBBConfigVersion.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCUDAInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVIDIA-CUDA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVIDIA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\ExternalProject\shared_internal_commands.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FetchContent.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FetchContent\CMakeLists.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\FindCUDA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindCUDA\select_compute_arch.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindCUDAToolkit.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindGit.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCUDALinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeRCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CUDA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-NVIDIA-CUDA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeCCompiler.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeCUDACompiler.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeCXXCompiler.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeRCCompiler.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeSystem.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\cmake.verify_globs;C:\Users\joshc\Projects\cpp\ovr-vr\extern\bin2c\target_add_embeded_shaders.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\configure.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\dep_glad.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\dep_glfw.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\FindOptiX.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\configure_build_type.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\configure_cuda.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\configure_optix.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/joshc/Projects/cpp/ovr-vr/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/joshc/Projects/cpp/ovr-vr -BC:/Users/joshc/Projects/cpp/ovr-vr --check-stamp-file C:/Users/joshc/Projects/cpp/ovr-vr/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Libraries\OneAPITBB\2021.13.1.13\tbb\2021.13\lib\cmake\tbb\TBBConfig.cmake;C:\Libraries\OneAPITBB\2021.13.1.13\tbb\2021.13\lib\cmake\tbb\TBBConfigVersion.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCUDAInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVIDIA-CUDA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVIDIA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\ExternalProject\shared_internal_commands.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FetchContent.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FetchContent\CMakeLists.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\FindCUDA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindCUDA\select_compute_arch.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindCUDAToolkit.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindGit.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCUDALinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeRCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CUDA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-NVIDIA-CUDA.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeCCompiler.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeCUDACompiler.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeCXXCompiler.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeRCCompiler.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\3.31.0-rc2\CMakeSystem.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\cmake.verify_globs;C:\Users\joshc\Projects\cpp\ovr-vr\extern\bin2c\target_add_embeded_shaders.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\configure.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\dep_glad.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\dep_glfw.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\FindOptiX.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\configure_build_type.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\configure_cuda.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\configure_optix.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\colormap.cpp" />
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\colormap.h" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\diverging\BrBG.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\diverging\RdYlGn.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\diverging\RdBu.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\diverging\RdYlBu.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\diverging\bwr.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\diverging\Spectral.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\diverging\RdGy.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\diverging\seismic.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\diverging\coolwarm.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\diverging\PRGn.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\diverging\PuOr.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\diverging\PiYG.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\perceptual\magma.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\perceptual\inferno.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\perceptual\viridis.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\perceptual\plasma.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\Purples.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\PuBuGn.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\Oranges.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\Blues.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\YlGn.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\PuBu.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\GnBu.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\Greens.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\PuRd.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\BuPu.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\Greys.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\YlOrBr.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\RdPu.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\YlOrRd.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\Reds.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\YlGnBu.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\BuGn.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential\OrRd.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential2\hot.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential2\Wistia.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential2\gist_gray.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential2\bone.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential2\winter.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential2\pink.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential2\binary.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential2\autumn.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential2\spring.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential2\gist_yarg.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential2\copper.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential2\gray.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential2\afmhot.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential2\cool.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential2\gist_heat.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\tfn\colormaps\sequential2\summer.cpp" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\joshc\Projects\cpp\ovr-vr\ZERO_CHECK.vcxproj">
+      <Project>{495880BA-A661-3835-A17C-066F3818200F}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.6.targets" />
+  </ImportGroup>
+</Project>

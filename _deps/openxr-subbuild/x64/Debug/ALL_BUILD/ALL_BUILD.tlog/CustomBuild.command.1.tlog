@@ -1,0 +1,10 @@
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\OPENXR-SUBBUILD\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild -BC:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild --check-stamp-file C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

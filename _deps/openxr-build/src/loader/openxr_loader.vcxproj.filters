@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\android_utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\api_layer_interface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_core.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_init_data.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_instance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_logger_recorders.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\manifest_file.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\runtime_interface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common\object_info.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\xr_generated_loader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\xr_generated_dispatch_table_core.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common\filesystem_utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\src\lib_json\json_reader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\src\lib_json\json_value.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\src\lib_json\json_writer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\android_utilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\api_layer_interface.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_init_data.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_instance.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_logger.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_logger_recorders.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\manifest_file.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\runtime_interface.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common\hex_and_handles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common\object_info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common\platform_utils.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\xr_generated_loader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\xr_generated_dispatch_table_core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\b9b5da50acf62d9678108e66ebd9987f\xr_generated_loader.hpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\b9b5da50acf62d9678108e66ebd9987f\xr_generated_loader.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{81C4C35B-DB8C-3083-83FA-9490E122A254}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{F5234EF9-A1A4-3FCC-B003-480C59A7CFC9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{E8963CA3-B053-3E77-9FBD-31D43276EB02}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

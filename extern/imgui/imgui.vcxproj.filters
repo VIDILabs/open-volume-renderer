@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\imgui\imgui\imgui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\imgui\imgui\imgui_draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\imgui\imgui\imgui_demo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\imgui\imgui\imgui_widgets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\imgui\imgui\examples\imgui_impl_glfw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\imgui\imgui\examples\imgui_impl_opengl2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\imgui\imgui\examples\imgui_impl_opengl3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\imgui\implot\implot_demo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\imgui\implot\implot_items.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\imgui\implot\implot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\imgui\imgui\examples\imgui_impl_vulkan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\imgui\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{E8963CA3-B053-3E77-9FBD-31D43276EB02}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

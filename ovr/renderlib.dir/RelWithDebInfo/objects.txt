@@ -1,0 +1,4 @@
+C:/Users/joshc/Projects/cpp/ovr-vr/ovr/renderlib.dir/RelWithDebInfo/serializer_json.obj
+C:/Users/joshc/Projects/cpp/ovr-vr/ovr/renderlib.dir/RelWithDebInfo/imageop.obj
+C:/Users/joshc/Projects/cpp/ovr-vr/ovr/renderlib.dir/RelWithDebInfo/optix7_denoiser.obj
+C:/Users/joshc/Projects/cpp/ovr-vr/ovr/renderlib.dir/RelWithDebInfo/renderer.obj

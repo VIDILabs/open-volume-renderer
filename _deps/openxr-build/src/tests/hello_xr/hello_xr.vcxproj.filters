@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\d3d_common.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\graphicsplugin_d3d11.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\graphicsplugin_d3d12.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\graphicsplugin_factory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\graphicsplugin_opengl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\graphicsplugin_opengles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\graphicsplugin_vulkan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\openxr_program.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\platformplugin_android.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\platformplugin_factory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\platformplugin_posix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\platformplugin_win32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\check.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\common.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\d3d_common.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\geometry.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\graphicsapi.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\graphicsplugin.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\logger.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\openxr_program.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\options.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\pch.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\platformdata.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\platformplugin.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\vulkan_shaders\frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\hello_xr\vulkan_shaders\vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{40E61C35-9DC0-3C5F-8D97-035E05D945F5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{9D858917-E7BC-3148-82D7-0A9834FDC1FC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{E8963CA3-B053-3E77-9FBD-31D43276EB02}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

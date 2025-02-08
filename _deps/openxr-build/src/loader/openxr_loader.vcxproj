@@ -1,0 +1,512 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{90BE954B-DD49-3C08-86CD-E9ED172EE2CE}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>openxr_loader</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.6.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">openxr_loader.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">openxr_loaderd</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">openxr_loader.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">openxr_loader</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">openxr_loader.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">openxr_loader</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">openxr_loader.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">openxr_loader</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\include;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\.;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader;C:\Libraries\VulkanSDK\1.3.296.0\Include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>6386</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ProcessorNumber>24</ProcessorNumber>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;XR_CURRENT_API_MAJOR_VERSION=1;XR_CURRENT_API_MINOR_VERSION=0;XR_CURRENT_API_PATCH_VERSION=34;NOMINMAX;__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__=1;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_VULKAN;XR_OS_WINDOWS;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;OPENXR_HAVE_COMMON_CONFIG;XR_USE_TIMESPEC;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;XR_CURRENT_API_MAJOR_VERSION=1;XR_CURRENT_API_MINOR_VERSION=0;XR_CURRENT_API_PATCH_VERSION=34;NOMINMAX;__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__=1;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_VULKAN;XR_OS_WINDOWS;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;OPENXR_HAVE_COMMON_CONFIG;XR_USE_TIMESPEC;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\include;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\.;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader;C:\Libraries\VulkanSDK\1.3.296.0\Include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\include;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\.;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader;C:\Libraries\VulkanSDK\1.3.296.0\Include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <CudaLink>
+      <AdditionalOptions>-forward-unknown-to-host-compiler -Wno-deprecated-gpu-targets </AdditionalOptions>
+      <PerformDeviceLink>false</PerformDeviceLink>
+    </CudaLink>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\include;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\.;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader;C:\Libraries\VulkanSDK\1.3.296.0\Include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <DisableSpecificWarnings>6386</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ProcessorNumber>24</ProcessorNumber>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;XR_CURRENT_API_MAJOR_VERSION=1;XR_CURRENT_API_MINOR_VERSION=0;XR_CURRENT_API_PATCH_VERSION=34;NOMINMAX;__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__=1;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_VULKAN;XR_OS_WINDOWS;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;OPENXR_HAVE_COMMON_CONFIG;XR_USE_TIMESPEC;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;XR_CURRENT_API_MAJOR_VERSION=1;XR_CURRENT_API_MINOR_VERSION=0;XR_CURRENT_API_PATCH_VERSION=34;NOMINMAX;__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__=1;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_VULKAN;XR_OS_WINDOWS;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;OPENXR_HAVE_COMMON_CONFIG;XR_USE_TIMESPEC;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\include;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\.;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader;C:\Libraries\VulkanSDK\1.3.296.0\Include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\include;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\.;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader;C:\Libraries\VulkanSDK\1.3.296.0\Include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <CudaLink>
+      <AdditionalOptions>-forward-unknown-to-host-compiler -Wno-deprecated-gpu-targets </AdditionalOptions>
+      <PerformDeviceLink>false</PerformDeviceLink>
+    </CudaLink>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\include;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\.;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader;C:\Libraries\VulkanSDK\1.3.296.0\Include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <DisableSpecificWarnings>6386</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ProcessorNumber>24</ProcessorNumber>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;XR_CURRENT_API_MAJOR_VERSION=1;XR_CURRENT_API_MINOR_VERSION=0;XR_CURRENT_API_PATCH_VERSION=34;NOMINMAX;__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__=1;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_VULKAN;XR_OS_WINDOWS;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;OPENXR_HAVE_COMMON_CONFIG;XR_USE_TIMESPEC;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;XR_CURRENT_API_MAJOR_VERSION=1;XR_CURRENT_API_MINOR_VERSION=0;XR_CURRENT_API_PATCH_VERSION=34;NOMINMAX;__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__=1;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_VULKAN;XR_OS_WINDOWS;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;OPENXR_HAVE_COMMON_CONFIG;XR_USE_TIMESPEC;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\include;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\.;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader;C:\Libraries\VulkanSDK\1.3.296.0\Include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\include;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\.;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader;C:\Libraries\VulkanSDK\1.3.296.0\Include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <CudaLink>
+      <AdditionalOptions>-forward-unknown-to-host-compiler -Wno-deprecated-gpu-targets </AdditionalOptions>
+      <PerformDeviceLink>false</PerformDeviceLink>
+    </CudaLink>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\include;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\.;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader;C:\Libraries\VulkanSDK\1.3.296.0\Include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>6386</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ProcessorNumber>24</ProcessorNumber>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;XR_CURRENT_API_MAJOR_VERSION=1;XR_CURRENT_API_MINOR_VERSION=0;XR_CURRENT_API_PATCH_VERSION=34;NOMINMAX;__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__=1;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_VULKAN;XR_OS_WINDOWS;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;OPENXR_HAVE_COMMON_CONFIG;XR_USE_TIMESPEC;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;XR_CURRENT_API_MAJOR_VERSION=1;XR_CURRENT_API_MINOR_VERSION=0;XR_CURRENT_API_PATCH_VERSION=34;NOMINMAX;__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__=1;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_VULKAN;XR_OS_WINDOWS;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;OPENXR_HAVE_COMMON_CONFIG;XR_USE_TIMESPEC;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\include;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\.;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader;C:\Libraries\VulkanSDK\1.3.296.0\Include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\joshc\Projects\cpp\ovr-vr\extern;C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\include;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\..;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\.;C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader;C:\Libraries\VulkanSDK\1.3.296.0\Include;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <CudaLink>
+      <AdditionalOptions>-forward-unknown-to-host-compiler -Wno-deprecated-gpu-targets </AdditionalOptions>
+      <PerformDeviceLink>false</PerformDeviceLink>
+    </CudaLink>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\b9b5da50acf62d9678108e66ebd9987f\xr_generated_loader.hpp.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating xr_generated_loader.hpp using C:/Users/joshc/AppData/Local/Microsoft/WindowsApps/python3.exe on loader_source_generator.py</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E env "PYTHONPATH=C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/specification/scripts";"C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/scripts";"" C:/Users/joshc/AppData/Local/Microsoft/WindowsApps/python3.exe C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/scripts/src_genxr.py -registry C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/specification/registry/xr.xml xr_generated_loader.hpp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\registry\xr.xml;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\scripts\generator.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\scripts\reg.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\scripts\loader_source_generator.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\scripts\src_genxr.py;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\xr_generated_loader.hpp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating xr_generated_loader.hpp using C:/Users/joshc/AppData/Local/Microsoft/WindowsApps/python3.exe on loader_source_generator.py</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E env "PYTHONPATH=C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/specification/scripts";"C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/scripts";"" C:/Users/joshc/AppData/Local/Microsoft/WindowsApps/python3.exe C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/scripts/src_genxr.py -registry C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/specification/registry/xr.xml xr_generated_loader.hpp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\registry\xr.xml;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\scripts\generator.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\scripts\reg.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\scripts\loader_source_generator.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\scripts\src_genxr.py;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\xr_generated_loader.hpp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Generating xr_generated_loader.hpp using C:/Users/joshc/AppData/Local/Microsoft/WindowsApps/python3.exe on loader_source_generator.py</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E env "PYTHONPATH=C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/specification/scripts";"C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/scripts";"" C:/Users/joshc/AppData/Local/Microsoft/WindowsApps/python3.exe C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/scripts/src_genxr.py -registry C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/specification/registry/xr.xml xr_generated_loader.hpp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\registry\xr.xml;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\scripts\generator.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\scripts\reg.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\scripts\loader_source_generator.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\scripts\src_genxr.py;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\xr_generated_loader.hpp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Generating xr_generated_loader.hpp using C:/Users/joshc/AppData/Local/Microsoft/WindowsApps/python3.exe on loader_source_generator.py</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E env "PYTHONPATH=C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/specification/scripts";"C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/scripts";"" C:/Users/joshc/AppData/Local/Microsoft/WindowsApps/python3.exe C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/scripts/src_genxr.py -registry C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/specification/registry/xr.xml xr_generated_loader.hpp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\registry\xr.xml;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\scripts\generator.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\scripts\reg.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\scripts\loader_source_generator.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\scripts\src_genxr.py;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\xr_generated_loader.hpp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\b9b5da50acf62d9678108e66ebd9987f\xr_generated_loader.cpp.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating xr_generated_loader.cpp using C:/Users/joshc/AppData/Local/Microsoft/WindowsApps/python3.exe on loader_source_generator.py</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E env "PYTHONPATH=C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/specification/scripts";"C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/scripts";"" C:/Users/joshc/AppData/Local/Microsoft/WindowsApps/python3.exe C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/scripts/src_genxr.py -registry C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/specification/registry/xr.xml xr_generated_loader.cpp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\registry\xr.xml;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\scripts\generator.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\scripts\reg.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\scripts\loader_source_generator.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\scripts\src_genxr.py;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\xr_generated_loader.cpp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating xr_generated_loader.cpp using C:/Users/joshc/AppData/Local/Microsoft/WindowsApps/python3.exe on loader_source_generator.py</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E env "PYTHONPATH=C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/specification/scripts";"C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/scripts";"" C:/Users/joshc/AppData/Local/Microsoft/WindowsApps/python3.exe C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/scripts/src_genxr.py -registry C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/specification/registry/xr.xml xr_generated_loader.cpp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\registry\xr.xml;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\scripts\generator.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\scripts\reg.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\scripts\loader_source_generator.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\scripts\src_genxr.py;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\xr_generated_loader.cpp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Generating xr_generated_loader.cpp using C:/Users/joshc/AppData/Local/Microsoft/WindowsApps/python3.exe on loader_source_generator.py</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E env "PYTHONPATH=C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/specification/scripts";"C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/scripts";"" C:/Users/joshc/AppData/Local/Microsoft/WindowsApps/python3.exe C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/scripts/src_genxr.py -registry C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/specification/registry/xr.xml xr_generated_loader.cpp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\registry\xr.xml;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\scripts\generator.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\scripts\reg.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\scripts\loader_source_generator.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\scripts\src_genxr.py;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\xr_generated_loader.cpp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Generating xr_generated_loader.cpp using C:/Users/joshc/AppData/Local/Microsoft/WindowsApps/python3.exe on loader_source_generator.py</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E env "PYTHONPATH=C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/specification/scripts";"C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/scripts";"" C:/Users/joshc/AppData/Local/Microsoft/WindowsApps/python3.exe C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/scripts/src_genxr.py -registry C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/specification/registry/xr.xml xr_generated_loader.cpp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\registry\xr.xml;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\scripts\generator.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\specification\scripts\reg.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\scripts\loader_source_generator.py;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\scripts\src_genxr.py;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\xr_generated_loader.cpp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/loader/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/joshc/Projects/cpp/ovr-vr -BC:/Users/joshc/Projects/cpp/ovr-vr --check-stamp-file C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-build/src/loader/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\WriteBasicConfigVersionFile.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\cmake.verify_globs;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\OpenXRConfig.cmake.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/loader/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/joshc/Projects/cpp/ovr-vr -BC:/Users/joshc/Projects/cpp/ovr-vr --check-stamp-file C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-build/src/loader/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\WriteBasicConfigVersionFile.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\cmake.verify_globs;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\OpenXRConfig.cmake.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/loader/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/joshc/Projects/cpp/ovr-vr -BC:/Users/joshc/Projects/cpp/ovr-vr --check-stamp-file C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-build/src/loader/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\WriteBasicConfigVersionFile.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\cmake.verify_globs;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\OpenXRConfig.cmake.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/loader/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/joshc/Projects/cpp/ovr-vr -BC:/Users/joshc/Projects/cpp/ovr-vr --check-stamp-file C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-build/src/loader/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\WriteBasicConfigVersionFile.cmake;C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\cmake.verify_globs;C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\OpenXRConfig.cmake.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\android_utilities.cpp" />
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\android_utilities.h" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\api_layer_interface.cpp" />
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\api_layer_interface.hpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_core.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_init_data.cpp" />
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_init_data.hpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_instance.cpp" />
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_instance.hpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_logger.cpp" />
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_logger.hpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_logger_recorders.cpp" />
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader_logger_recorders.hpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\manifest_file.cpp" />
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\manifest_file.hpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\runtime_interface.cpp" />
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\runtime_interface.hpp" />
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common\hex_and_handles.h" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common\object_info.cpp" />
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common\object_info.h" />
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common\platform_utils.hpp" />
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\xr_generated_loader.hpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\loader\xr_generated_loader.cpp" />
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\xr_generated_dispatch_table_core.h" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\xr_generated_dispatch_table_core.c" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common\filesystem_utils.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\src\lib_json\json_reader.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\src\lib_json\json_value.cpp" />
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\external\jsoncpp\src\lib_json\json_writer.cpp" />
+    <ResourceCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\loader\loader.rc" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\joshc\Projects\cpp\ovr-vr\ZERO_CHECK.vcxproj">
+      <Project>{495880BA-A661-3835-A17C-066F3818200F}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\include\openxr\generate_openxr_header.vcxproj">
+      <Project>{CBE47B39-9A1B-3DE3-9C60-05DAF170430D}</Project>
+      <Name>generate_openxr_header</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\xr_global_generated_files.vcxproj">
+      <Project>{005DB794-C217-3303-8175-49C237248E09}</Project>
+      <Name>xr_global_generated_files</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.6.targets" />
+  </ImportGroup>
+</Project>

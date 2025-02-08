@@ -1,0 +1,150 @@
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\GLAD-SUBBUILD\CMAKEFILES\540D8468BF2655E5580F4194FD8518AF\GLAD-POPULATE-MKDIR.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -Dcfgdir=/Debug -P C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/glad-populate-prefix/tmp/glad-populate-mkdirs.cmake
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/glad/stamp/Debug/glad-populate-mkdir
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\GLAD-SUBBUILD\CMAKEFILES\540D8468BF2655E5580F4194FD8518AF\GLAD-POPULATE-DOWNLOAD.RULE
+setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\glad
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/glad-populate-prefix/tmp/glad-populate-gitclone.cmake
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/glad/stamp/Debug/glad-populate-download
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\GLAD-SUBBUILD\CMAKEFILES\540D8468BF2655E5580F4194FD8518AF\GLAD-POPULATE-UPDATE.RULE
+setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\glad\src
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -Dcan_fetch=YES -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/glad-populate-prefix/tmp/glad-populate-gitupdate.cmake
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\GLAD-SUBBUILD\CMAKEFILES\540D8468BF2655E5580F4194FD8518AF\GLAD-POPULATE-PATCH.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/glad/stamp/Debug/glad-populate-patch
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\GLAD-SUBBUILD\CMAKEFILES\540D8468BF2655E5580F4194FD8518AF\GLAD-POPULATE-CONFIGURE.RULE
+setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\glad\build
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/glad/stamp/Debug/glad-populate-configure
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\GLAD-SUBBUILD\CMAKEFILES\540D8468BF2655E5580F4194FD8518AF\GLAD-POPULATE-BUILD.RULE
+setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\glad\build
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/glad/stamp/Debug/glad-populate-build
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\GLAD-SUBBUILD\CMAKEFILES\540D8468BF2655E5580F4194FD8518AF\GLAD-POPULATE-INSTALL.RULE
+setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\glad\build
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/glad/stamp/Debug/glad-populate-install
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\GLAD-SUBBUILD\CMAKEFILES\540D8468BF2655E5580F4194FD8518AF\GLAD-POPULATE-TEST.RULE
+setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\glad\build
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/glad/stamp/Debug/glad-populate-test
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\GLAD-SUBBUILD\CMAKEFILES\DFECB60B317404F2802299932CD7B081\GLAD-POPULATE-COMPLETE.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E make_directory C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/CMakeFiles/Debug
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/CMakeFiles/Debug/glad-populate-complete
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/glad/stamp/Debug/glad-populate-done
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\GLAD-SUBBUILD\CMAKEFILES\0B7B3CA5D2BF7EE978D25A550D195ECC\GLAD-POPULATE.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\GLAD-SUBBUILD\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild -BC:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild --check-stamp-file C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

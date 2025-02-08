@@ -1,0 +1,14 @@
+# Target labels
+ glad-populate
+# Source files and their labels
+C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/CMakeFiles/glad-populate
+C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/CMakeFiles/0b7b3ca5d2bf7ee978d25a550d195ecc/glad-populate.rule
+C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/CMakeFiles/dfecb60b317404f2802299932cd7b081/glad-populate-complete.rule
+C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/CMakeFiles/540d8468bf2655e5580f4194fd8518af/glad-populate-build.rule
+C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/CMakeFiles/540d8468bf2655e5580f4194fd8518af/glad-populate-configure.rule
+C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/CMakeFiles/540d8468bf2655e5580f4194fd8518af/glad-populate-download.rule
+C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/CMakeFiles/540d8468bf2655e5580f4194fd8518af/glad-populate-install.rule
+C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/CMakeFiles/540d8468bf2655e5580f4194fd8518af/glad-populate-mkdir.rule
+C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/CMakeFiles/540d8468bf2655e5580f4194fd8518af/glad-populate-patch.rule
+C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/CMakeFiles/540d8468bf2655e5580f4194fd8518af/glad-populate-test.rule
+C:/Users/joshc/Projects/cpp/ovr-vr/_deps/glad-subbuild/CMakeFiles/540d8468bf2655e5580f4194fd8518af/glad-populate-update.rule

@@ -1,0 +1,152 @@
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\OPENXR-SUBBUILD\CMAKEFILES\520DEC5EC8618997700A8975C719392C\OPENXR-POPULATE-MKDIR.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -Dcfgdir=/Debug -P C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/openxr-populate-prefix/tmp/openxr-populate-mkdirs.cmake
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/openxr-populate-prefix/src/openxr-populate-stamp/Debug/openxr-populate-mkdir
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\OPENXR-SUBBUILD\CMAKEFILES\520DEC5EC8618997700A8975C719392C\OPENXR-POPULATE-DOWNLOAD.RULE
+setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/openxr-populate-prefix/src/openxr-populate-stamp/download-openxr-populate.cmake
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/openxr-populate-prefix/src/openxr-populate-stamp/verify-openxr-populate.cmake
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/openxr-populate-prefix/src/openxr-populate-stamp/extract-openxr-populate.cmake
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/openxr-populate-prefix/src/openxr-populate-stamp/Debug/openxr-populate-download
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\OPENXR-SUBBUILD\CMAKEFILES\520DEC5EC8618997700A8975C719392C\OPENXR-POPULATE-UPDATE.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/openxr-populate-prefix/src/openxr-populate-stamp/Debug/openxr-populate-update
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\OPENXR-SUBBUILD\CMAKEFILES\520DEC5EC8618997700A8975C719392C\OPENXR-POPULATE-PATCH.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/openxr-populate-prefix/src/openxr-populate-stamp/Debug/openxr-populate-patch
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\OPENXR-SUBBUILD\CMAKEFILES\520DEC5EC8618997700A8975C719392C\OPENXR-POPULATE-CONFIGURE.RULE
+setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/openxr-populate-prefix/src/openxr-populate-stamp/Debug/openxr-populate-configure
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\OPENXR-SUBBUILD\CMAKEFILES\520DEC5EC8618997700A8975C719392C\OPENXR-POPULATE-BUILD.RULE
+setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/openxr-populate-prefix/src/openxr-populate-stamp/Debug/openxr-populate-build
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\OPENXR-SUBBUILD\CMAKEFILES\520DEC5EC8618997700A8975C719392C\OPENXR-POPULATE-INSTALL.RULE
+setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/openxr-populate-prefix/src/openxr-populate-stamp/Debug/openxr-populate-install
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\OPENXR-SUBBUILD\CMAKEFILES\520DEC5EC8618997700A8975C719392C\OPENXR-POPULATE-TEST.RULE
+setlocal
+cd C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/openxr-populate-prefix/src/openxr-populate-stamp/Debug/openxr-populate-test
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\OPENXR-SUBBUILD\CMAKEFILES\1A95E9F36744462A0AFB71E01ACEB1BA\OPENXR-POPULATE-COMPLETE.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E make_directory C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/CMakeFiles/Debug
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/CMakeFiles/Debug/openxr-populate-complete
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/openxr-populate-prefix/src/openxr-populate-stamp/Debug/openxr-populate-done
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\OPENXR-SUBBUILD\CMAKEFILES\6BF9B63F2F54CB046AFC42D2F2C84FFB\OPENXR-POPULATE.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JOSHC\PROJECTS\CPP\OVR-VR\_DEPS\OPENXR-SUBBUILD\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild -BC:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild --check-stamp-file C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

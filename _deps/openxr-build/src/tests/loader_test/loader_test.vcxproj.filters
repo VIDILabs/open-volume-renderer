@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\loader_test\loader_test_utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\loader_test\loader_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\common\filesystem_utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\tests\loader_test\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{E8963CA3-B053-3E77-9FBD-31D43276EB02}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,5 @@
+# CMake generation dependency list for this directory.
+C:/Users/joshc/Projects/cpp/ovr-vr/CMakeFiles/cmake.verify_globs
+C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/tests/hello_xr/CMakeLists.txt
+C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/tests/hello_xr/vulkan_shaders/frag.spv
+C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/tests/hello_xr/vulkan_shaders/vert.spv

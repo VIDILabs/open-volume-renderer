@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\ovr\devices\optix7\cuda_compile_ptx_1_generated_shaders_raymarching.cu.ptx_embedded.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\ovr\devices\optix7\cuda_compile_ptx_2_generated_shaders_pathtracing.cu.ptx_embedded.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\ovr\devices\optix7\array.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\ovr\devices\optix7\device_impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\ovr\devices\optix7\device.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\joshc\Projects\cpp\ovr-vr\ovr\devices\optix7\volume.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\ovr\devices\optix7\accel\spatial_partition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\ovr\devices\optix7\array.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\ovr\devices\optix7\device_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\ovr\devices\optix7\device.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\ovr\devices\optix7\optix7_common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\ovr\devices\optix7\params.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\joshc\Projects\cpp\ovr-vr\ovr\devices\optix7\volume.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="accel\sp_singlemc.cu">
+      <Filter>Source Files</Filter>
+    </CudaCompile>
+    <CudaCompile Include="compute.cu">
+      <Filter>Source Files</Filter>
+    </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="shaders_raymarching.cu">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\965c531f9cd5acc87cdb994739ad5594\cuda_compile_ptx_1_generated_shaders_raymarching.cu.ptx_embedded.c.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders_pathtracing.cu">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\965c531f9cd5acc87cdb994739ad5594\cuda_compile_ptx_2_generated_shaders_pathtracing.cu.ptx_embedded.c.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\ovr\devices\optix7\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{81C4C35B-DB8C-3083-83FA-9490E122A254}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{F5234EF9-A1A4-3FCC-B003-480C59A7CFC9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{E8963CA3-B053-3E77-9FBD-31D43276EB02}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

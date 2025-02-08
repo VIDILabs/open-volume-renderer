@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\configure_build_type.cmake" />
+    <None Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\configure_optix.cmake" />
+    <None Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\cmake\FindOptiX.cmake" />
+    <None Include="C:\Users\joshc\Projects\cpp\ovr-vr\extern\gdt\gdt\gdt.h">
+      <Filter>Header Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{F5234EF9-A1A4-3FCC-B003-480C59A7CFC9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

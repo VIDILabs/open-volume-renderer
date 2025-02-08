@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\584135bd03ace52c53dce83e659f3095\xr_generated_dispatch_table.c.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\584135bd03ace52c53dce83e659f3095\xr_generated_dispatch_table.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\CMakeFiles\b99e39c402cb8e49a43ac925db314187\xr_common_generated_files.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\joshc\Projects\cpp\ovr-vr\projects\ovr-stereo\openxr\src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\joshc\Projects\cpp\ovr-vr\_deps\openxr-build\src\CMakeFiles\xr_common_generated_files" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{81C4C35B-DB8C-3083-83FA-9490E122A254}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

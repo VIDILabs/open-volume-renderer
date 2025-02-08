@@ -519,7 +519,7 @@ main(int ac, const char** av)
   // -------------------------------------------------------
   // parse device name
   // -------------------------------------------------------
-  ovr::Scene scene;
+  ovr::Scene scene; 
 
   // Hack for testing isosurface rendering
   scene = create_scene_device(scene_file, device);

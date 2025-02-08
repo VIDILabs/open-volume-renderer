@@ -1,0 +1,7 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-3.31/Modules/BasicConfigVersion-SameMajorVersion.cmake.in
+C:/Program Files/CMake/share/cmake-3.31/Modules/CMakePackageConfigHelpers.cmake
+C:/Program Files/CMake/share/cmake-3.31/Modules/WriteBasicConfigVersionFile.cmake
+C:/Users/joshc/Projects/cpp/ovr-vr/CMakeFiles/cmake.verify_globs
+C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/loader/CMakeLists.txt
+C:/Users/joshc/Projects/cpp/ovr-vr/projects/ovr-stereo/openxr/src/loader/OpenXRConfig.cmake.in
