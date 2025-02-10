@@ -7,7 +7,7 @@
         "z" : 128
       },
       "endian" : "LITTLE_ENDIAN",
-      "fileName" : "C:/Users/joshc/Projects/cpp/ovr-vr/data/data/vorts25.data",
+      "fileName" : "D:/datasets/vortices/vorts25.data",
       "fileUpperLeft" : false,
       "format" : "REGULAR_GRID_RAW_BINARY",
       "id" : 1,

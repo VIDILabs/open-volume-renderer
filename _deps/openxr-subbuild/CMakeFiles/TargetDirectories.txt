@@ -1,3 +1,0 @@
-C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/CMakeFiles/openxr-populate.dir
-C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/CMakeFiles/ALL_BUILD.dir
-C:/Users/joshc/Projects/cpp/ovr-vr/_deps/openxr-subbuild/CMakeFiles/ZERO_CHECK.dir

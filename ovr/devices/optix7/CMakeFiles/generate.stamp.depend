@@ -1,8 +1,0 @@
-# CMake generation dependency list for this directory.
-C:/Program Files/CMake/share/cmake-3.31/Modules/FindCUDA/run_nvcc.cmake
-C:/Users/joshc/Projects/cpp/ovr-vr/CMakeFiles/cmake.verify_globs
-C:/Users/joshc/Projects/cpp/ovr-vr/ovr/devices/optix7/CMakeFiles/cuda_compile_ptx_1.dir/cuda_compile_ptx_1_generated_shaders_raymarching.cu.ptx.cmake.pre-gen
-C:/Users/joshc/Projects/cpp/ovr-vr/ovr/devices/optix7/CMakeFiles/cuda_compile_ptx_1.dir/cuda_compile_ptx_1_generated_shaders_raymarching.cu.ptx.depend
-C:/Users/joshc/Projects/cpp/ovr-vr/ovr/devices/optix7/CMakeFiles/cuda_compile_ptx_2.dir/cuda_compile_ptx_2_generated_shaders_pathtracing.cu.ptx.cmake.pre-gen
-C:/Users/joshc/Projects/cpp/ovr-vr/ovr/devices/optix7/CMakeFiles/cuda_compile_ptx_2.dir/cuda_compile_ptx_2_generated_shaders_pathtracing.cu.ptx.depend
-C:/Users/joshc/Projects/cpp/ovr-vr/ovr/devices/optix7/CMakeLists.txt
