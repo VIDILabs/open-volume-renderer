@@ -34,7 +34,7 @@
 
 #include "pcg32.h"
 #include <gdt/random/random.h>
-#include "../cuda/cuda_utils.h"
+#include <cuda/cuda_utils.h>
 
 namespace ovr { namespace random {
 
