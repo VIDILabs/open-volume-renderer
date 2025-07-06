@@ -53,9 +53,10 @@ DeviceOptix7::mapframe(FrameBufferData* fb)
 }
 
 void 
-DeviceOptix7::ui() 
+DeviceOptix7::ui(ImGuiContext* context) 
 {
 #ifdef OVR_BUILD_OPENGL
+  ImGui::SetCurrentContext(context);
   static struct {
     vec2f focus{ 0.5f, 0.5f };
     float focus_scale{ 0.06f };

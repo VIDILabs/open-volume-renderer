@@ -61,6 +61,17 @@ create_renderer(std::string name)
 ovr::Scene
 create_scene_device(std::string filename, std::string name) 
 {
+#ifdef OVR_BUILD_OPTIX7
+    if (name == "optix7") {
+      return create_scene_default(filename);
+    }
+#endif
+
+#ifdef OVR_BUILD_OSPRAY
+    if (name == "ospray") {
+      return create_scene_default(filename);
+    }
+#endif
 
   ovr::dynamic::LibraryRepository::GetInstance()->add("device_" + name, true);
   

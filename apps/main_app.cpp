@@ -165,6 +165,7 @@ public:
     , frame_active_layer(layer)
   {
     ImPlot::CreateContext();
+
 #ifdef OVR_LOGGING
     logger.initialize({"frame", "fps", "frame_time", "render_time", "inference_time"});
 #endif
@@ -439,8 +440,8 @@ public:
       ImGui::End();
       widget.render();
       
-      // Device Specific GUIs
-      renderer->ui();
+      // Device Specific GUIs //
+      renderer->ui(GetImGuiContext());
     }
 
     // Performance Graph
