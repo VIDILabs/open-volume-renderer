@@ -239,7 +239,7 @@ struct Camera {
 struct TransferFunction {
   array_1d_float4_t color;
   array_1d_scalar_t opacity; // float //
-  vec2f value_range;
+  vec2f value_range { std::numeric_limits<float>::max(), std::numeric_limits<float>::lowest() };
   void print(std::ostream&, int indent = 0) const;
 };
 

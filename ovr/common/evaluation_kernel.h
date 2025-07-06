@@ -13,6 +13,7 @@
 #include <thrust/tuple.h>
 #include <thrust/device_ptr.h>
 #include <thrust/execution_policy.h>
+#include <thrust/transform_reduce.h>
 #include <cuda_runtime.h>
 
 template<typename T>
