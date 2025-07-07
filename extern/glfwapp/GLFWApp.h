@@ -32,6 +32,8 @@
 
 #include "camera_frame.h"
 
+struct ImGuiContext;
+
 /*! \namespace glfwapp */
 namespace glfwapp
 {
@@ -41,6 +43,8 @@ namespace glfwapp
   {
     GLFWindow(const char* title, int w, int h);
     ~GLFWindow();
+
+    ImGuiContext* GetImGuiContext();
 
     void disableResizing()
     {

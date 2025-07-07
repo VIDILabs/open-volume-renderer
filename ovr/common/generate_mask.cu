@@ -47,9 +47,9 @@ generate_uniform_dist(CUDABuffer& buffer, float lower, float upper)
 }
 
 [[maybe_unused]] void
-generate_blue_dist(CUDABuffer& buffer, vec2i size, int frame_index)
+generate_blue_dist(CUDABuffer& buffer, vec2i size)
 {
-  generate_blue_noise<float>((uint32_t)(buffer.sizeInBytes / sizeof(float)), (float*)buffer.d_pointer(), size, frame_index);
+  generate_blue_noise<float>(rng, (uint32_t)(buffer.sizeInBytes / sizeof(float)), (float*)buffer.d_pointer(), size);
 }
 
 __global__ void
@@ -113,7 +113,7 @@ generate_sparse_sampling_mask_d(int32_t* d_output,
 #ifdef OVR_OPTIX7_MASKING_NOISE_UNIFORM
   generate_uniform_dist(dist_uniform, 0.f, 1.f);
 #else
-  generate_blue_dist(dist_uniform, fbsize, frame_index);
+  generate_blue_dist(dist_uniform, fbsize);
 #endif
 
   return generate_and_compact_coordinates(d_output, dist_uniform, fbsize, 1, focus_center, focus_scale, base_noise);

@@ -48,6 +48,9 @@
 
 #define OVR_FRAMEBUFFERDATA_REQUIRE_SIZE 1
 
+// Forward declare for context setter method
+struct ImGuiContext;
+
 namespace ovr {
 
 using vidi::TransactionalValue;
@@ -133,7 +136,7 @@ public:
   const TransferFunctionData& unsafe_get_tfn() const { return params.tfn.ref(); }
 
   /*! thread safe: called in GUI thread */
-  virtual void ui() {}
+  virtual void ui(ImGuiContext* context) {}
 
   /*! thread safe: setters */
   void set_fbsize(const math::vec2i& fbsize) { params.fbsize = fbsize; }
