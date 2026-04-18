@@ -13,7 +13,8 @@
         "/home/davbauer/Downloads/MechHand_f_640x220x229.raw",
         "H:/mechhand/MechHand_f_640x220x229.raw",
         "F:/mechhand/MechHand_f_640x220x229.raw",
-        "/home/deralik/Github/open-volume-renderer/data/data/MechHand_f_640x220x229_float32/MechHand_f_640x220x229_float32.raw"
+        "/home/deralik/Github/open-volume-renderer/data/data/MechHand_f_640x220x229_float32/MechHand_f_640x220x229_float32.raw",
+        "/media/slow/qiwu/Datasets/mechhand/MechHand_f_640x220x229.raw"
       ],
       "fileUpperLeft" : false,
       "format" : "REGULAR_GRID_RAW_BINARY",

@@ -14,20 +14,15 @@
 # limitations under the License.                                           #
 # ======================================================================== #
 
-project(GPUDevelopmentTools)
-cmake_minimum_required(VERSION 3.5)
+project(GPUDevelopmentTools LANGUAGES C CXX)
+cmake_minimum_required(VERSION 3.18)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
-add_library(gdt INTERFACE
-  cmake/configure_build_type.cmake
-  cmake/configure_optix.cmake
-  cmake/FindOptiX.cmake
-  gdt/gdt.h  
-  # gdt/gdt.cpp
+add_library(gdt INTERFACE gdt/gdt.h)
+
+target_include_directories(gdt INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  # Installed consumers inherit the include root selected by OVR itself.
+  $<INSTALL_INTERFACE:${OVR_INSTALL_INCLUDEDIR}>
 )
-
-target_include_directories(gdt INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-if (UNIX)
-  set_target_properties(gdt PROPERTIES POSITION_INDEPENDENT_CODE ON)
-endif()

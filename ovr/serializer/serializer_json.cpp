@@ -517,7 +517,7 @@ create_scene_default(std::string filename)
 {
   const auto ext = filename.substr(filename.find_last_of(".") + 1);
   if (ext == "json") return ovr::scene::create_json_scene(filename);
-#ifdef OVR_BUILD_SCENE_USD
+#ifdef OVR_BUILD_USD
   if (ext == "usda") return ovr::scene::create_usda_scene(filename);
 #endif
   throw std::runtime_error("unknown scene format");

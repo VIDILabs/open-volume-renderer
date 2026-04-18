@@ -1,155 +1,166 @@
 name: CI
 
+env:
+  DEBIAN_FRONTEND: noninteractive
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 on:
   push:
-    branches:
-      - master
-      - main
-      - public
+    branches: [main, master, public]
   pull_request:
-    branches:
-      - master
-      - main
-      - public
+    branches: [main, master, public]
+
+concurrency:
+  group: ${{ github.workflow }}:${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-
-  build_linux:
-    name: Build on Linux Systems
-
-    runs-on: ${{ matrix.os }}
-
+  build-linux:
+    name: linux (CUDA ${{ matrix.cuda_version }} Ubuntu ${{ matrix.ubuntu_version }} OSPRay ${{ matrix.ospray_mode }})
+    runs-on: ubuntu-${{ matrix.ubuntu_version }}
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - os: ubuntu-20.04
-            arch: 86
-            cuda: "11.3"
-            optix: "7.3.0"
-            ospray: "2.5.0"
-          - os: ubuntu-20.04
-            arch: 75
-            cuda: "11.3"
-            optix: "7.3.0"
-            ospray: "2.5.0"
-
+          - cuda_version: "11.8.0"
+            ubuntu_version: "22.04"
+            arch: "86"
+            ospray_mode: fetchcontent
+          - cuda_version: "11.8.0"
+            ubuntu_version: "22.04"
+            arch: "86"
+            ospray_mode: external
+          - cuda_version: "12.8.1"
+            ubuntu_version: "24.04"
+            arch: "86"
+            ospray_mode: fetchcontent
+          - cuda_version: "12.8.1"
+            ubuntu_version: "24.04"
+            arch: "86"
+            ospray_mode: external
     env:
-      build_dir: "build"
-      config: "Release"
-      GDT_CUDA_ARCHITECTURES: ${{ matrix.arch }}
+      BUILD_DIR: build
+      CONFIG: Release
+      CUDA_ARCHITECTURES: ${{ matrix.arch }}
 
     steps:
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install cmake gcc g++ libtbb-dev libglfw3-dev xorg-dev
-
-      # - name: Add gitlab.com into known_hosts
-      #   run: mkdir -p ~/.ssh && ssh-keyscan -H gitlab.com > ~/.ssh/known_hosts
-      #   shell: bash
-
-      - uses: actions/checkout@v2
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
         with:
-          # ssh-key: ${{ secrets.SUBMODULE_CONTENT_PULL_KEY }}
-          submodules: 'recursive'
-          # ssh-known-hosts: ''
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
 
-      - name: Install OptiX
-        shell: bash
-        working-directory: github-actions
-        env:
-          optix: ${{ matrix.optix }}
-        run: bash ./optix-cmake-github-actions/install_optix.sh
-
-      - name: Install OSPRay
-        shell: bash
-        working-directory: github-actions
-        env:
-          ospray: ${{ matrix.ospray }}
-        run: bash ./ospray-cmake-github-actions/install_ospray_ubuntu.sh
-
-      - name: Install CUDA
-        shell: bash
-        working-directory: github-actions
-        run: bash ./cuda-cmake-github-actions/scripts/actions/install_cuda_ubuntu.sh
-        env:
-          cuda: ${{ matrix.cuda }}
-
-      - name: CMake
-        env: 
-          OptiX_INSTALL_DIR: ${{ env.OptiX_INSTALL_DIR }}
-        run: cmake . -B ${{ env.build_dir }} 
-          -DCMAKE_BUILD_TYPE=${{ env.config }} 
-          -DOVR_BUILD_DEVICE_OPTIX7=ON 
-          -DOVR_BUILD_DEVICE_OSPRAY=ON 
-          -Dospray_DIR=${{ env.OSPRAY_CMAKE_DIR }}
-          -DGDT_CUDA_ARCHITECTURES=${{ matrix.arch }}
-
-      - name: Build
-        working-directory: ${{ env.build_dir }}
-        run: cmake --build . --target all --verbose -j `nproc`
-
-  build_windows:
-    name: Build on Windows
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - os: windows-2019
-            visual_studio: "Visual Studio 16 2019"
-            cuda: "11.5.1"
-            optix: "7.3.0"
-            ospray: "2.5.0"
-            arch: 86
-          - os: windows-2019
-            visual_studio: "Visual Studio 16 2019"
-            cuda: "11.5.1"
-            optix: "7.3.0"
-            ospray: "2.5.0"
-            arch: 75
-
-    env:
-      build_dir: "build"
-      config: "Release"
-      GDT_CUDA_ARCHITECTURES: ${{ matrix.arch }}
-
-    steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Install OptiX
-        shell: powershell
-        working-directory: github-actions
-        run: .\optix-cmake-github-actions\install_optix.ps1
-        env:
-          optix: ${{ matrix.optix }}
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            gcc \
+            g++ \
+            libtbb-dev \
+            libglfw3-dev \
+            xorg-dev \
+            wget
 
-      - name: Install OSPRay
-        shell: powershell
-        working-directory: github-actions
-        run: .\ospray-cmake-github-actions\install_ospray_windows.ps1
-        env:
-          ospray: ${{ matrix.ospray }}
+      - name: Install CUDA toolkit
+        uses: Jimver/cuda-toolkit@v0.2.34
+        id: cuda-toolkit
+        with:
+          cuda: ${{ matrix.cuda_version }}
+          method: network
 
-      - name: Install CUDA
-        shell: powershell
-        working-directory: github-actions
-        run: .\cuda-cmake-github-actions\scripts\actions\install_cuda_windows.ps1
-        env:
-          cuda: ${{ matrix.cuda }}
-          visual_studio: ${{ matrix.visual_studio }}
+      - name: Install external OSPRay archive
+        if: matrix.ospray_mode == 'external'
+        shell: bash
+        run: |
+          OSPRAY_URL="https://github.com/wilsonCernWq/ospray/releases/download/sparse_sampling_v2.11.0/ospray-2.11.0.x86_64.linux_sparse_sampling.tar.gz"
+          OSPRAY_ROOT="$RUNNER_TEMP/ospray-2.11.0.x86_64.linux_sparse_sampling"
 
-      - name: CMake
-        env: 
-          OptiX_INSTALL_DIR: ${{ env.OptiX_INSTALL_DIR }}
-        run: cmake . -B ${{ env.build_dir }} 
-          -G "${{ matrix.visual_studio }}" -A x64 
-          -DCMAKE_BUILD_TYPE=${{ env.config }} 
-          -DOVR_BUILD_DEVICE_OPTIX7=ON 
-          -DOVR_BUILD_DEVICE_OSPRAY=ON 
-          -Dospray_DIR=${{ env.OSPRAY_CMAKE_DIR }}
-          -DTBB_DIR=${{ env.TBB_CMAKE_DIR }}
-          -DGDT_CUDA_ARCHITECTURES=${{ matrix.arch }}
+          wget -O "$RUNNER_TEMP/ospray.tar.gz" "$OSPRAY_URL"
+          tar -xzf "$RUNNER_TEMP/ospray.tar.gz" -C "$RUNNER_TEMP"
+
+          echo "OSPRAY_DIR=$OSPRAY_ROOT/lib/cmake/ospray-2.11.0" >> "$GITHUB_ENV"
+
+      - name: Configure
+        shell: bash
+        run: |
+          CMAKE_ARGS=(
+            -DCMAKE_BUILD_TYPE="${CONFIG}"
+            -DOVR_BUILD_DEVICE_OPTIX7=ON
+            -DOVR_BUILD_DEVICE_OSPRAY=ON
+            -DCMAKE_CUDA_ARCHITECTURES="${CUDA_ARCHITECTURES}"
+          )
+
+          if [[ "${{ matrix.ospray_mode }}" == "external" ]]; then
+            CMAKE_ARGS+=("-Dospray_DIR=${OSPRAY_DIR}")
+          fi
+
+          cmake -S . -B "${BUILD_DIR}" "${CMAKE_ARGS[@]}"
 
       - name: Build
-        working-directory: ${{ env.build_dir }}
-        run: cmake --build . --config ${{ env.config }} --target ALL_BUILD --verbose
+        run: cmake --build "${BUILD_DIR}" --target all --verbose -j"$(nproc)"
+
+  build-windows:
+    name: windows (CUDA ${{ matrix.cuda_version }})
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cuda_version: "12.8.1"
+            arch: "86"
+    env:
+      BUILD_DIR: build
+      CONFIG: Release
+      CUDA_ARCHITECTURES: ${{ matrix.arch }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Install oneTBB
+        shell: pwsh
+        run: |
+          $tbbVersion = "2021.9.0"
+          $tbbArchive = Join-Path $env:RUNNER_TEMP "oneapi-tbb-win.zip"
+          $tbbRoot = Join-Path $env:RUNNER_TEMP "oneapi-tbb-$tbbVersion"
+
+          Invoke-WebRequest -Uri "https://github.com/oneapi-src/oneTBB/releases/download/v$tbbVersion/oneapi-tbb-$tbbVersion-win.zip" -OutFile $tbbArchive
+          Expand-Archive -Path $tbbArchive -DestinationPath $env:RUNNER_TEMP -Force
+
+          "TBB_DIR=$tbbRoot/lib/cmake/tbb" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Install CUDA toolkit
+        uses: Jimver/cuda-toolkit@v0.2.34
+        id: cuda-toolkit
+        with:
+          cuda: ${{ matrix.cuda_version }}
+          method: network
+
+      - name: Configure
+        shell: pwsh
+        run: |
+          cmake -S . -B $env:BUILD_DIR `
+            -DCMAKE_BUILD_TYPE=$env:CONFIG `
+            -DOVR_BUILD_DEVICE_OPTIX7=ON `
+            -DOVR_BUILD_DEVICE_OSPRAY=ON `
+            -DCMAKE_CUDA_ARCHITECTURES=$env:CUDA_ARCHITECTURES `
+            -DTBB_DIR=$env:TBB_DIR
+
+      - name: Build
+        shell: pwsh
+        run: cmake --build $env:BUILD_DIR --config $env:CONFIG --target ALL_BUILD --verbose

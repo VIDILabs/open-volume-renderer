@@ -42,3 +42,7 @@ projects/
 *.obj
 *.mpi
 *.raw
+
+CLAUDE.md
+
+__pycache__/

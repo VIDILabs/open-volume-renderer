@@ -41,31 +41,40 @@ add_library(rendercommon SHARED
   scene.cpp
   scene.h
 )
-target_link_libraries(rendercommon PUBLIC gdt tfnmodule TBB::tbb Threads::Threads)
-target_link_libraries(rendercommon PRIVATE ${CMAKE_DL_LIBS})
-target_include_directories(rendercommon 
-PUBLIC  
+target_link_libraries(rendercommon PRIVATE
+  $<BUILD_INTERFACE:gdt>
+  $<BUILD_INTERFACE:tfnmodule>
+  $<BUILD_INTERFACE:TBB::tbb>
+  $<BUILD_INTERFACE:Threads::Threads>
+  $<BUILD_INTERFACE:${CMAKE_DL_LIBS}>
+)
+target_include_directories(rendercommon
+PUBLIC
+  # Keep OVR's build interface rooted in this repository; installed include
+  # layout is coordinated separately via OVR_INSTALL_INCLUDEDIR.
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../gdt>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../extern>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/common>
-PRIVATE 
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common/cuda>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/common/cuda>
+PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
 if(OVR_BUILD_CUDA)
-  target_sources(rendercommon PRIVATE 
+  # Use OVR_BUILD_CUDA (set by the parent project) rather than OVR_BUILD_CUDA,
+  # since when embedded as a subdirectory OVR_BUILD_CUDA is set OFF to skip
+  # the now-removed find_package(CUDA), but CUDA itself is still available.
+  target_sources(rendercommon PRIVATE
     common/generate_mask.cu
     common/cuda/texture.cu
   )
-  target_link_libraries(rendercommon PUBLIC CUDA::cudart_static) # this is useful for including CUDABuffer in C++ code
-  target_compile_options(rendercommon PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>)
-  target_compile_definitions(rendercommon PUBLIC OVR_BUILD_CUDA_DEVICES=1)
-  target_include_directories(rendercommon PUBLIC 
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common/cuda>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/common/cuda>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/common>
-  )
+  target_link_libraries(rendercommon PUBLIC $<BUILD_INTERFACE:CUDA::cudart_static>)
+  target_compile_options(rendercommon PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>)
+  target_compile_definitions(rendercommon PUBLIC $<BUILD_INTERFACE:OVR_BUILD_CUDA_DEVICES=1>)
   # TODO: this is just a temporary hack to get the code to compile
   # Copy cuda/cuda_utils.h to cuda_misc.h 
   execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -92,8 +101,7 @@ target_add_embeded_shaders(rendercommon
 
 # Allow device to define its own GUI pannel
 if(OVR_BUILD_OPENGL)
-  target_link_libraries(rendercommon PUBLIC imgui)
-  target_compile_definitions(rendercommon PUBLIC OVR_BUILD_OPENGL=1)
+  target_compile_definitions(rendercommon PUBLIC $<BUILD_INTERFACE:OVR_BUILD_OPENGL=1>)
 endif()
 
 # ======================================================================== #
@@ -116,11 +124,11 @@ PRIVATE
 target_include_directories(renderlib PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 target_include_directories(renderlib PUBLIC ${CMAKE_CURRENT_LIST_DIR}/..)
 
-if(OVR_BUILD_SCENE_USD)
+if(OVR_BUILD_USD)
   target_sources(renderlib PRIVATE serializer/serializer_usda.cpp)
   target_link_libraries(renderlib PRIVATE ${PXR_LIBRARIES})
   target_include_directories(renderlib PRIVATE ${PXR_INCLUDE_DIRS})
-  target_compile_definitions(renderlib PUBLIC OVR_BUILD_SCENE_USD=1)
+  target_compile_definitions(renderlib PUBLIC OVR_BUILD_USD=1)
 endif()
 
 # filesystem
@@ -138,7 +146,11 @@ if (NOT APPLE)
 endif()
 
 # ---------------------------------------------
-# devices  
+# devices (optional — may not be checked out)
 # ---------------------------------------------
-add_subdirectory(devices/optix7)
-add_subdirectory(devices/ospray)
+if(OVR_BUILD_DEVICE_OPTIX7 AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/devices/optix7")
+  add_subdirectory(devices/optix7)
+endif()
+if(OVR_BUILD_DEVICE_OSPRAY AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/devices/ospray")
+  add_subdirectory(devices/ospray)
+endif()

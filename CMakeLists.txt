@@ -27,164 +27,93 @@ if (POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif (POLICY CMP0135)
 
-
 cmake_minimum_required(VERSION 3.18)
-project(OpenVisRenderer LANGUAGES C CXX CUDA)
+project(OpenVisRenderer LANGUAGES C CXX)
 
+include(GNUInstallDirs)
 
-option(OVR_BUILD_OPENGL "Build with OpenGL Apps" ON)
-option(OVR_BUILD_CUDA "Build with CUDA" ON)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/extern")
 
-option(OVR_BUILD_DEVICE_OPTIX7  "Build OptiX7 Device"  ON)
-option(OVR_BUILD_DEVICE_OSPRAY  "Build OSPRay Device" OFF)
-option(OVR_BUILD_SCENE_USD "Build USDA Scene Reader" OFF)
-
-option(OVR_BUILD_PYTHON_BINDINGS "Build Python Bindings" OFF)
-
-###############################################################################
-# Python setup
-###############################################################################
-if(OVR_BUILD_PYTHON_BINDINGS)
-  # Find where `python` is by executing command `which python`
-  execute_process(
-    COMMAND "which" "python" OUTPUT_VARIABLE PYTHON_EXECUTABLE
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-  )
-  if("${PYTHON_EXECUTABLE}" STREQUAL "")
-    message(FATAL_ERROR "Python not found")
-  else()
-    message(STATUS "PYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}")
-  endif()
-  # # Check if CXX11 ABI should be enabled. Must match Python.
-  # execute_process(
-  #   COMMAND "${PYTHON_EXECUTABLE}" -c 
-  #     "import torch; print(torch._C._GLIBCXX_USE_CXX11_ABI)"
-  #   OUTPUT_VARIABLE PYTHON_GLIBCXX_USE_CXX11_ABI
-  #   OUTPUT_STRIP_TRAILING_WHITESPACE
-  # )
-  # if(PYTHON_GLIBCXX_USE_CXX11_ABI STREQUAL "True")
-  #   add_definitions(-D_GLIBCXX_USE_CXX11_ABI=1)
-  # else()
-  #   add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
-  # endif()
+# `OVR_INSTALL_INCLUDEDIR` is the include root encoded into installed/exported
+# OVR interface targets. Standalone OVR defaults to GNUInstallDirs' include
+# directory, while parent projects embedding OVR may override it before calling
+# `add_subdirectory(base)` if they install OVR headers into a package-specific
+# subtree such as `include/<package>`.
+if(NOT DEFINED OVR_INSTALL_INCLUDEDIR)
+  set(OVR_INSTALL_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}")
 endif()
 
-# ------------------------------------------------------------------
-# toggles
-# ------------------------------------------------------------------
-
+option(OVR_BUILD_DEVICE_OPTIX7 "Build OptiX7 Device" ON)
+option(OVR_BUILD_DEVICE_OSPRAY "Build OSPRay Device" ON)
 if(OVR_BUILD_DEVICE_OPTIX7)
   set(OVR_BUILD_OPTIX7 TRUE)
 endif()
-
 if(OVR_BUILD_DEVICE_OSPRAY)
   set(OVR_BUILD_OSPRAY TRUE)
 endif()
 
-# force to pull subdirectories, credit to Nate :)
-find_package(Git)
-set(WORKDIR ${CMAKE_CURRENT_SOURCE_DIR})
-if(GIT_FOUND AND IS_DIRECTORY "${WORKDIR}/.git")
-  option(GIT_SUBMODULE "Check submodules during build" ON)
-  if(GIT_SUBMODULE)
-    message(STATUS "Submodule update")
-    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-                    WORKING_DIRECTORY ${WORKDIR}
-                    RESULT_VARIABLE GIT_SUBMOD_RESULT)
-    if(NOT GIT_SUBMOD_RESULT EQUAL 0)
-      message(FATAL_ERROR "'git submodule update --init --recursive' failed with \
-        ${GIT_SUBMOD_RESULT}, please checkout submodules")
-    endif()
-  endif()
-endif()
+###############################################################################
+# Setup Repositories
+###############################################################################
+include(configure_build_type)
+include(configure_cxx)
 
-# ------------------------------------------------------------------
-# configure
-# ------------------------------------------------------------------
-
-# set library output path
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-
-if(APPLE) # MacOS is not supported ...
-	set(CMAKE_MACOSX_RPATH ON)
-endif()
-if(MSVC)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_CRT_SECURE_NO_WARNINGS")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP24")
-  set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT")
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT")
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT")
-else()
-	# if(BUILD_SHARED_LIBS)
-	# 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-  #   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-	# endif()
-endif()
-# if(NOT WIN32)
-#   # visual studio doesn't like these (not need them):
-#   set(CMAKE_CXX_FLAGS "--std=c++17")
-#   set(CUDA_PROPAGATE_HOST_FLAGS ON)
-# endif()
-# if(UNIX)
-#   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-# endif()
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CUDA_STANDARD 17)
-set(CMAKE_CUDA_STANDARD_REQUIRED ON)
-set(CMAKE_CUDA_EXTENSIONS OFF)
-set(CUDA_LINK_LIBRARIES_KEYWORD PUBLIC)
-
-if (MSVC)
-	list(APPEND CUDA_NVCC_FLAGS "-Xcompiler=-bigobj")
-else()
-	list(APPEND CUDA_NVCC_FLAGS "-Xcompiler=-mf16c")
-	list(APPEND CUDA_NVCC_FLAGS "-Xcompiler=-Wno-float-conversion")
-	list(APPEND CUDA_NVCC_FLAGS "-Xcompiler=-fno-strict-aliasing")
-	# if(BUILD_SHARED_LIBS)
-	# 	list(APPEND CUDA_NVCC_FLAGS "-fPIC")
-	# endif()
-endif()
-list(APPEND CUDA_NVCC_FLAGS "--extended-lambda")
-list(APPEND CUDA_NVCC_FLAGS "--expt-relaxed-constexpr")
-list(APPEND CUDA_NVCC_FLAGS "-U__CUDA_NO_HALF_OPERATORS__")
-list(APPEND CUDA_NVCC_FLAGS "-U__CUDA_NO_HALF_CONVERSIONS__")
-list(APPEND CUDA_NVCC_FLAGS "-U__CUDA_NO_HALF2_OPERATORS__")
-
+option(OVR_BUILD_CUDA "Build with CUDA" ON)
 if(OVR_BUILD_CUDA)
-  # adapted from https://stackoverflow.com/a/69353718
-  find_package(CUDA REQUIRED)
-  # enable_language(CUDA)
-
-  if(DEFINED GDT_CUDA_ARCHITECTURES) 
-    message(STATUS "Obtained target architecture from environment variable GDT_CUDA_ARCHITECTURES=${GDT_CUDA_ARCHITECTURES}")
-    set(CMAKE_CUDA_ARCHITECTURES ${GDT_CUDA_ARCHITECTURES})
-  endif()
-
-  if(NOT CMAKE_CUDA_ARCHITECTURES)
-    include(FindCUDA/select_compute_arch)
-    CUDA_DETECT_INSTALLED_GPUS(INSTALLED_GPU_CCS_1)
-    string(STRIP "${INSTALLED_GPU_CCS_1}" INSTALLED_GPU_CCS_2)
-    string(REPLACE " " ";" INSTALLED_GPU_CCS_3 "${INSTALLED_GPU_CCS_2}")
-    string(REPLACE "." "" CUDA_ARCH_LIST "${INSTALLED_GPU_CCS_3}")
-    set(CMAKE_CUDA_ARCHITECTURES ${CUDA_ARCH_LIST})
-    message(STATUS "Automatically detected GPU architectures: ${CMAKE_CUDA_ARCHITECTURES}")
-  endif()
-  
-  # we can only enable CUDA if CMAKE_CUDA_ARCHITECTURES is set
-  if (CMAKE_CUDA_ARCHITECTURES)
-    enable_language(CUDA)
-  else()
-    message(FATAL_ERROR "Cannot utomatically detected GPU architecture")
-  endif()
+  include(configure_cuda)
+endif()
+if(OVR_BUILD_OPTIX7)
+  include(configure_optix)
 endif()
 
-include(extern/configure.cmake)
+# Core Math Library
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/gdt)
+
+# Other Libraries
+include(configure_oneapi)
+include(dep_opengl)
+include(dep_usd)
+find_package(Threads REQUIRED)
+# find_package(OpenMP REQUIRED)
+
+###############################################################################
+# Python setup
+###############################################################################
+option(OVR_BUILD_PYTHON_BINDINGS "Build Python Bindings" OFF)
+if(OVR_BUILD_PYTHON_BINDINGS)
+  include(configure_python)
+endif()
+
+###############################################################################
+# Application build
+###############################################################################
+option(OVR_BUILD_APPS "Build OVR application executables" ON)
+
+###############################################################################
+# OpenGL Shader Encoder
+###############################################################################
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/extern/bin2c EXCLUDE_FROM_ALL)
+include(${CMAKE_CURRENT_LIST_DIR}/extern/bin2c/target_add_embeded_shaders.cmake)
+
+###############################################################################
+# Transfer Function Module  
+###############################################################################
+set(TFNMODULE_INCLUDE ${CMAKE_CURRENT_LIST_DIR}/extern/tfn/colormaps)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/extern/tfn/colormaps)
+add_library(tfnmodule STATIC ${embedded_colormap})
+target_include_directories(tfnmodule PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/extern/tfn/colormaps>
+)
+if (UNIX)
+  set_target_properties(tfnmodule PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
 add_subdirectory(ovr)
-add_subdirectory(apps)
+if(OVR_BUILD_APPS)
+  add_subdirectory(apps)
+endif()
 add_subdirectory(projects)
-add_subdirectory(python)
+if(OVR_BUILD_PYTHON_BINDINGS)
+  add_subdirectory(python)
+endif()
