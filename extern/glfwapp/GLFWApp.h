@@ -32,6 +32,8 @@
 
 #include "camera_frame.h"
 
+struct ImGuiContext;
+
 /*! \namespace glfwapp */
 namespace glfwapp
 {
@@ -39,8 +41,10 @@ namespace glfwapp
 
   struct GLFWindow
   {
-    GLFWindow(const std::string &title, int w, int h);
+    GLFWindow(const char* title, int w, int h);
     ~GLFWindow();
+
+    ImGuiContext* GetImGuiContext();
 
     void disableResizing()
     {
@@ -134,7 +138,7 @@ namespace glfwapp
         std::cout << "(C)urrent camera:" << std::endl;
         std::cout << "- from :" << fc.get_position() << std::endl;
         std::cout << "- poi  :" << fc.get_poi() << std::endl;
-        std::cout << "- upVec:" << fc.get_up() << std::endl;
+        std::cout << "- upVec:" << fc.get_accurate_up() << std::endl;
         std::cout << "- frame:" << fc.get_frame() << std::endl;
         break;
       case 'x':
@@ -219,7 +223,7 @@ namespace glfwapp
                     const vec3f &camera_up,
                     const float worldScale,
                     int w = 800, int h = 800)
-        : GLFWindow(title, w, h),
+        : GLFWindow(title.c_str(), w, h),
           cameraFrame(worldScale)
     {
       cameraFrame.setOrientation(camera_from, camera_at, camera_up);

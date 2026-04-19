@@ -340,11 +340,14 @@ __raygen__render_frame()
     vec3f color = 0.f;
     vec3f gradient = 0.f;
     vec2f optical_flow = 0.f;
+    RenderStats stats;
   } output;
   output.alpha = 0.f;
   output.color = 0.f;
   output.gradient = 0.f;
   output.optical_flow = 0.f;
+  output.stats.ray_direction = vec3f(0.f);
+  output.stats.pixel_index = pixel_index;
 
   int spp = optix_launch_params.sample_per_pixel;
   assert(optix_launch_params.sample_per_pixel > 0 && "'sample_per_pixel' should always be positive");
@@ -360,6 +363,7 @@ __raygen__render_frame()
     vec3f ray_dir = normalize(camera.direction +                      /* -z axis */
                               (screen.x - 0.5f) * camera.horizontal + /* x shift */
                               (screen.y - 0.5f) * camera.vertical);   /* y shift */
+    output.stats.ray_direction += ray_dir;
 
     /* the values we store the PRD pointer in: */
     // uint32_t u0, u1;
@@ -374,6 +378,7 @@ __raygen__render_frame()
   output.color *= rspp;
   output.gradient *= rspp;
   output.optical_flow *= vec2f(rspp);
+  output.stats.ray_direction *= rspp;
 
   /* and write to frame buffer ... */
   // {
@@ -390,16 +395,25 @@ __raygen__render_frame()
     assert(optix_launch_params.frame_index > 0 && "frame index should always be positive");
     if (optix_launch_params.frame_index == 1) {
       optix_launch_params.frame_accum_rgba[pixel_index] = vec4f(output.color, output.alpha);
-      optix_launch_params.frame.rgba[pixel_index] = vec4f(output.color, output.alpha);
+      if (optix_launch_params.enable_tonemapping)
+        optix_launch_params.frame.rgba[pixel_index] = vec4f(tonemap_aces(output.color), output.alpha);
+      else
+        optix_launch_params.frame.rgba[pixel_index] = vec4f(output.color, output.alpha);
     }
     else {
       const vec4f rgba = optix_launch_params.frame_accum_rgba[pixel_index] + vec4f(output.color, output.alpha);
+      vec4f rgba_ldr = rgba / vec4f(optix_launch_params.frame_index);
+      if (optix_launch_params.enable_tonemapping)
+        rgba_ldr = vec4f(tonemap_aces(vec3f(rgba_ldr)), rgba_ldr.w);
       optix_launch_params.frame_accum_rgba[pixel_index] = rgba;
-      optix_launch_params.frame.rgba[pixel_index] = rgba / vec4f(optix_launch_params.frame_index);
+      optix_launch_params.frame.rgba[pixel_index] = rgba_ldr;
     }
   }
   else {
-    optix_launch_params.frame.rgba[pixel_index] = vec4f(output.color, output.alpha);
+    if (optix_launch_params.enable_tonemapping)
+      optix_launch_params.frame.rgba[pixel_index] = vec4f(output.color, output.alpha);
+    else
+      optix_launch_params.frame.rgba[pixel_index] = vec4f(tonemap_aces(output.color), output.alpha);
   }
 
   /* gradient field */
@@ -410,6 +424,9 @@ __raygen__render_frame()
 
   /* to visualize sparse sampling results */
   // optix_launch_params.frame.grad[pixel_index] = vec3f(1.f);
+
+  /* render stats */
+  optix_launch_params.frame.stats[pixel_index] = output.stats;
 }
 
 }

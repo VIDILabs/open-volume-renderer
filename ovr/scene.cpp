@@ -18,89 +18,31 @@
 
 #include <colormap.h>
 
-#include <fstream>
+#include <vidi_parallel_algorithm.h>
+
+namespace vidi {
+enum VoxelType {
+  VOXEL_UINT8   = ovr::VALUE_TYPE_UINT8,
+  VOXEL_INT8    = ovr::VALUE_TYPE_INT8,
+  VOXEL_UINT16  = ovr::VALUE_TYPE_UINT16,
+  VOXEL_INT16   = ovr::VALUE_TYPE_INT16,
+  VOXEL_UINT32  = ovr::VALUE_TYPE_UINT32,
+  VOXEL_INT32   = ovr::VALUE_TYPE_INT32,
+  VOXEL_FLOAT   = ovr::VALUE_TYPE_FLOAT,
+  VOXEL_DOUBLE  = ovr::VALUE_TYPE_DOUBLE,
+  VOXEL_FLOAT2  = ovr::VALUE_TYPE_FLOAT2,
+  VOXEL_FLOAT3  = ovr::VALUE_TYPE_FLOAT3,
+  VOXEL_FLOAT4  = ovr::VALUE_TYPE_FLOAT4,
+  VOXEL_DOUBLE2 = ovr::VALUE_TYPE_DOUBLE2,
+  VOXEL_DOUBLE3 = ovr::VALUE_TYPE_DOUBLE3,
+  VOXEL_DOUBLE4 = ovr::VALUE_TYPE_DOUBLE4,
+  VOXEL_VOID    = ovr::VALUE_TYPE_VOID,
+};
+} // namespace vidi
+#define VIDI_VOLUME_EXTERNAL_TYPE_ENUM
+#include <vidi_volume_reader.h>
 
 namespace ovr {
-
-namespace {
-
-// ------------------------------------------------------------------
-//
-// ------------------------------------------------------------------
-
-template<size_t Size>
-inline void
-swap_bytes(void* data)
-{
-  char* p = reinterpret_cast<char*>(data);
-  char* q = p + Size - 1;
-  while (p < q)
-    std::swap(*(p++), *(q--));
-}
-
-template<>
-inline void
-swap_bytes<1>(void*)
-{
-}
-
-template<>
-inline void
-swap_bytes<2>(void* data)
-{
-  char* p = reinterpret_cast<char*>(data);
-  std::swap(p[0], p[1]);
-}
-
-template<>
-inline void
-swap_bytes<4>(void* data)
-{
-  char* p = reinterpret_cast<char*>(data);
-  std::swap(p[0], p[3]);
-  std::swap(p[1], p[2]);
-}
-
-template<>
-inline void
-swap_bytes<8>(void* data)
-{
-  char* p = reinterpret_cast<char*>(data);
-  std::swap(p[0], p[7]);
-  std::swap(p[1], p[6]);
-  std::swap(p[2], p[5]);
-  std::swap(p[3], p[4]);
-}
-
-template<typename T>
-inline void
-swap_bytes(T* data)
-{
-  swap_bytes<sizeof(T)>(reinterpret_cast<void*>(data));
-}
-
-inline void
-reverse_byte_order(char* data, size_t elemCount, size_t elemSize)
-{
-  switch (elemSize) {
-  case 1: break;
-  case 2:
-    for (size_t i = 0; i < elemCount; ++i)
-      swap_bytes<2>(&data[i * elemSize]);
-    break;
-  case 4:
-    for (size_t i = 0; i < elemCount; ++i)
-      swap_bytes<4>(&data[i * elemSize]);
-    break;
-  case 8:
-    for (size_t i = 0; i < elemCount; ++i)
-      swap_bytes<8>(&data[i * elemSize]);
-    break;
-  default: assert(false);
-  }
-}
-
-} // namespace
 
 template<typename T>
 array_1d_scalar_t
@@ -162,86 +104,288 @@ array_1d_float4_t CreateArray1DFloat4(const std::vector<vec4f>& input, bool shar
 array_1d_float4_t CreateArray1DFloat4(const vec4f* input, size_t len,  bool shared) { return CreateArray1DScalar(input, len, shared); }
 
 array_1d_float4_t
-CreateColorMap(const std::string& name)
+CreateColorMap(const char* name)
 {
-  if (colormap::data.count(name) > 0) {
-    // auto& _arr = *colormap::data.at(name);
-    // std::vector<vec4f> arr;
-    // for (int i = 0; i < _arr.size(); ++i) {
-    //   arr.push_back(vec4f(_arr[i].r, _arr[i].g, _arr[i].b, _arr[i].a));
-    // }
-    std::vector<vec4f>& arr = *((std::vector<vec4f>*)colormap::data.at(name));
+  if (colormap::has(name)) {
+    const std::vector<vec4f>& arr = (const std::vector<vec4f>&)colormap::get(name);
     return CreateArray1DFloat4(arr, false);
   }
   else {
-    throw std::runtime_error("Unexpected colormap name: " + name);
+    throw std::runtime_error("Unexpected colormap name: " + std::string(name));
   }
 }
 
 array_3d_scalar_t
-CreateArray3DScalarFromFile(const std::string& filename, vec3i dims, ValueType type, size_t offset, bool is_big_endian)
+CreateArray3DScalarFromFile(const char* filename, vec3i dims, ValueType type, size_t offset, bool is_big_endian)
 {
   // data geometry
   assert(dims.x > 0 && dims.y > 0 && dims.z > 0);
-
-  size_t elem_count = (size_t)dims.x * dims.y * dims.z;
-
-  size_t elem_size = // clang-format off
-    (type == VALUE_TYPE_UINT8  || type == VALUE_TYPE_INT8 ) ? sizeof(uint8_t)  :
-    (type == VALUE_TYPE_UINT16 || type == VALUE_TYPE_INT16) ? sizeof(uint16_t) :
-    (type == VALUE_TYPE_UINT32 || type == VALUE_TYPE_INT32 || type == VALUE_TYPE_FLOAT) ? 
-    sizeof(uint32_t) : sizeof(double);
-  // clang-format on
-
-  size_t data_size = elem_count * elem_size;
-
-  // load the data
+  // load data from file
   std::shared_ptr<char[]> data_buffer;
-
-  std::ifstream ifs(filename, std::ios::in | std::ios::binary);
-  if (ifs.fail()) // cannot open the file
   {
-    throw std::runtime_error("Cannot open the file: " + filename);
+    vidi::VolumeFileDesc desc;
+    desc.dims.x = dims.x;
+    desc.dims.y = dims.y;
+    desc.dims.z = dims.z;
+    desc.type = (vidi::VoxelType)type;
+    desc.offset = offset;
+    desc.is_big_endian = is_big_endian;
+    data_buffer = vidi::read_volume_structured_regular(std::string(filename), desc);
   }
-
-  ifs.seekg(0, std::ios::end);
-  size_t file_size = ifs.tellg();
-  if (file_size < offset + data_size) // file size does not match data size
-  {
-    throw std::runtime_error("File size does not match data size");
-  }
-  ifs.seekg(offset, std::ios::beg);
-
-  try {
-    data_buffer.reset(new char[data_size]);
-  }
-  catch (std::bad_alloc&) // memory allocation failed
-  {
-    throw std::runtime_error("Cannot allocate memory for the data");
-  }
-
-  // read data
-  ifs.read(data_buffer.get(), data_size);
-  if (ifs.fail()) // reading data failed
-  {
-    throw std::runtime_error("Cannot read the file");
-  }
-
-  // reverse byte-order if necessary
-  const bool reverse = (is_big_endian && elem_size > 1);
-  if (reverse) {
-    reverse_byte_order(data_buffer.get(), elem_count, elem_size);
-  }
-
-  ifs.close();
-
   // finalize
   array_3d_scalar_t output = std::make_shared<Array<3>>();
   output->dims = dims;
   output->type = type;
   output->acquire_data(std::move(data_buffer));
-
   return output;
 }
 
+#define INDENT std::string(indent, ' ')
+
+namespace scene {
+
+template<typename T>
+static void 
+print_array(std::ostream& os, const array_1d_t& array, size_t max_n_items)
+{
+  if (!array) {
+    os << "nullptr\n";
+    return;
+  }
+
+  os << "{ ";
+  for (int i = 0; i < std::min(array->size(), max_n_items); i++) {
+    os << array->data_typed<T>()[i] << " ";
+  }
+  if (array->size() > max_n_items) {
+    os << "... skipped " << array->size() - max_n_items << " items ";
+  }
+  os << "}\n";
+}
+
+void 
+TransferFunction::print(std::ostream& os, int indent) const
+{
+  os << INDENT << "transfer_function\n";
+  os << INDENT << "+-> value_range = " << value_range << "\n";
+  os << INDENT << "+-> color = ";
+  print_array<vec4f>(os, color, 5);
+  os << INDENT << "+-> opacity = ";
+  print_array<float>(os, opacity, 5);
+}
+
+box3f 
+Volume::get_bounds(const Scene&) const 
+{
+  box3f bounds;
+  if (type == STRUCTURED_REGULAR_VOLUME) {
+    auto& sr = structured_regular;
+    auto& origin  = sr.grid_origin;
+    auto& spacing = sr.grid_spacing;
+    auto dims = vec3f(sr.data->dims);
+    bounds = { origin, origin+dims*spacing };
+  }
+  return bounds;
+}
+
+void
+Volume::print(const Scene& self, std::ostream& os, int indent) const
+{
+  if (type == STRUCTURED_REGULAR_VOLUME) {
+    auto& sr = structured_regular;
+    os << INDENT << "volume structured_regular\n";
+    os << INDENT << "+-> grid_origin = " << sr.grid_origin << "\n";
+    os << INDENT << "+-> grid_spacing = " << sr.grid_spacing << "\n";
+    os << INDENT << "+-> data = " << sr.data << "\n";
+  }
+}
+
+box3f 
+Geometry::get_bounds(const Scene& self) const 
+{
+  box3f bounds;
+  if (type == TRIANGLES_GEOMETRY) {
+    auto& g = triangles;
+    for (int i = 0; i < g.position->size(); i++) {  // TODO optimize this
+      bounds.extend(g.position->data_typed<vec3f>()[i]);
+    }
+  }
+  else if (type == SPHERES_GEOMETRY) {
+    auto& g = spheres;
+    for (int i = 0; i < g.sphere.position->size(); i++) {  // TODO optimize this
+      bounds.extend(g.sphere.position->data_typed<vec3f>()[i]);
+    }
+  }
+  else if (type == ISOSURFACE_GEOMETRY) {
+    auto& g = isosurfaces;
+    bounds = self.textures[g.volume_texture].volume.volume.get_bounds(self);
+  }
+  return bounds;
+}
+
+void
+Geometry::print(const Scene& self, std::ostream& os, int indent) const
+{
+  if (type == TRIANGLES_GEOMETRY) {
+    auto& g = triangles;
+    os << INDENT << "geometry triangles\n";
+    os << INDENT << "+-> position = ";
+    print_array<vec3f>(os, g.position, 5);
+    os << INDENT << "+-> index = ";
+    print_array<int>(os, g.index, 5);
+    os << INDENT << "+-> verts.normal = ";
+    print_array<vec3f>(os, g.verts.normal, 5);
+    os << INDENT << "+-> verts.texcoord = ";
+    print_array<vec2f>(os, g.verts.texcoord, 5);
+    os << INDENT << "+-> faces.normal = ";
+    print_array<vec3f>(os, g.faces.normal, 5);
+    os << INDENT << "+-> faces.texcoord = ";
+    print_array<vec2f>(os, g.faces.texcoord, 5);
+  }
+  else if (type == SPHERES_GEOMETRY) {
+    auto& g = spheres;
+    os << INDENT << "geometry spheres\n";
+    os << INDENT << "+-> sphere.position = ";
+    print_array<vec3f>(os, g.sphere.position, 5);
+    os << INDENT << "+-> sphere.radius = ";
+    print_array<float>(os, g.sphere.radius, 5);
+    os << INDENT << "+-> radius = " << g.radius << "\n";
+  }
+  else if (type == ISOSURFACE_GEOMETRY) {
+    auto& g = isosurfaces;
+    os << INDENT << "geometry isosurfaces\n";
+    os << INDENT << "+-> isovalues = ";
+    print_array<float>(os, g.isovalues, 5);
+    os << INDENT << "+-> volume_texture = " << g.volume_texture << "\n";
+    self.textures[g.volume_texture].volume.volume.print(self, os, indent + 4);
+  }
+}
+
+box3f 
+Model::get_bounds(const Scene& self) const 
+{
+  box3f bounds;
+  if (type == GEOMETRIC_MODEL) {
+    bounds = geometry_model.geometry.get_bounds(self);
+  } else if (type == VOLUMETRIC_MODEL) {
+    bounds = self.textures[volume_model.volume_texture].volume.volume.get_bounds(self);
+  }
+  return bounds;
+}
+
+void
+Model::print(const Scene& self, std::ostream& os, int indent) const
+{
+  if (type == GEOMETRIC_MODEL) {
+    os << INDENT << "model geometric\n";
+    os << INDENT << "+-> mtl = " << geometry_model.mtl << "\n";
+    os << INDENT << "+-> mtls = { ";
+    for (auto& mtl : geometry_model.mtls) {
+      os << mtl << " ";
+    }
+    os << "}\n";
+    geometry_model.geometry.print(self, os, indent + 4);
+  } else if (type == VOLUMETRIC_MODEL) {
+    os << INDENT << "model volumetric\n";
+    os << INDENT << "+-> transfer_function = ";
+    volume_model.transfer_function.print(os, indent + 4);
+    os << INDENT << "+-> volume_texture = " << volume_model.volume_texture << "\n";
+    self.textures[volume_model.volume_texture].volume.volume.print(self, os, indent + 4);
+  }
+}
+
+box3f 
+Instance::get_bounds(const Scene& self) const 
+{
+  box3f bounds;
+  for (auto& model : models) {
+    auto b = model.get_bounds(self);
+    b.lower = xfmPoint(transform, b.lower);
+    b.upper = xfmPoint(transform, b.upper);
+    bounds.extend(b);
+  }
+  return bounds;
+}
+
+void
+Instance::print(const Scene& self, std::ostream& os, int indent) const
+{
+  os << INDENT << "instance\n";
+  os << INDENT << "+-> transform: " << transform << "\n";
+  for (auto& model : models) {
+    model.print(self, os, indent + 4);
+  }
+}
+
+box3f
+Scene::get_bounds() const
+{
+  box3f bounds;
+  for (auto& instance : instances) {
+    bounds.extend(instance.get_bounds(*this));
+  }
+  return bounds;
+}
+
+void
+Scene::print() const
+{
+  std::ostream& os = std::cout;
+  os << "scene:\n";
+  for (auto& instance : instances) {
+    instance.print(*this, os, 2);
+  }
+}
+
+template<typename T> T 
+lerp(float t, T a, T b) { return a + t * (b - a); }
+
+static vec4f 
+access_transfer_function(const ovr::scene::TransferFunction& self, float value) 
+{
+  using namespace ovr;
+
+  // remap to [0.0, 1.0]
+  value = (value - self.value_range.x) / (self.value_range.y - self.value_range.x);
+  // clamp to [0.0, 1.0)
+  const float nextBefore1 = 0x1.fffffep-1f;
+  value = clamp(value, 0.0f, nextBefore1);
+
+  const int maxIdxC = self.color->size() - 1;
+  const float idxCf = value * maxIdxC;
+  float intC;
+  const float fracC = std::modf(idxCf, &intC);
+  const int idxC = idxCf;
+
+  vec4f* cdata = (vec4f*)self.color->data();
+  const vec4f col = lerp(fracC, cdata[idxC], cdata[std::min(maxIdxC, idxC + 1)]);
+
+  const int maxIdxO = self.opacity->size() - 1;
+  const float idxOf = value * maxIdxO;
+  float intO;
+  const float fracO = std::modf(idxOf, &intO);
+  const int idxO = idxOf;
+
+  float* odata = (float*)self.opacity->data();
+  const float opacity = lerp(fracO, odata[idxO], odata[std::min(maxIdxO, idxO + 1)]);
+
+  return vec4f(col.xyz(), opacity);
+}
+
+std::vector<uint32_t> 
+Scene::add_materials_for_isosurfaces(std::vector<float> isovalues, 
+  const ovr::scene::TransferFunction& transfer_function)
+{
+  std::vector<uint32_t> mtls;
+  for (int i = 0; i < isovalues.size(); ++i) {
+    ovr::scene::Material volume_mtl;
+    volume_mtl.type = ovr::scene::Material::OBJ_MATERIAL;
+    volume_mtl.obj.kd = access_transfer_function(transfer_function, isovalues[i]).xyz();
+    this->materials.push_back(volume_mtl);
+    mtls.push_back(this->materials.size() - 1);
+  }
+  return mtls;
+}
+
+} // namespace scene
 } // namespace ovr

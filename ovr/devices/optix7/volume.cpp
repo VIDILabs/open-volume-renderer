@@ -161,11 +161,17 @@ StructuredRegularVolume::set_sampling_rate(float r, float b)
     base = b;
 }
 
+void
+StructuredRegularVolume::set_density_scale(float d)
+{
+  self.density_scale = d;
+}
+
 void*
 StructuredRegularVolume::get_sbt_pointer(cudaStream_t stream)
 {
-  if (GetSbtPtr() == nullptr)
-    return CreateSbtPtr(stream); /* upload to GPU */
+  // if (GetSbtPtr() == nullptr)
+  //   return CreateSbtPtr(stream); /* upload to GPU */
   return GetSbtPtr();
 }
 
@@ -175,6 +181,7 @@ StructuredRegularVolume::commit(cudaStream_t stream)
   // self.alpha_adjustment = base / rate;
   self.base = base;
   self.step = 1.f / rate;
+  if (GetSbtPtr() == nullptr) CreateSbtPtr(stream);
   UpdateSbtData(stream);
 }
 

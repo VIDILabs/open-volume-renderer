@@ -22,6 +22,7 @@
 #include <fstream>
 #include <vector>
 
+#include "random.h"
 #include "noise_files.h"
 
 #include <cuda_misc.h>
@@ -80,7 +81,7 @@ load_blue_noise(CUDABuffer& noise_buffer)
 
 template<typename T>
 __global__ void
-generate_blue_noise_kernel(const uint32_t n_elements, T* __restrict__ noise, T* __restrict__ out, const uint32_t height, const uint32_t width, int frame_index)
+generate_blue_noise_kernel(const uint32_t n_elements, T* __restrict__ noise, T* __restrict__ out, const uint32_t height, const uint32_t width, uint32_t time)
 {
     const uint32_t i = threadIdx.x + blockIdx.x * blockDim.x;
     if (i >= n_elements) return;
@@ -91,19 +92,21 @@ generate_blue_noise_kernel(const uint32_t n_elements, T* __restrict__ noise, T* 
     if (x >= width || y >= height)
         return;
 
-    
-    float val = noise[
-        (y%OVR_NOISE_TILE_SIZE_XY)*OVR_NOISE_TILE_SIZE_XY*OVR_NOISE_TILE_SIZE_T +
-        (x%OVR_NOISE_TILE_SIZE_XY)*OVR_NOISE_TILE_SIZE_T + 
-        (frame_index%OVR_NOISE_TILE_SIZE_T)
-        ];
+    int xid = x%OVR_NOISE_TILE_SIZE_XY;
+    int yid = y%OVR_NOISE_TILE_SIZE_XY;
+    int tid = time%OVR_NOISE_TILE_SIZE_T;
 
-    out[i] = val;
+    int l0 = OVR_NOISE_TILE_SIZE_XY * OVR_NOISE_TILE_SIZE_T;
+    int l1 = OVR_NOISE_TILE_SIZE_T;
+
+    size_t noise_idx = xid * l0 + yid * l1 + tid;
+    
+    out[i] = noise[noise_idx];
 }
 
-template<typename T>
+template<typename T, typename RNG>
 inline void
-generate_blue_noise(uint32_t n_elements, T* out, const vec2i size, const int frame_index = 0)
+generate_blue_noise(RNG& rng, uint32_t n_elements, T* out, const vec2i size)
 {
     static CUDABuffer noise_buffer;
 
@@ -111,7 +114,11 @@ generate_blue_noise(uint32_t n_elements, T* out, const vec2i size, const int fra
         load_blue_noise(noise_buffer);
     }
 
-    generate_blue_noise_kernel<T><<<((n_elements + (OVR_NOISE_TILE_SIZE_XY-1)) / OVR_NOISE_TILE_SIZE_XY), OVR_NOISE_TILE_SIZE_XY>>>(n_elements, (T*)noise_buffer.d_pointer(), out, size.y, size.x, frame_index);
+    // Generate a random "time" number to pick from the temporal dimension of STBN
+    uint32_t time = rng.next_uint();
+    rng.advance(1);
+
+    generate_blue_noise_kernel<T><<<((n_elements + (OVR_NOISE_TILE_SIZE_XY-1)) / OVR_NOISE_TILE_SIZE_XY), OVR_NOISE_TILE_SIZE_XY>>>(n_elements, (T*)noise_buffer.d_pointer(), out, size.y, size.x, time);
 }
 
 }

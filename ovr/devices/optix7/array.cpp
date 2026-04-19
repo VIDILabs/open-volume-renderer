@@ -16,54 +16,14 @@
 
 #include "array.h"
 
-#include <tbb/blocked_range.h>
-#include <tbb/parallel_reduce.h>
-#include <tbb/parallel_for.h>
+#include <vidi_parallel_algorithm.h>
 
 namespace ovr::optix7 {
 
+using vidi::parallel::compute_scalar_minmax;
+using vidi::parallel::parallel_for;
+
 namespace {
-
-template<typename T>
-std::pair<T, T>
-compute_scalar_range(const void* _array, size_t count, size_t stride)
-{
-  static_assert(std::is_scalar<T>::value, "expecting a scalar type");
-
-  if (stride == 0)
-    stride = sizeof(T);
-
-  T* array = (T*)_array;
-  auto value = [array, stride](size_t index) -> T {
-    const auto begin = (const uint8_t*)array;
-    const auto curr = (T*)(begin + index * stride);
-    return static_cast<T>(*curr);
-  };
-
-  T init;
-
-  init = std::numeric_limits<T>::lowest();
-  T actual_max = tbb::parallel_reduce(
-    tbb::blocked_range<size_t>(0, count), init,
-    [value](const tbb::blocked_range<size_t>& r, T v) -> T {
-      for (auto i = r.begin(); i != r.end(); ++i)
-        v = std::max(v, value(i));
-      return v;
-    },
-    [](T x, T y) -> T { return std::max(x, y); });
-
-  init = std::numeric_limits<T>::max();
-  T actual_min = tbb::parallel_reduce(
-    tbb::blocked_range<size_t>(0, count), init,
-    [value](const tbb::blocked_range<size_t>& r, T v) -> T {
-      for (auto i = r.begin(); i != r.end(); ++i)
-        v = std::min(v, value(i));
-      return v;
-    },
-    [](T x, T y) -> T { return std::min(x, y); });
-
-  return std::make_pair(actual_min, actual_max);
-}
 
 template<typename IType, typename OType>
 std::shared_ptr<char[]>
@@ -72,7 +32,7 @@ convert_array1d(const char* idata, size_t size)
   std::shared_ptr<char[]> odata;
   odata.reset(new char[size * sizeof(OType)]);
 
-  tbb::parallel_for(size_t(0), size, [&](size_t idx) {
+  parallel_for(size, [&](size_t idx) {
     auto* i = (IType*)&idata[idx * sizeof(IType)];
     auto* o = (OType*)&odata[idx * sizeof(OType)];
     *o = static_cast<OType>(*i);
@@ -93,17 +53,16 @@ template<typename InType, typename = typename std::enable_if<std::is_integral<In
 std::pair<float, float>
 cuda_scalar_range(const void* _array, size_t count, size_t stride)
 {
-  auto p = compute_scalar_range<InType>(_array, count, stride);
+  auto p = compute_scalar_minmax<InType>(_array, count, stride);
   return std::make_pair(integer_normalize<float, InType>(p.first), integer_normalize<float, InType>(p.second));
 }
 
-template<typename InType,
-         typename = void,
+template<typename InType, typename = void,
          typename = typename std::enable_if<std::is_floating_point<InType>::value>::type>
 std::pair<float, float>
 cuda_scalar_range(const void* _array, size_t count, size_t stride)
 {
-  auto p = compute_scalar_range<InType>(_array, count, stride);
+  auto p = compute_scalar_minmax<InType>(_array, count, stride);
   return std::make_pair((float)p.first, (float)p.second);
 }
 
@@ -124,8 +83,13 @@ CreateArray1DScalarOptix7(const std::vector<T>& input, cudaStream_t stream)
   output.dims = (int)input.size();
   std::tie(output.lower.v, output.upper.v) = cuda_scalar_range<T>(input.data(), input.size(), 0);
   output.scale.v = 1.f / (output.upper.v - output.lower.v);
+
+  // TODO: we should really follow the OpenGL data normalization rule here:
+  // -- https://www.khronos.org/opengl/wiki/Normalized_Integer
+  static_assert(!(sizeof(T) > 2 && std::is_integral<T>::value), "32-bit integer is currently not supported");
+
   auto array_handler = createCudaArray1D<T>(input.data(), input.size());
-  if (std::is_floating_point<T>::value) {
+  if (sizeof(T) > 2) {
     output.data = createCudaTexture<T>(array_handler, cudaReadModeElementType, cudaFilterModeLinear, cudaFilterModeLinear, cudaAddressModeClamp, true);
   }
   else {
@@ -159,8 +123,12 @@ CreateArray1DScalarOptix7(array_1d_scalar_t input, const char* data)
   std::tie(output.lower.v, output.upper.v) = cuda_scalar_range<T>(data, input->dims.v, 0);
   output.scale.v = 1.f / (output.upper.v - output.lower.v);
 
+  // TODO: we should really follow the OpenGL data normalization rule here:
+  // -- https://www.khronos.org/opengl/wiki/Normalized_Integer
+  static_assert(!(sizeof(T) > 2 && std::is_integral<T>::value), "32-bit integer is currently not supported");
+
   auto array_handler = createCudaArray1D<T>(data, input->dims.v);
-  if (std::is_floating_point<T>::value) {
+  if (sizeof(T) > 2) {
     output.data = createCudaTexture<T>(array_handler, cudaReadModeElementType, cudaFilterModeLinear, cudaFilterModeLinear, cudaAddressModeClamp, true);
   }
   else {
@@ -180,33 +148,21 @@ CreateArray1DScalarOptix7(array_1d_scalar_t input)
 {
   Array1DScalarOptix7 output;
   std::shared_ptr<char[]> buffer;
-
   switch (input->type) {
   case VALUE_TYPE_UINT8: output = CreateArray1DScalarOptix7<uint8_t>(input, input->data()); break;
-  case VALUE_TYPE_INT8: output = CreateArray1DScalarOptix7<int8_t>(input, input->data()); break;
-  case VALUE_TYPE_UINT32: output = CreateArray1DScalarOptix7<uint32_t>(input, input->data()); break;
-  case VALUE_TYPE_INT32: output = CreateArray1DScalarOptix7<int32_t>(input, input->data()); break;
+  case VALUE_TYPE_INT8:  output = CreateArray1DScalarOptix7< int8_t>(input, input->data()); break;
+  case VALUE_TYPE_UINT16: output = CreateArray1DScalarOptix7<uint16_t>(input, input->data()); break;
+  case VALUE_TYPE_INT16:  output = CreateArray1DScalarOptix7< int16_t>(input, input->data()); break;
+  // case VALUE_TYPE_UINT32: output = CreateArray1DScalarOptix7<uint32_t>(input, input->data()); break;
+  // case VALUE_TYPE_INT32:  output = CreateArray1DScalarOptix7< int32_t>(input, input->data()); break;
   case VALUE_TYPE_FLOAT: output = CreateArray1DScalarOptix7<float>(input, input->data()); break;
-
-  case VALUE_TYPE_UINT16:
-    buffer = convert_array1d<uint16_t, float>(input->data(), input->dims.v);
-    input->type = VALUE_TYPE_FLOAT;
-    output = CreateArray1DScalarOptix7<float>(input, input->data());
-    break;
-  case VALUE_TYPE_INT16:
-    buffer = convert_array1d<int16_t, float>(input->data(), input->dims.v);
-    input->type = VALUE_TYPE_FLOAT;
-    output = CreateArray1DScalarOptix7<float>(input, input->data());
-    break;
   case VALUE_TYPE_DOUBLE:
     buffer = convert_array1d<double, float>(input->data(), input->dims.v);
     input->type = VALUE_TYPE_FLOAT;
     output = CreateArray1DScalarOptix7<float>(input, input->data());
     break;
-
   default: throw std::runtime_error("[Optix7] unexpected array type ...");
   }
-
   return output;
 }
 
@@ -251,7 +207,6 @@ CreateArray1DFloat4Optix7(array_1d_float4_t input)
     throw std::runtime_error("type mismatch");
 
   Array1DFloat4Optix7 output;
-
   auto* dx = (float*)input->data();
   auto* dy = dx + 1;
   auto* dz = dx + 2;
@@ -260,13 +215,10 @@ CreateArray1DFloat4Optix7(array_1d_float4_t input)
   std::tie(output.lower.y, output.upper.y) = cuda_scalar_range<float>(dy, input->dims.v, sizeof(float4));
   std::tie(output.lower.z, output.upper.z) = cuda_scalar_range<float>(dz, input->dims.v, sizeof(float4));
   std::tie(output.lower.w, output.upper.w) = cuda_scalar_range<float>(dw, input->dims.v, sizeof(float4));
-
   output.type = input->type;
   output.dims = input->dims;
-
   auto array_handler = createCudaArray1D<float4>(input->data(), input->dims.v);
   output.data = createCudaTexture<float4>(array_handler, cudaReadModeElementType, cudaFilterModeLinear, cudaFilterModeLinear, cudaAddressModeClamp, true);
-
   output.scale.x = 1.f / (output.upper.x - output.lower.x);
   output.scale.y = 1.f / (output.upper.y - output.lower.y);
   output.scale.z = 1.f / (output.upper.z - output.lower.z);
@@ -297,8 +249,12 @@ CreateArray3DScalarOptix7(void* input, vec3i dims)
   std::tie(output.lower.v, output.upper.v) = cuda_scalar_range<T>(input, elem_count, 0);
   output.scale.v = 1.f / (output.upper.v - output.lower.v);
 
+  // TODO: we should really follow the OpenGL data normalization rule here:
+  // -- https://www.khronos.org/opengl/wiki/Normalized_Integer
+  static_assert(!(sizeof(T) > 2 && std::is_integral<T>::value), "32-bit integer is currently not supported");
+
   auto array_handler = createCudaArray3D<T>(input, (int3&)dims);
-  if (std::is_floating_point<T>::value) {
+  if (sizeof(T) > 2) {
     output.data = createCudaTexture<T>(array_handler, cudaReadModeElementType, cudaFilterModeLinear, cudaFilterModeLinear, cudaAddressModeClamp, true);
   }
   else {
@@ -313,8 +269,8 @@ CreateArray3DScalarOptix7(void* input, vec3i dims)
 
 instantiate_create_array_3d_scalar(int8_t);
 instantiate_create_array_3d_scalar(uint8_t);
-instantiate_create_array_3d_scalar(uint32_t);
-instantiate_create_array_3d_scalar(int32_t);
+instantiate_create_array_3d_scalar(uint16_t);
+instantiate_create_array_3d_scalar(int16_t);
 instantiate_create_array_3d_scalar(float);
 
 #undef instantiate_create_array_3d_scalar
@@ -327,19 +283,13 @@ CreateArray3DScalarOptix7(array_3d_scalar_t array)
 
   switch (array->type) {
   case VALUE_TYPE_UINT8: output = CreateArray3DScalarOptix7<uint8_t>(array->data(), array->dims); break;
-  case VALUE_TYPE_INT8: output = CreateArray3DScalarOptix7<int8_t>(array->data(), array->dims); break;
-  case VALUE_TYPE_UINT32: output = CreateArray3DScalarOptix7<uint32_t>(array->data(), array->dims); break;
-  case VALUE_TYPE_INT32: output = CreateArray3DScalarOptix7<int32_t>(array->data(), array->dims); break;
+  case VALUE_TYPE_INT8:  output = CreateArray3DScalarOptix7< int8_t>(array->data(), array->dims); break;
+  case VALUE_TYPE_UINT16: output = CreateArray3DScalarOptix7<uint16_t>(array->data(), array->dims); break;
+  case VALUE_TYPE_INT16:  output = CreateArray3DScalarOptix7< int16_t>(array->data(), array->dims); break;
+  // case VALUE_TYPE_UINT32: output = CreateArray3DScalarOptix7<uint32_t>(array->data(), array->dims); break;
+  // case VALUE_TYPE_INT32:  output = CreateArray3DScalarOptix7< int32_t>(array->data(), array->dims); break;
   case VALUE_TYPE_FLOAT: output = CreateArray3DScalarOptix7<float>(array->data(), array->dims); break;
-  // TODO cannot handle the following correctly, so converting them into floats //
-  case VALUE_TYPE_UINT16:
-    buffer = convert_volume<uint16_t, float>(array->data(), array->dims);
-    output = CreateArray3DScalarOptix7<float>(buffer.get(), array->dims);
-    break;
-  case VALUE_TYPE_INT16:
-    buffer = convert_volume<int16_t, float>(array->data(), array->dims);
-    output = CreateArray3DScalarOptix7<float>(buffer.get(), array->dims);
-    break;
+  // Cannot handle the following correctly, so converting them into floats //
   case VALUE_TYPE_DOUBLE:
     buffer = convert_volume<double, float>(array->data(), array->dims);
     output = CreateArray3DScalarOptix7<float>(buffer.get(), array->dims);

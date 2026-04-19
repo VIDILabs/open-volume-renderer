@@ -218,7 +218,6 @@ public:
 
   void create() override
   {
-    // CUDA_CHECK(cudaStreamCreate(&stream));
   }
 
   void resize(size_t& count) override
@@ -330,18 +329,28 @@ struct DoubleBufferObject {
 private:
   using BufferObject = MultipleRenderBuffers<Args...>;
 
-  BufferObject& current_buffer()
+  BufferObject& front_buffer()
   {
-    return buffers[current_buffer_index];
+    return buffers[front_index];
   }
 
-  const BufferObject& current_buffer() const
+  const BufferObject& front_buffer() const
   {
-    return buffers[current_buffer_index];
+    return buffers[front_index];
+  }
+
+  BufferObject& back_buffer()
+  {
+    return buffers[(front_index + 1) % 2];
+  }
+
+  const BufferObject& back_buffer() const
+  {
+    return buffers[(front_index + 1) % 2];
   }
 
   BufferObject buffers[2];
-  int current_buffer_index{ 0 };
+  int front_index{ 0 };
 
   size_t fb_pixel_count{ 0 };
   vec2i fb_size;
@@ -368,7 +377,7 @@ public:
   void safe_swap()
   {
     // CUDA_CHECK(cudaStreamSynchronize(current_buffer().stream));
-    current_buffer_index = (current_buffer_index + 1) % 2;
+    front_index = (front_index + 1) % 2;
   }
 
   bool empty() const
@@ -381,35 +390,38 @@ public:
     return fb_size;
   }
 
-  cudaStream_t current_stream()
+  cudaStream_t back_stream() // stream for rendering
   {
-    return current_buffer().stream;
+    return back_buffer().stream;
   }
 
-  void download_async()
+  void* front_dpointer(int layout = 0) const
   {
-    current_buffer().download_async();
+    return (void*)front_buffer().d_pointer(layout);
   }
 
-  void* device_pointer(int layout) const
+  void* back_dpointer(int layout = 0) const
   {
-    return (void*)current_buffer().d_pointer(layout);
+    return (void*)back_buffer().d_pointer(layout);
   }
 
-  void* host_pointer(int layout) const
+  void download_front()
   {
-    return (void*)current_buffer().h_pointer(layout);
+    front_buffer().download_async();
   }
 
-  void deepcopy(int layout, void* dst)
+  void* front_hpointer(int layout = 0) const
   {
-    current_buffer().deepcopy(layout, dst);
+    return (void*)front_buffer().h_pointer(layout);
   }
 
-  void reset()
-  {
-    buffers[0].reset();
-    buffers[1].reset();
+  void front_reset() { front_buffer().reset(); }
+
+  void back_reset()  { back_buffer().reset(); }
+
+  void reset() {
+    front_buffer().reset();
+    back_buffer().reset();
   }
 };
 

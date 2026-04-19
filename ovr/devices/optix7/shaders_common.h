@@ -78,6 +78,7 @@ struct PathTracingPayload {
   /* radiance output */
   float alpha = 0.f;
   vec3f color = 0.f;
+  vec3f color_direct = 0.f;
 
   /* by path tracing */
   void* rng = nullptr;
@@ -370,6 +371,23 @@ inline __device__ float
 luminance(const vec3f c)
 {
   return 0.212671f * c.x + 0.715160f * c.y + 0.072169f * c.z;
+}
+
+inline __device__ vec3f
+tonemap_reinhard(const vec3f C)
+{
+  return C / (C + 1.f);
+}
+
+inline __device__ vec3f
+tonemap_aces(vec3f C)
+{
+  float a = 2.51f;
+  float b = 0.03f;
+  float c = 2.43f;
+  float d = 0.59f;
+  float e = 0.14f;
+  return clamp((C*(a*C + b)) / (C*(c*C + d) + e), vec3f(0.0f), vec3f(1.0f));
 }
 
 //------------------------------------------------------------------------------

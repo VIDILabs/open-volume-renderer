@@ -22,6 +22,7 @@
 #include "volume.h"
 
 #include "ovr/scene.h"
+#include "ovr/renderer.h"
 
 #include <cuda_misc.h>
 
@@ -56,6 +57,7 @@ struct LaunchParams { // shared global data
   struct DeviceFrameBuffer {
     vec4f* rgba;
     vec3f* grad;
+    RenderStats* stats;
     vec2i size;
     vec2f size_rcp;
   } frame;
@@ -73,11 +75,12 @@ struct LaunchParams { // shared global data
   OptixTraversableHandle traversable{};
 
   bool enable_path_tracing{ false };
+  bool enable_tonemapping{ false };
   bool enable_sparse_sampling{ false };
   bool enable_frame_accumulation{ false };
 
   vec3f light_directional_pos{ -907.108f, 2205.875f, -400.0267f };
-  float light_ambient_intensity{ 1.f };
+  float light_ambient_intensity{ 1.5f };
 
   float base_noise{ 0.1f };
   vec2f focus_center{ 0.5f, 0.5f };
@@ -105,7 +108,7 @@ struct LaunchParams { // shared global data
 // ------------------------------------------------------------------
 
 #if defined(__cplusplus)
-using FrameBuffer = DoubleBufferObject<vec4f, vec3f>;
+using FrameBuffer = DoubleBufferObject<vec4f, vec3f, RenderStats>;
 #endif // define(__cplusplus)
 
 // void update_inference_macrocell(cudaStream_t stream, DeviceStructuredRegularVolume& self);

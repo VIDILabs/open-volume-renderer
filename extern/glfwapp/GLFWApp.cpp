@@ -61,7 +61,7 @@ namespace glfwapp
     glfwTerminate();
   }
 
-  GLFWindow::GLFWindow(const std::string &title, int w, int h)
+  GLFWindow::GLFWindow(const char* title, int w, int h)
   {
     glfwSetErrorCallback(glfw_error_callback);
 #if __APPLE__
@@ -82,7 +82,7 @@ namespace glfwapp
     glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
 #endif
 
-    handle = glfwCreateWindow(w, h, title.c_str(), NULL, NULL);
+    handle = glfwCreateWindow(w, h, title, NULL, NULL);
     if (!handle)
     {
       glfwTerminate();
@@ -114,14 +114,17 @@ namespace glfwapp
 #endif
   }
 
+  ImGuiContext* GLFWindow::GetImGuiContext()
+  {
+    return ImGui::GetCurrentContext();
+  }
+
   /*! callback for a window resizing event */
   static void glfwindow_reshape_cb(GLFWwindow *window, int width, int height)
   {
     GLFWindow *gw = static_cast<GLFWindow *>(glfwGetWindowUserPointer(window));
     assert(gw);
     gw->resize(vec2i(width, height));
-    // assert(GLFWindow::current);
-    //   GLFWindow::current->resize(vec2i(width,height));
   }
 
   /*! callback for a key press */
@@ -165,7 +168,6 @@ namespace glfwapp
     glfwGetFramebufferSize(handle, &width, &height);
     resize(vec2i(width, height));
 
-    // glfwSetWindowUserPointer(window, GLFWindow::current);
     glfwSetFramebufferSizeCallback(handle, glfwindow_reshape_cb);
     glfwSetMouseButtonCallback(handle, glfwindow_mouseButton_cb);
     glfwSetKeyCallback(handle, glfwindow_key_cb);

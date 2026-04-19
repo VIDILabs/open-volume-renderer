@@ -9,15 +9,14 @@
 #ifndef HELPER_CUDA_BUFFER_H
 #define HELPER_CUDA_BUFFER_H
 
-#include "cuda_misc.h"
+#include "cuda_utils.h"
 
-#include <cuda.h>
+#include <cuda.h> // for CUdeviceptr
 #include <cuda_runtime.h>
 
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
-
 #include <vector>
 
 // #define CUDA_BUFFER_VERBOSE_MEMORY_ALLOCS
@@ -92,13 +91,7 @@ public:
     assert(d_ptr == nullptr);
     this->sizeInBytes = size;
     
-    CUDA_CHECK(cudaMallocAsync((void**)&d_ptr, sizeInBytes, stream));
-
-    util::tot_nbytes_allocated() += sizeInBytes;
-
-#ifdef CUDA_BUFFER_VERBOSE_MEMORY_ALLOCS
-		printf("[mem] CUDABuffer alloc %s\n", util::prettyBytes(sizeInBytes).c_str());
-#endif
+    CUDA_CHECK(cudaTrackedMallocAsync((void**)&d_ptr, sizeInBytes, stream));
 
     owned_data = true;
   }
@@ -107,11 +100,7 @@ public:
   void free(cudaStream_t stream = 0)
   {
     if (owned_data && d_ptr) {
-      CUDA_CHECK(cudaFreeAsync(d_ptr, stream));
-      util::tot_nbytes_allocated() -= sizeInBytes;
-#ifdef CUDA_BUFFER_VERBOSE_MEMORY_ALLOCS
-      printf("[mem] CUDABuffer free %s\n", util::prettyBytes(sizeInBytes).c_str());
-#endif
+      CUDA_CHECK(cudaTrackedFreeAsync(d_ptr, sizeInBytes, stream));
     }
     d_ptr = nullptr;
     sizeInBytes = 0;
@@ -243,6 +232,153 @@ public:
 // ------------------------------------------------------------------
 // CUDA Texture Setup
 // ------------------------------------------------------------------
+
+/*! simple wrapper for creating, and managing a device-side CUDA buffer */
+struct CUDAArray {
+  cudaArray_t handler = nullptr;
+  bool owned_data = false;
+  int3 shape = make_int3(0, 0, 0);
+  int elem_size = 0;
+  int n_dims = 0;
+  cudaChannelFormatDesc channel_desc{};
+
+public:
+	CUDAArray() {}
+
+	CUDAArray& operator=(CUDAArray&& other) {
+		std::swap(handler, other.handler);
+		std::swap(owned_data, other.owned_data);
+    std::swap(shape, other.shape);
+    std::swap(elem_size, other.elem_size);
+    std::swap(n_dims, other.n_dims);
+    std::swap(channel_desc, other.channel_desc);
+		return *this;
+	}
+
+	CUDAArray(CUDAArray&& other) {
+		*this = std::move(other);
+	}
+
+  CUDAArray(const CUDAArray &other) 
+    : handler{other.handler}
+    , owned_data{false}
+    , shape{other.shape}
+    , elem_size{other.elem_size}
+    , n_dims{other.n_dims}
+    , channel_desc{other.channel_desc} 
+  {}
+
+	// Frees memory again
+	~CUDAArray() {
+		try {
+			free();
+		} catch (std::runtime_error error) {
+			// Don't need to report on memory-free problems when the driver is shutting down.
+			if (std::string{error.what()}.find("driver shutting down") == std::string::npos) {
+				fprintf(stderr, "Could not free memory: %s\n", error.what());
+			}
+		}
+	}
+
+  // free allocated memory
+  void free() {
+    if (owned_data && handler) {
+      CUDA_CHECK_NOEXCEPT(cudaTrackedFreeArray(handler));
+    }
+  }
+
+  // in c++11 using std::enable_if
+  template<typename Type>
+  void alloc(int length) {
+    n_dims = 1;
+    elem_size = sizeof(Type);
+    shape.x = length;
+    channel_desc = cudaCreateChannelDesc<Type>();
+    owned_data = true; assert(handler == nullptr);
+    CUDA_CHECK(cudaTrackedMallocArray(&handler, &channel_desc, length));
+  }
+
+  template<typename Type>
+  void alloc(int2 dims) { 
+    n_dims = 2;
+    elem_size = sizeof(Type);
+    shape.x = dims.x; shape.y = dims.y;
+    channel_desc = cudaCreateChannelDesc<Type>();
+    owned_data = true; assert(handler == nullptr);
+    CUDA_CHECK(cudaTrackedMallocArray(&handler, &channel_desc, dims.x, dims.y));
+  }
+
+  template<typename Type>
+  void alloc(int3 dims) { 
+    n_dims = 3;
+    elem_size = sizeof(Type);
+    shape.x = dims.x; shape.y = dims.y; shape.z = dims.z;
+    channel_desc = cudaCreateChannelDesc<Type>();
+    owned_data = true; assert(handler == nullptr);
+    CUDA_CHECK(cudaTrackedMalloc3DArray(&handler, &channel_desc, make_cudaExtent(dims.x, dims.y, dims.z)));
+  }
+
+  void fill(const void* dptr, bool device_pointer = false) { // Copy data to the CUDA array
+    const auto kind = device_pointer ? cudaMemcpyDeviceToDevice : cudaMemcpyHostToDevice;
+    if (n_dims == 1) {
+      const size_t nByte = (size_t)shape.x * elem_size;
+      CUDA_CHECK(cudaMemcpy2DToArray(handler, 0, 0, dptr, nByte, nByte, 1, kind));
+    }
+    else if (n_dims == 2) {
+      const size_t nByte = (size_t)shape.x * (size_t)shape.y * elem_size;
+      CUDA_CHECK(cudaMemcpy2DToArray(handler, 0, 0, dptr, nByte, nByte, shape.y, kind));
+    }
+    else if (n_dims == 3) {
+      cudaMemcpy3DParms param = { 0 };
+      param.srcPos = make_cudaPos(0, 0, 0);
+      param.dstPos = make_cudaPos(0, 0, 0);
+      param.srcPtr = make_cudaPitchedPtr((void*)dptr, shape.x * elem_size, shape.x, shape.y);
+      param.dstArray = handler;
+      param.extent = make_cudaExtent(shape.x, shape.y, shape.z);
+      param.kind = kind;
+      CUDA_CHECK(cudaMemcpy3D(&param));
+    }
+  }
+};
+
+struct CUDATexture {
+  cudaTextureObject_t handler = 0;
+
+public:
+  CUDATexture() {}
+
+  ~CUDATexture() {
+    if (handler) CUDA_CHECK_NOEXCEPT(cudaDestroyTextureObject(handler));
+  }
+
+  void bind(const CUDAArray& array, bool trilinear = true, bool normalized_coords = true) {
+    const auto filter_mode = trilinear 
+      ? cudaFilterModeLinear 
+      : cudaFilterModePoint;
+    const auto read_mode = (array.channel_desc.x < 32) 
+      ? cudaReadModeNormalizedFloat
+      : cudaReadModeElementType;
+
+    cudaResourceDesc res_desc{};
+    memset(&res_desc, 0, sizeof(cudaResourceDesc));
+
+    res_desc.resType = cudaResourceTypeArray;
+    res_desc.res.array.array = array.handler;
+
+    cudaTextureDesc tex_desc{};
+    memset(&tex_desc, 0, sizeof(cudaTextureDesc));
+
+    tex_desc.addressMode[0] = cudaAddressModeClamp;
+    tex_desc.addressMode[1] = cudaAddressModeClamp;
+    tex_desc.addressMode[2] = cudaAddressModeClamp;
+    tex_desc.filterMode = filter_mode;
+    tex_desc.readMode = read_mode;
+    tex_desc.normalizedCoords = normalized_coords ? 1 : 0;
+
+    CUDA_CHECK(cudaCreateTextureObject(&handler, &res_desc, &tex_desc, nullptr));
+  }
+};
+
 // TODO support stream ordered operation //
 
 template<typename Type>
@@ -311,11 +447,7 @@ createCudaArray3D(void* dataPtr, const int3& dims)
 
   // allocate 3D CUDA array
   cudaChannelFormatDesc channel_desc = cudaCreateChannelDesc<Type>();
-  CUDA_CHECK(cudaMalloc3DArray(&dataArr, &channel_desc, make_cudaExtent(dims.x, dims.y, dims.z)));
-  util::tot_nbytes_allocated() += (size_t)dims.x * dims.y * dims.z * sizeof(Type);
-#ifdef CUDA_BUFFER_VERBOSE_MEMORY_ALLOCS
-  printf("[mem] 3DTex %s\n", util::prettyBytes((size_t)dims.x * dims.y * dims.z * sizeof(Type)).c_str());
-#endif
+  CUDA_CHECK(cudaTrackedMalloc3DArray(&dataArr, &channel_desc, make_cudaExtent(dims.x, dims.y, dims.z)));
 
   // copy data to the CUDA array
   cudaMemcpy3DParms param = { 0 };
@@ -338,11 +470,7 @@ createCudaArray1D(const void* dataPtr, const size_t& size)
 
   // Allocate actually a 2D CUDA array of shape N x 1
   cudaChannelFormatDesc channel_desc = cudaCreateChannelDesc<Type>();
-  CUDA_CHECK(cudaMallocArray(&dataArr, &channel_desc, size, 1));
-  util::tot_nbytes_allocated() += size * sizeof(Type);
-#ifdef CUDA_BUFFER_VERBOSE_MEMORY_ALLOCS
-  printf("[mem] 3DTex %s\n", util::prettyBytes(size * sizeof(Type)).c_str());
-#endif
+  CUDA_CHECK(cudaTrackedMallocArray(&dataArr, &channel_desc, size, 1));
 
   // Copy data to the CUDA array
   const size_t nByte = size * sizeof(Type);
@@ -369,11 +497,7 @@ allocateCudaArray1D(const void* dataPtr, const size_t& size)
 
   // Allocate a 1D CUDA array of size N
   cudaChannelFormatDesc channel_desc = cudaCreateChannelDesc<Type>();
-  CUDA_CHECK(cudaMallocArray(&dataArr, &channel_desc, size));
-  util::tot_nbytes_allocated() += size * sizeof(Type);
-#ifdef CUDA_BUFFER_VERBOSE_MEMORY_ALLOCS
-  printf("[mem] Array1D %s\n", util::prettyBytes(size * sizeof(Type)).c_str());
-#endif
+  CUDA_CHECK(cudaTrackedMallocArray(&dataArr, &channel_desc, size));
 
   // Copy data to the CUDA array
   fillCudaArray1D<Type>(dataArr, dataPtr, size);

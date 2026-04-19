@@ -8,7 +8,7 @@ if(OVR_BUILD_DEVICE_OSPRAY)
     device_impl.cpp
     device_impl.h
   )
-  target_link_libraries     (device_ospray PRIVATE    ospray::ospray rendercommon TBB::tbb)
+  target_link_libraries     (device_ospray PRIVATE    rendercommon ospray::ospray)
   target_compile_definitions(device_ospray INTERFACE  OVR_BUILD_OSPRAY=1)
   set_target_properties(device_ospray 
   PROPERTIES 

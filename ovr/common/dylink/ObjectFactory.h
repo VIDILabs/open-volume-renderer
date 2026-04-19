@@ -72,17 +72,4 @@ objectFactory(const std::string& tstr, const std::string& type)
 } // namespace dynamic
 } // namespace vidi
 
-
-// clang-format off
-#define OVR_REGISTER_OBJECT(Object, object_name, InternalClass, external_name)\
-  extern "C" /*VIDI_EXPORT*/                                                   \
-      Object *ovr_create_##object_name##__##external_name()                   \
-  {                                                                            \
-    auto *instance = new InternalClass;                                        \
-    return instance;                                                           \
-  }                                                                            \
-  /* additional declaration to avoid "extra ;" -Wpedantic warnings */          \
-  Object *ovr_create_##object_name##__##external_name();
-// clang-format on
-
 #endif // OVR_COMMON_DYNAMIC_OBJECTFACTORY_H

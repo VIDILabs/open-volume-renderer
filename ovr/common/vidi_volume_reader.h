@@ -17,7 +17,14 @@ enum VoxelType {
   VOXEL_UINT32 = 300,
   VOXEL_INT32,
   VOXEL_FLOAT = 400,
+  VOXEL_FLOAT2,
+  VOXEL_FLOAT3,
+  VOXEL_FLOAT4,
   VOXEL_DOUBLE = 500,
+  VOXEL_DOUBLE2,
+  VOXEL_DOUBLE3,
+  VOXEL_DOUBLE4,
+  VOXEL_VOID = 1000,
 };
 #endif // VIDI_VOLUME_READER_EXTERNAL_ENUM
 
@@ -31,8 +38,14 @@ sizeof_voxel_type(VoxelType type)
   case VOXEL_INT16: return sizeof(short);
   case VOXEL_UINT32:
   case VOXEL_INT32: return sizeof(int);
-  case VOXEL_FLOAT: return sizeof(float);
-  case VOXEL_DOUBLE: return sizeof(double);
+  case VOXEL_FLOAT:   return sizeof(float);
+  case VOXEL_FLOAT2:  return sizeof(float)*2;
+  case VOXEL_FLOAT3:  return sizeof(float)*3;
+  case VOXEL_FLOAT4:  return sizeof(float)*4;
+  case VOXEL_DOUBLE:  return sizeof(double);
+  case VOXEL_DOUBLE2: return sizeof(double)*2;
+  case VOXEL_DOUBLE3: return sizeof(double)*3;
+  case VOXEL_DOUBLE4: return sizeof(double)*4;
   default: return 0;
   }
 }
@@ -127,7 +140,7 @@ reverse_byte_order(char* data, size_t elemCount, size_t elemSize)
   }
 }
 
-struct StructuredRegularVolumeDesc {
+struct VolumeFileDesc {
   VoxelType type;
   struct {
     int x, y, z;
@@ -137,8 +150,10 @@ struct StructuredRegularVolumeDesc {
   bool is_big_endian;
 };
 
+[[deprecated]] typedef VolumeFileDesc StructuredRegularVolumeDesc;
+
 inline std::shared_ptr<char[]>
-read_volume_structured_regular(const std::string& filename, StructuredRegularVolumeDesc desc)
+read_volume_structured_regular(const std::string& filename, VolumeFileDesc desc)
 {
   // data geometry
   assert(desc.dims.x > 0 && desc.dims.y > 0 && desc.dims.z > 0);
@@ -186,7 +201,7 @@ read_volume_structured_regular(const std::string& filename, StructuredRegularVol
 }
 
 inline void
-read_volume_structured_regular(const std::string& filename, StructuredRegularVolumeDesc desc, void* dst)
+read_volume_structured_regular(const std::string& filename, VolumeFileDesc desc, void* dst)
 {
   // data geometry
   assert(desc.dims.x > 0 && desc.dims.y > 0 && desc.dims.z > 0);

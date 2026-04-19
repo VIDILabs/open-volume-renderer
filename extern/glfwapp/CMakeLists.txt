@@ -30,6 +30,11 @@
 # limitations under the License.                                           #
 # ======================================================================== #
 
-add_library(glfwApp GLFWApp.h GLFWApp.cpp)
-target_link_libraries(glfwApp PUBLIC imgui gdt glad::glad ${GFX_LIBRARIES})
+add_library(glfwApp STATIC
+    GLFWApp.h GLFWApp.cpp
+)
+target_link_libraries(glfwApp PUBLIC imgui gdt ${GFX_LIBRARIES})
 target_compile_definitions(glfwApp PRIVATE GLFWAPP_USE_OPENGL2)
+if (UNIX)
+    set_target_properties(glfwApp PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()

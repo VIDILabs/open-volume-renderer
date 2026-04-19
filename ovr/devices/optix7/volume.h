@@ -41,6 +41,7 @@ struct DeviceStructuredRegularVolume {
   Array3DScalarOptix7 volume;
   float base;
   float step;
+  float density_scale = 1.f;
   DeviceTransferFunction tfn;
 
   DeviceSpacePartiton_SingleMC sp;
@@ -132,6 +133,7 @@ public:
   void* get_sbt_pointer(cudaStream_t stream) override;
 
   void set_sampling_rate(float r, float b = 0.f);
+  void set_density_scale(float r);
 
   void load_from_array3d_scalar(array_3d_scalar_t array, float data_value_min = 1, float data_value_max = -1);
 

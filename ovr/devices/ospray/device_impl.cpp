@@ -18,11 +18,11 @@
 
 #include <generate_mask.h>
 
+#include <vidi_parallel_algorithm.h>
+
 #include <ospray/ospray_cpp.h>
 #include <ospray/ospray_util.h>
 #include <ospray/OSPEnums.h>
-
-#include <tbb/parallel_for.h>
 
 namespace ospray {
 OSPTYPEFOR_SPECIALIZATION(gdt::vec2uc, OSP_VEC2UC);
@@ -251,12 +251,13 @@ DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometryTriangles ha
 OSPGeometry 
 DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometrySpheres handler) {
   OSPGeometry sphere = ospNewGeometry("sphere");
-  assert(handler.position->type == ovr::VALUE_TYPE_FLOAT3);
-  auto position = ospNewSharedData1D(handler.position->data(), OSP_VEC3F, handler.position->dims.v);
+  assert(handler.sphere.position->type == ovr::VALUE_TYPE_FLOAT3);
+  auto position = create_ospray_array1d_scalar(handler.sphere.position);
   ospSetObject(sphere, "sphere.position", position);
-  ospSetFloat(sphere, "radius", handler.radius);
+  ospSetFloat(sphere, "radius", 5.f);
   ospCommit(sphere);
   ospRelease(position);
+  printf("sphere created\n");
   return sphere;
 }
 
@@ -264,9 +265,12 @@ OSPGeometry
 DeviceOSPRay::Impl::create_ospray_geometry(scene::Geometry::GeometryIsosurfaces handler) {
   OSPGeometry geom = ospNewGeometry("isosurface");
   OSPVolume volume = ospray.get_volume(handler.volume_texture);
-  ospSetVectorAsData(geom, "isovalue", OSP_FLOAT, handler.isovalues);
+  OSPData isovalues = create_ospray_array1d_scalar(handler.isovalues);
+  ospSetObject(geom, "isovalue", isovalues);
   ospSetObject(geom, "volume", volume);
   ospCommit(geom);
+  ospRelease(isovalues);
+  // no need to release volume, as it is not created here
   return geom;
 }
 
@@ -317,8 +321,9 @@ DeviceOSPRay::Impl::create_ospray_material(scene::Material::ObjMaterial handler)
   ospSetVec3f(mtl, "kd", handler.kd.x, handler.kd.y, handler.kd.z);
   ospSetVec3f(mtl, "ks", handler.ks.x, handler.ks.y, handler.ks.z);
   ospSetFloat(mtl, "ns", handler.ns);
-  ospSetFloat(mtl, "d", handler.d);
-  ospSetVec3f(mtl, "tf", handler.tf.x, handler.tf.y, handler.tf.z);
+  /* NOTE: comment out the following lines to ensure opaque material */
+  // ospSetFloat(mtl, "d", handler.d);
+  // ospSetVec3f(mtl, "tf", handler.tf.x, handler.tf.y, handler.tf.z);
   if (handler.map_kd != -1) {
     ospSetObject(mtl, "map_kd", ospray.get_texture(handler.map_kd));
   }
@@ -330,10 +335,19 @@ DeviceOSPRay::Impl::create_ospray_material(scene::Material::ObjMaterial handler)
 }
 
 OSPMaterial
+DeviceOSPRay::Impl::create_ospray_material(scene::Material::PrincipledMaterial handler) {
+  OSPMaterial mtl = ospNewMaterial(NULL, "principled");
+  ospSetVec3f(mtl, "baseColor", handler.baseColor.x, handler.baseColor.y, handler.baseColor.z);
+  ospCommit(mtl);
+  return mtl;
+}
+
+OSPMaterial
 DeviceOSPRay::Impl::create_ospray_material(scene::Material handler) {
   using namespace scene;
   switch (handler.type) {
   case Material::OBJ_MATERIAL: return create_ospray_material(handler.obj);
+  case Material::PRINCIPLED_MATERIAL: return create_ospray_material(handler.principled);
   default: throw std::runtime_error("unknown material type");
   }
 }
@@ -358,12 +372,19 @@ OSPGeometricModel
 DeviceOSPRay::Impl::create_ospray_geometric_model(scene::Model::GeometricModel handler) {
   auto geometry = create_ospray_geometry(handler.geometry);
   OSPGeometricModel model = ospNewGeometricModel(geometry);
-  if (handler.mtl == -1) {
-    OSPMaterial mtl = ospNewMaterial(NULL, "obj");
-    ospSetObject(model, "material", mtl);
+  if (!handler.mtls.empty()) {
+    std::vector<OSPMaterial> mtls;
+    for (auto mtl : handler.mtls) {
+      mtls.push_back(ospray.materials[mtl]);
+    }
+    ospSetVectorAsData(model, "material", OSP_MATERIAL, mtls);
+  }
+  else if (handler.mtl >= 0) {
+    ospSetObject(model, "material", ospray.materials[handler.mtl]);
   }
   else {
-    ospSetObject(model, "material", ospray.materials[handler.mtl]);
+    OSPMaterial mtl = ospNewMaterial(NULL, "obj");
+    ospSetObject(model, "material", mtl);
   }
   ospCommit(model);
   ospRelease(geometry);
@@ -417,8 +438,9 @@ DeviceOSPRay::Impl::~Impl() {
     ospUnmapFrameBuffer(framebuffer_rgba_ptr, ospray.framebuffer);
     ospRelease(ospray.framebuffer);
   }
-  
-  
+
+  if (ospray.tonemapper) ospRelease(ospray.tonemapper);
+
   ospShutdown();
 }
 
@@ -475,7 +497,6 @@ DeviceOSPRay::Impl::commit_renderer() {
       ospray.renderer = ospNewRenderer("scivis");
       ospSetFloat(ospray.renderer, "volumeSamplingRate", scene.volume_sampling_rate);
       ospSetInt(ospray.renderer, "aoSamples", scene.ao_samples);
-      // ospSetInt(ospray.renderer, "aoSamples", 1);
       // ospSetBool(ospray.renderer, "shadows", false);
     }
     ospSetInt(ospray.renderer, "pixelSamples", scene.spp);
@@ -521,16 +542,34 @@ DeviceOSPRay::Impl::commit_framebuffer() {
     recreate = true;
   }
 
-  if (recreate) {
+  if (parent->params.tonemapping.update()) {
+    if (ospray.tonemapper) {
+      ospRelease(ospray.tonemapper);
+      ospray.tonemapper = nullptr;
+    }
+    if (parent->params.tonemapping.get()) {
+      ospray.tonemapper = ospNewImageOperation("tonemapper");
+    }
+    recreate = true;
+  }
+
+  if (recreate && framebuffer_size_latest.long_product() > 0) {
     if (ospray.framebuffer) {
       ospUnmapFrameBuffer(framebuffer_rgba_ptr, ospray.framebuffer);
       ospRelease(ospray.framebuffer);
     }
 
     ospray.framebuffer = ospNewFrameBuffer(framebuffer_size_latest.x, framebuffer_size_latest.y, OSP_FB_RGBA32F, framebuffer_channels);
+    if (ospray.tonemapper) { 
+      ospSetObjectAsData(ospray.framebuffer, "imageOperation", OSP_IMAGE_OPERATION, ospray.tonemapper);
+    }
+    ospCommit(ospray.framebuffer);
 
     framebuffer_rgba_ptr = ospMapFrameBuffer(ospray.framebuffer, OSP_FB_COLOR);
     framebuffer_should_reset_accum = true;
+
+    // update renderstats buffer
+    framebuffer_renderstats.resize(framebuffer_size_latest.long_product());
 
     // update sparse sampling buffer
     sparse_sampling_xs_ys.resize(framebuffer_size_latest.long_product() * 2ULL);
@@ -549,7 +588,7 @@ DeviceOSPRay::Impl::commit_camera() {
 
     const Camera& camera = parent->params.camera.ref();
     // std::cout << "camera update" << std::endl;
-    // std::cout << "  from: " << camera.from << std::endl;
+    // std::cout << "  from: " << camera.eye << std::endl;
     // std::cout << "  at:   " << camera.at << std::endl;
     // std::cout << "  up:   " << camera.up << std::endl;
 
@@ -564,9 +603,9 @@ DeviceOSPRay::Impl::commit_camera() {
       ospSetFloat(ospray.camera, "height", camera.orthographic.height);
     }
 
-    const vec3f dir = camera.at - camera.from;
+    const vec3f dir = camera.at - camera.eye;
     ospSetFloat(ospray.camera, "aspect", framebuffer_size_latest.x / (float)framebuffer_size_latest.y);
-    ospSetParam(ospray.camera, "position", OSP_VEC3F, &camera.from);
+    ospSetParam(ospray.camera, "position", OSP_VEC3F, &camera.eye);
     ospSetParam(ospray.camera, "direction", OSP_VEC3F, &dir);
     ospSetParam(ospray.camera, "up", OSP_VEC3F, &camera.up);
     ospCommit(ospray.camera); // commit each object to indicate modifications are done
@@ -705,7 +744,7 @@ DeviceOSPRay::Impl::build_scene() {
 
   // create some default lights if there is no scene light
   auto sun1 = ospNewLight("sunSky");  
-  ospSetFloat(sun1, "intensity", 0.9f);
+  ospSetFloat(sun1, "intensity", 0.8f);
   ospSetVec3f(sun1, "color", 2.6f, 2.5f, 2.3f);
   ospSetVec3f(sun1, "direction", 0, -1, 0);
   ospCommit(sun1);
@@ -714,7 +753,7 @@ DeviceOSPRay::Impl::build_scene() {
   }
 
   auto sun2 = ospNewLight("sunSky");  
-  ospSetFloat(sun2, "intensity", 0.9f);
+  ospSetFloat(sun2, "intensity", 0.8f);
   ospSetVec3f(sun2, "color", 2.6f, 2.5f, 2.3f);
   ospSetVec3f(sun2, "direction", 0, 1, 0);
   ospCommit(sun2);
@@ -733,15 +772,15 @@ DeviceOSPRay::Impl::build_scene() {
   ospSetVectorAsData(ospray.world, "light", OSP_LIGHT, lights);
   ospCommit(ospray.world);
 
-  // // release instances
-  // for (auto& i : instances) ospRelease(i);
-  // // release lights!
-  // for (auto& l : lights) ospRelease(l);
+  // release instances
+  for (auto& i : instances) ospRelease(i);
+  // release lights!
+  for (auto& l : lights) ospRelease(l);
 }
 
 void
 DeviceOSPRay::Impl::swap() {
-  framebuffer_index = (framebuffer_index + 1) % 2;
+  // TODO we only have one framebuffer for now, so not doing any double buffering
 }
 
 void
@@ -783,6 +822,8 @@ DeviceOSPRay::Impl::commit() {
 
 void
 DeviceOSPRay::Impl::render() {
+  if (framebuffer_size_latest.long_product() == 0) return;
+
   frame_index++;
 
   if (parent->params.sparse_sampling.ref()) {
@@ -797,16 +838,22 @@ DeviceOSPRay::Impl::render() {
     // TODO throw if launch_size is too large.
 
     OSPFrameBuffer fb = ospNewFrameBuffer((int)launch_size, 1, OSP_FB_RGBA32F, OSP_FB_COLOR);
+    if (ospray.tonemapper) {
+      ospSetObjectAsData(fb, "imageOperation", OSP_IMAGE_OPERATION, ospray.tonemapper);
+    }
+    ospCommit(fb);
 
     parent->variance = ospRenderFrameBlocking(fb, ospray.renderer, ospray.camera, ospray.world);
 
     // split rendered data to the actual framebuffer
     memset((void*)framebuffer_rgba_ptr, 0, sizeof(vec4f) * framebuffer_size_latest.long_product());
     const vec4f* data = (vec4f*)ospMapFrameBuffer(fb, OSP_FB_COLOR);
-    tbb::parallel_for(int64_t(0), launch_size, [&] (int64_t i) {
+    vidi::parallel::parallel_for(launch_size, [&] (int64_t i) {
       int x = sparse_sampling_xs_ys[2 * i + 0];
       int y = sparse_sampling_xs_ys[2 * i + 1];
       ((vec4f*)framebuffer_rgba_ptr)[y * framebuffer_size_latest.x + x] = data[i];
+      framebuffer_renderstats[y * framebuffer_size_latest.x + x].pixel_index = i;
+      // TODO: Write ray_direction to renderstats
     });
     ospUnmapFrameBuffer(data, fb);
 
@@ -814,6 +861,8 @@ DeviceOSPRay::Impl::render() {
   }
   else {
     parent->variance = ospRenderFrameBlocking(ospray.framebuffer, ospray.renderer, ospray.camera, ospray.world);
+
+    // TODO fill in renderstats
   }
 }
 
@@ -821,6 +870,8 @@ void
 DeviceOSPRay::Impl::mapframe(FrameBufferData* fb) {
   const size_t num_bytes = framebuffer_size_latest.long_product();
   fb->rgba->set_data((void*)framebuffer_rgba_ptr, num_bytes * sizeof(vec4f), CrossDeviceBuffer::DEVICE_CPU);
+  fb->stats->set_data(framebuffer_renderstats.data(), num_bytes * sizeof(RenderStats), CrossDeviceBuffer::DEVICE_CPU);
+  fb->size = framebuffer_size_latest;
 }
 
 } // namespace ovr::ospray

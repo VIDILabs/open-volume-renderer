@@ -38,21 +38,40 @@ add_library(rendercommon SHARED
   common/imageio.cpp
   common/generate_mask.cpp
   common/dylink/Library.cpp
+  scene.cpp
+  scene.h
 )
-target_link_libraries(rendercommon PRIVATE gdt Threads::Threads)
-target_include_directories(rendercommon PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/..)
-target_include_directories(rendercommon PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/common)
-target_include_directories(rendercommon PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_link_libraries(rendercommon PUBLIC gdt tfnmodule TBB::tbb Threads::Threads)
+target_link_libraries(rendercommon PRIVATE ${CMAKE_DL_LIBS})
+target_include_directories(rendercommon 
+PUBLIC  
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../extern>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/common>
+PRIVATE 
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
 
 if(OVR_BUILD_CUDA)
   target_sources(rendercommon PRIVATE 
     common/generate_mask.cu
     common/cuda/texture.cu
   )
-  target_link_libraries(rendercommon PUBLIC CUDA::cudart_static)
+  target_link_libraries(rendercommon PUBLIC CUDA::cudart_static) # this is useful for including CUDABuffer in C++ code
   target_compile_options(rendercommon PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>)
   target_compile_definitions(rendercommon PUBLIC OVR_BUILD_CUDA_DEVICES=1)
-  target_include_directories(rendercommon PUBLIC ${CMAKE_CURRENT_LIST_DIR}/common/cuda)
+  target_include_directories(rendercommon PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common/cuda>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/common/cuda>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/common>
+  )
+  # TODO: this is just a temporary hack to get the code to compile
+  # Copy cuda/cuda_utils.h to cuda_misc.h 
+  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${CMAKE_CURRENT_SOURCE_DIR}/common/cuda/cuda_utils.h
+    ${CMAKE_CURRENT_BINARY_DIR}/common/cuda/cuda_misc.h
+  )
 endif()
 
 # embed data into source
@@ -71,19 +90,29 @@ target_add_embeded_shaders(rendercommon
   stbn_128x128x64=${PROJECT_SOURCE_DIR}/data/noise/stbn_128x128x64.bin
 )
 
+# Allow device to define its own GUI pannel
+if(OVR_BUILD_OPENGL)
+  target_link_libraries(rendercommon PUBLIC imgui)
+  target_compile_definitions(rendercommon PUBLIC OVR_BUILD_OPENGL=1)
+endif()
+
 # ======================================================================== #
 # renderer
 # ======================================================================== #
 add_library(renderlib SHARED
   serializer/serializer.h
-  serializer/serializer_diva.cpp
-  serializer/serializer_vidi3d.cpp
-  scene.cpp
-  scene.h
+  serializer/serializer_json.cpp
+  imageops/imageop.cpp
+  imageops/$<$<BOOL:${OVR_BUILD_DEVICE_OPTIX7}>:optix7_denoiser.cpp>
   renderer.cpp
   renderer.h
 )
-target_link_libraries(renderlib PUBLIC gdt tfnmodule rendercommon TBB::tbb Threads::Threads)
+target_link_libraries(renderlib 
+PUBLIC 
+  rendercommon
+PRIVATE
+  $<$<BOOL:${OVR_BUILD_DEVICE_OPTIX7}>:OptiX::optix7>
+)
 target_include_directories(renderlib PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 target_include_directories(renderlib PUBLIC ${CMAKE_CURRENT_LIST_DIR}/..)
 
@@ -107,7 +136,6 @@ if (NOT APPLE)
   target_link_libraries(renderlib PUBLIC $<$<CXX_COMPILER_ID:GNU>:stdc++fs>)
   target_link_libraries(renderlib PUBLIC $<$<CXX_COMPILER_ID:Clang>:c++fs>)
 endif()
-
 
 # ---------------------------------------------
 # devices  
