@@ -20,7 +20,7 @@ create_json_scene_diva(json root, std::string workdir);
 Scene
 create_json_scene_vidi(json root, std::string workdir);
 
-#ifdef OVR_BUILD_SCENE_USD
+#ifdef OVR_BUILD_USD
 Scene 
 create_usda_scene(std::string filename);
 #endif

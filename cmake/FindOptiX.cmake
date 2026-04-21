@@ -25,8 +25,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+cmake_minimum_required(VERSION 3.10)
+include_guard(GLOBAL)
 
 # Locate the OptiX distribution.  Search relative to the SDK first, then look in the system.
+# Note: OptiX_INSTALL_DIR and OptiX_ROOT_DIR are expected to be set before this file is
+# included (e.g. by configure_optix.cmake via FetchContent of optix-dev, or by the user).
 
 # Our initial guess will be within the SDK.
 if(NOT DEFINED OptiX_INSTALL_DIR)
@@ -95,4 +99,11 @@ if (NOT TARGET OptiX::optix7)
   add_library(OptiX::optix7 INTERFACE IMPORTED)
   target_include_directories(OptiX::optix7 INTERFACE ${OptiX_INCLUDE})
   target_compile_definitions(OptiX::optix7 INTERFACE ENABLE_OPTIX)
+endif()
+
+# owl's CMakeLists.txt links against OptiX::OptiX; provide it as an alias
+if (NOT TARGET OptiX::OptiX)
+  add_library(OptiX::OptiX INTERFACE IMPORTED)
+  target_include_directories(OptiX::OptiX INTERFACE ${OptiX_INCLUDE})
+  target_compile_definitions(OptiX::OptiX INTERFACE ENABLE_OPTIX)
 endif()

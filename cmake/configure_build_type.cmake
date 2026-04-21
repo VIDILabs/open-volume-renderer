@@ -13,10 +13,63 @@
 # See the License for the specific language governing permissions and      #
 # limitations under the License.                                           #
 # ======================================================================== #
+# ======================================================================== #
+# Copyright 2020 - 2026 Qi Wu                                              #
+#                                                                          #
+# Licensed under the Apache License, Version 2.0 (the "License");          #
+# you may not use this file except in compliance with the License.         #
+# You may obtain a copy of the License at                                  #
+#                                                                          #
+#     http://www.apache.org/licenses/LICENSE-2.0                           #
+#                                                                          #
+# Unless required by applicable law or agreed to in writing, software      #
+# distributed under the License is distributed on an "AS IS" BASIS,        #
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. #
+# See the License for the specific language governing permissions and      #
+# limitations under the License.                                           #
+# ======================================================================== #
+
+cmake_minimum_required(VERSION 3.10)
+include_guard(GLOBAL)
 
 # This helper script sets up default build targets for Release/Debug, etc,
 # something which each project I worked on seems to need, eventually, so
 # having it in one place arguably makes sense.
+
+###############################################################################
+# Configure
+###############################################################################
+
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+
+# set library output path
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+if(APPLE) # MacOS is not supported ...
+	set(CMAKE_MACOSX_RPATH ON)
+endif()
+if(MSVC)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_CRT_SECURE_NO_WARNINGS")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP24")
+  set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT")
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT")
+else()
+	# if(BUILD_SHARED_LIBS)
+	# 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+    #   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+	# endif()
+endif()
+# if(NOT WIN32)
+#   # visual studio doesn't like these (not need them):
+#   set(CMAKE_CXX_FLAGS "--std=c++17")
+#   set(CUDA_PROPAGATE_HOST_FLAGS ON)
+# endif()
+# if(UNIX)
+#   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+# endif()
 
 if(NOT SET_UP_CONFIGURATIONS_DONE)
     set(SET_UP_CONFIGURATIONS_DONE 1)

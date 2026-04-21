@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/wilsonCernWq/open-volume-renderer/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/wilsonCernWq/open-volume-renderer/actions/workflows/main.yml)
 
-![Expected Rendering Result](./data/example.png)
+![Expected Rendering Result](./data/example.jpg)
 
 ## TODO List
 
@@ -83,6 +83,35 @@ Detailed steps below:
 ```
     cmake --build .
 ```
+
+## Installing and Embedding
+
+OVR uses a generic CMake variable, `OVR_INSTALL_INCLUDEDIR`, to describe the
+include root that should be encoded into installed/exported OVR interface
+targets.
+
+- When OVR is configured standalone, `base/CMakeLists.txt` includes
+  `GNUInstallDirs` and defaults `OVR_INSTALL_INCLUDEDIR` to
+  `${CMAKE_INSTALL_INCLUDEDIR}` (normally `include`).
+- When OVR is embedded as a subdirectory of a parent project, the parent may
+  override `OVR_INSTALL_INCLUDEDIR` before `add_subdirectory(base)` if OVR's
+  public headers should live under a package-specific subtree such as
+  `include/instantvnr`.
+- This variable only controls the installed/exported include interface. OVR's
+  build interface intentionally stays rooted in the OVR source tree so the base
+  repository does not depend on parent-specific path conventions.
+
+Example parent-project override:
+
+```cmake
+include(GNUInstallDirs)
+set(OVR_INSTALL_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}/instantvnr")
+add_subdirectory(base)
+```
+
+Use plain `${CMAKE_INSTALL_INCLUDEDIR}` when you want OVR headers installed
+directly under the global include root, and override `OVR_INSTALL_INCLUDEDIR`
+only when the parent package intentionally nests them under its own prefix.
 
 ## Running
 

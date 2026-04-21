@@ -7,19 +7,7 @@ def "scene" {
         bool simple_path_tracing = True
     }
     def "volume" {
-        # string data_path = "C:/Users/wilso/Documents/Projects/research/open-volume-renderer/data/configs/scene_mechhand.json"
-
-        # string data_path = "baseline/generated_heatrelease_1atm_camera_adjusted.json"
-        # string data_path = "baseline/generated_heatrelease_10atm_camera_adjusted.json"
-        # string data_path = "baseline/generated_temp_1atm_camera_adjusted.json"
-        # string data_path = "baseline/generated_temp_10atm_camera_adjusted.json"
-
-        # string data_path = "baseline/scene_chameleon.json"
-        # string data_path = "baseline/scene_mechhand.json"
-
-        # string data_path = "baseline/render_pigheart.json"
-        string data_path = "baseline/render_richtmyer_meshkov.json"
-
+        string data_path = "data/data/vort1.json"
     }
     def "camera" {
         # from = eye
