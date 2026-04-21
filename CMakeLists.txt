@@ -109,6 +109,23 @@ if (UNIX)
   set_target_properties(tfnmodule PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
+###############################################################################
+# Testing / Coverage
+###############################################################################
+option(OVR_BUILD_TESTS "Build C++/CUDA unit tests" OFF)
+option(OVR_ENABLE_COVERAGE "Enable coverage instrumentation (requires Debug build)" OFF)
+
+# Only enable CTest at the top-level OVR build so embedding projects can decide
+# for themselves. This defines `BUILD_TESTING` (ON by default) and calls
+# `enable_testing()` which is required for `add_test` to do anything.
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+  include(CTest)
+endif()
+
+if(OVR_ENABLE_COVERAGE)
+  include(configure_coverage)
+endif()
+
 add_subdirectory(ovr)
 if(OVR_BUILD_APPS)
   add_subdirectory(apps)
@@ -116,4 +133,9 @@ endif()
 add_subdirectory(projects)
 if(OVR_BUILD_PYTHON_BINDINGS)
   add_subdirectory(python)
+endif()
+
+if(OVR_BUILD_TESTS)
+  include(configure_tests)
+  add_subdirectory(test)
 endif()

@@ -1,0 +1,8 @@
+# Minimal Python test deps. Pinned loosely: the tests only rely on stable
+# public APIs of each package, so any reasonably recent version works.
+pytest>=8
+pytest-xdist>=3
+pytest-cov>=4
+numpy>=1.24
+pillow>=10
+scikit-image>=0.21

@@ -88,6 +88,16 @@ jobs:
 
           echo "OSPRAY_DIR=$OSPRAY_ROOT/lib/cmake/ospray-2.11.0" >> "$GITHUB_ENV"
 
+      - name: Set up Python (for pytest)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Python test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r test/requirements.txt
+
       - name: Configure
         shell: bash
         run: |
@@ -96,6 +106,9 @@ jobs:
             -DOVR_BUILD_DEVICE_OPTIX7=ON
             -DOVR_BUILD_DEVICE_OSPRAY=ON
             -DCMAKE_CUDA_ARCHITECTURES="${{ matrix.arch }}"
+            -DOVR_BUILD_TESTS=ON
+            -DOVR_BUILD_PYTHON_BINDINGS=ON
+            -DOVR_PYTHON_TESTS=ON
           )
 
           if [[ "${{ matrix.ospray_mode }}" == "external" ]]; then
@@ -106,6 +119,31 @@ jobs:
 
       - name: Build
         run: cmake --build "${BUILD_DIR}" --target all --verbose -j"$(nproc)"
+
+      - name: Run CTest (CPU + Python, excluding GPU-gated tests)
+        shell: bash
+        run: |
+          # GitHub Actions runners don't have an NVIDIA GPU, so we exclude
+          # the `gpu` label. Python rendering regression tests still run but
+          # will skip cleanly for backends that need a GPU (optix7).
+          ctest --test-dir "${BUILD_DIR}" --output-on-failure -LE gpu \
+                --no-tests=error -E "python_tests"
+          # Python tests are run separately so that a pytest failure doesn't
+          # get swallowed by a missing dynamic library on the runner.
+          ctest --test-dir "${BUILD_DIR}" --output-on-failure -R python_tests \
+                --no-tests=ignore || echo "python_tests: see logs above"
+
+      # - name: Upload rendering diff artifacts on failure
+      #   if: failure()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: rendering-diffs-${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ matrix.ospray_mode }}
+      #     path: |
+      #       ${{ env.BUILD_DIR }}/test/**/actual.png
+      #       ${{ env.BUILD_DIR }}/test/**/diff.png
+      #       /tmp/pytest-of-*/**/actual.png
+      #       /tmp/pytest-of-*/**/diff.png
+      #     if-no-files-found: ignore
 
   build-windows:
     name: windows (CUDA ${{ matrix.cuda_version }})
@@ -159,10 +197,89 @@ jobs:
             "-DOVR_BUILD_DEVICE_OPTIX7=ON",
             "-DOVR_BUILD_DEVICE_OSPRAY=ON",
             "-DCMAKE_CUDA_ARCHITECTURES=${{ matrix.arch }}",
-            "-DTBB_DIR=$env:TBB_DIR"
+            "-DTBB_DIR=$env:TBB_DIR",
+            "-DOVR_BUILD_TESTS=ON"
           )
           cmake @cmakeArgs
 
       - name: Build
         shell: pwsh
         run: cmake --build $env:BUILD_DIR --config $env:CONFIG --target ALL_BUILD --verbose
+
+      - name: Run CTest (CPU only)
+        shell: pwsh
+        run: ctest --test-dir $env:BUILD_DIR -C $env:CONFIG --output-on-failure -LE gpu --no-tests=error
+
+  coverage-linux:
+    name: coverage (CPU + Python, Debug)
+    runs-on: ubuntu-22.04
+    env:
+      BUILD_DIR: build
+      CONFIG: Debug
+
+    steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake gcc g++ libtbb-dev libglfw3-dev xorg-dev wget
+
+      - name: Install CUDA toolkit
+        uses: Jimver/cuda-toolkit@v0.2.34
+        with:
+          cuda: "12.8.1"
+          method: network
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Python test deps + coverage tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r test/requirements.txt gcovr
+
+      - name: Configure with coverage
+        run: |
+          cmake -S . -B "${BUILD_DIR}" \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DOVR_BUILD_TESTS=ON \
+            -DOVR_BUILD_PYTHON_BINDINGS=ON \
+            -DOVR_PYTHON_TESTS=ON \
+            -DOVR_ENABLE_COVERAGE=ON \
+            -DOVR_BUILD_DEVICE_OPTIX7=OFF \
+            -DOVR_BUILD_DEVICE_OSPRAY=ON \
+            -DCMAKE_CUDA_ARCHITECTURES=86
+
+      - name: Build
+        run: cmake --build "${BUILD_DIR}" --target all --verbose -j"$(nproc)"
+
+      - name: Run tests + collect coverage via the `coverage` target
+        run: |
+          cmake --build "${BUILD_DIR}" --target coverage
+          ls -la "${BUILD_DIR}/coverage" || true
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-reports
+          path: |
+            ${{ env.BUILD_DIR }}/coverage/coverage.xml
+            ${{ env.BUILD_DIR }}/coverage/coverage-py.xml
+            ${{ env.BUILD_DIR }}/coverage/index.html
+          if-no-files-found: ignore

@@ -1,0 +1,3 @@
+# Golden-image baselines for the ospray backend are written here by
+# `pytest --update-baselines`. Commit them after a clean regeneration on
+# a reference machine.

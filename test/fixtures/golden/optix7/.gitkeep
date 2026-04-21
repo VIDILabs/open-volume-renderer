@@ -1,0 +1,3 @@
+# Golden-image baselines for the optix7 backend are written here by
+# `pytest --update-baselines`. Commit them after a clean regeneration on
+# a reference machine.

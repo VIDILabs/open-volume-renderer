@@ -14,6 +14,7 @@
 # Environment overrides:
 #   BUILD_DIR    override build directory (default: <repo>/build)
 #   CMAKE_ARGS   extra flags passed to cmake
+#   CTEST_ARGS   extra flags passed to ctest (default: -LE gpu on hosts w/o CUDA)
 
 set -euo pipefail
 
@@ -25,12 +26,14 @@ BUILD_DIR="${BUILD_DIR:-$SOURCE_DIR/build}"
 # ── parse args ───────────────────────────────────────────────────────────────
 DO_CONFIGURE=true
 DO_BUILD=true
+DO_TEST=false
 
 for arg in "$@"; do
   case "$arg" in
-    --configure) DO_BUILD=false; DO_TEST=false  ;;
-    --build)     DO_CONFIGURE=false; DO_TEST=false  ;;
-    --test)      DO_CONFIGURE=false; DO_BUILD=false ;;
+    --configure) DO_BUILD=false; DO_TEST=false ;;
+    --build)     DO_CONFIGURE=false; DO_TEST=false ;;
+    --test)      DO_CONFIGURE=false; DO_BUILD=false; DO_TEST=true ;;
+    --all)       DO_CONFIGURE=true;  DO_BUILD=true;  DO_TEST=true ;;
     --clean)
       echo "[clean] removing $BUILD_DIR"
       rm -rf "$BUILD_DIR"
@@ -89,6 +92,7 @@ configure() {
     -B "$BUILD_DIR" \
     -DCMAKE_BUILD_TYPE=Release \
     -DOVR_BUILD_PYTHON_BINDINGS=ON \
+    -DOVR_BUILD_TESTS=ON \
     ${CMAKE_ARGS:-}
   ok "configure done"
 }
@@ -101,9 +105,20 @@ build() {
   ok "build done"
 }
 
+# ── test ──────────────────────────────────────────────────────────────────────
+run_tests() {
+  info "Running ctest..."
+  # Default: exclude GPU-labelled tests so this works on machines without a GPU.
+  # Users can set CTEST_ARGS="" to run everything, or pass their own filters.
+  local default_args="-LE gpu --output-on-failure --no-tests=error"
+  ctest --test-dir "$BUILD_DIR" ${CTEST_ARGS:-$default_args}
+  ok "tests done"
+}
+
 # ── main ──────────────────────────────────────────────────────────────────────
 check_prereqs
 init_submodules
 
 $DO_CONFIGURE && configure
 $DO_BUILD     && build
+$DO_TEST      && run_tests

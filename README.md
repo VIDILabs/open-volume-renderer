@@ -119,3 +119,26 @@ only when the parent package intentionally nests them under its own prefix.
 ```
 TODO
 ```
+
+## Testing
+
+OVR ships a unified test suite driven by CTest: C++/CUDA doctest binaries,
+a pytest-based Python suite, and PSNR+SSIM rendering regression tests.
+
+```bash
+# Configure with tests + Python bindings enabled
+cmake -S . -B build -DOVR_BUILD_TESTS=ON -DOVR_BUILD_PYTHON_BINDINGS=ON
+cmake --build build -j
+
+# Install Python test deps (first time)
+pip install -r test/requirements.txt
+
+# Run everything (excludes GPU-gated tests when no CUDA device is visible)
+ctest --test-dir build --output-on-failure
+
+# Or via the convenience script:
+./scripts/build.sh --all          # configure + build + test
+```
+
+See [test/README.md](test/README.md) for labels, markers, the golden-image
+baseline workflow, coverage reporting, and troubleshooting tips.
