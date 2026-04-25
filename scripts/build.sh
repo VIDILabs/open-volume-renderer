@@ -29,6 +29,8 @@
 #   BUILD_DIR    override build directory (default: <repo>/build)
 #   CMAKE_ARGS   extra flags passed to cmake
 #   CTEST_ARGS   extra flags passed to ctest (default: -LE gpu on hosts w/o CUDA)
+#
+# Full phase/option matrix and CMake option reference: see DEV.md.
 
 set -euo pipefail
 

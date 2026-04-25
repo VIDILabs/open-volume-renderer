@@ -5,6 +5,10 @@ tests (doctest), Python binding tests (pytest), and rendering regression
 tests (golden-image PSNR + SSIM). Everything is driven through **CTest**
 so a single command runs the lot.
 
+User-facing install/run instructions live in [`../README.md`](../README.md);
+build-system internals (CMake options, scikit-build-core wheel layout,
+component scoping, loader-error helper) are in [`../DEV.md`](../DEV.md).
+
 ## Requirements
 
 `OVR_BUILD_TESTS=ON` enforces these at configure time — any missing piece

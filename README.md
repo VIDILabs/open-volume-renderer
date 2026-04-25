@@ -13,9 +13,14 @@ OVR is a CUDA + OSPRay volume rendering framework. It ships:
 - Two reference applications:
   - `renderapp` — interactive GLFW + ImGui viewer
   - `renderbatch` — offline render-to-PNG driver
-- Optional Python bindings (`ovrpy`) built with pybind11
+- A Python package (`ovrpy`) built with pybind11, including the
+  `ovrpy-render` console script
 - A unified test suite (CTest + doctest + pytest) with optional
   PSNR/SSIM rendering regression
+
+For build-system internals, packaging, CI, and contributor notes see
+[`DEV.md`](DEV.md). Test infrastructure (markers, golden-image workflow,
+coverage) is documented in [`test/README.md`](test/README.md).
 
 ## Repository layout
 
@@ -30,318 +35,128 @@ OVR is a CUDA + OSPRay volume rendering framework. It ships:
 │   ├── python.cpp          PYBIND11_MODULE(_core, m)
 │   └── ovrpy/              re-exports `_core` as `import ovrpy`
 ├── test/                   doctest + pytest test suite (see test/README.md)
-├── gdt/                    vendored math header library
-├── projects/               sample integrations
 ├── pyproject.toml          scikit-build-core driver for `pip install`
-├── scripts/build.sh        convenience configure/build/test driver
+├── scripts/build.sh        configure/build/test driver for the cmake flow
 ├── cmake/                  CMake configure modules
 ├── extern/                 vendored / FetchContent dependency wrappers
 ├── data/                   example scenes, configs, transfer functions
-└── github-actions/         CI helper submodule
+├── gdt/                    vendored math header library
+└── projects/               sample integrations
 ```
 
 ## Requirements
-
-System (always required):
 
 - CMake **>= 3.18**
 - A C++17 compiler — tested on GCC 11/13 (Ubuntu 22.04/24.04) and MSVC 2019/2022
 - Threads (POSIX or Win32)
 
-Optional, gated by build-time flags:
+Optional, gated by build-time flags (defaults shown):
 
 | Component | When needed | Notes |
 | --- | --- | --- |
-| CUDA Toolkit (≥ 11.x) | `OVR_BUILD_CUDA=ON` (default) | CI tests against 11.8 and 12.8 |
-| OptiX 7 SDK | `OVR_BUILD_DEVICE_OPTIX7=ON` (default) | Set `OptiX_INSTALL_DIR=<path>`; download from <https://developer.nvidia.com/optix> |
-| OSPRay + TBB | `OVR_BUILD_DEVICE_OSPRAY=ON` (default) | Auto-fetched via FetchContent by default; supply your own with `-Dospray_DIR=...` |
-| OpenGL + GLFW | `OVR_BUILD_OPENGL=ON` (default) | Required for `renderapp`; on Debian/Ubuntu: `sudo apt install libglfw3-dev xorg-dev libtbb-dev` |
-| Python 3 + pytest | `OVR_BUILD_TESTS=ON` and/or `OVR_BUILD_PYTHON_BINDINGS=ON` | `pip install -e .[test]` (or, for CI without the build step: `pip install pytest pytest-xdist pytest-cov numpy pillow scikit-image`) |
+| CUDA Toolkit (≥ 11.x) | `OVR_BUILD_CUDA=ON` | CI tests against 11.8 and 12.8 |
+| OptiX 7 SDK | `OVR_BUILD_DEVICE_OPTIX7=ON` | `OptiX_INSTALL_DIR=<path>`; download from <https://developer.nvidia.com/optix> |
+| OSPRay + TBB | `OVR_BUILD_DEVICE_OSPRAY=ON` | Auto-fetched via FetchContent; override with `-Dospray_DIR=...` |
+| OpenGL + GLFW | `OVR_BUILD_OPENGL=ON` | Required for `renderapp`; on Debian/Ubuntu: `sudo apt install libglfw3-dev xorg-dev libtbb-dev` |
+| Python 3 + pytest | `OVR_BUILD_TESTS=ON` and/or `OVR_BUILD_PYTHON_BINDINGS=ON` | `pip install -e .[test]` |
 | Pixar USD | `OVR_BUILD_USD=ON` (off by default) | For USDA scene loading |
 
-Submodules are required:
+Submodules:
 
 ```bash
 git submodule update --init --recursive
 ```
 
-`scripts/build.sh` checks `git submodule status` before doing anything
-and refuses to proceed if any submodule is uninitialised — it never
-runs `git submodule update` on your behalf.
+`scripts/build.sh` checks `git submodule status` and refuses to proceed
+if any submodule is uninitialised — it never runs `git submodule update`
+on your behalf.
 
-## Quick start (recommended): `scripts/build.sh`
+## Install
 
-The phase flags (`--configure`, `--build`, `--test`) are **additive** —
-each one toggles its phase, and you can combine them freely. With no
-flags the script does configure + build (the historical default).
-`--all` is sugar for `--configure --build --test`. `--python` is
-orthogonal and enables `OVR_BUILD_PYTHON_BINDINGS=ON`.
+There are two equivalent paths; pick whichever matches what you're after.
+Don't combine them on the same checkout — you'd build twice.
 
-```bash
-./scripts/build.sh                            # configure + build (C++ only)
-./scripts/build.sh --python                   # configure + build, with the ovrpy bindings
-./scripts/build.sh --configure                # configure only
-./scripts/build.sh --build                    # build only (skip configure)
-./scripts/build.sh --test                     # run tests only (assumes an existing build)
-./scripts/build.sh --build --test             # build, then run tests
-./scripts/build.sh --configure --build --test # ≡ --all
-./scripts/build.sh --all                      # configure + build + run tests
-./scripts/build.sh --clean                    # rm -rf the build dir, exit
-```
-
-`--test` (and therefore `--all`) implies `--python`, because the test
-tier is gated on the bindings.
-
-Phase / option matrix:
-
-| Invocation | Configure | Build | Test | `OVR_BUILD_PYTHON_BINDINGS` | `OVR_BUILD_TESTS` |
-| --- | :-: | :-: | :-: | :-: | :-: |
-| (none) | yes | yes |  | OFF | OFF |
-| `--configure` | yes |  |  | OFF | OFF |
-| `--build` |  | yes |  | (uses cache) | (uses cache) |
-| `--test` |  |  | yes | **ON** | **ON** |
-| `--build --test` |  | yes | yes | **ON** | **ON** |
-| `--configure --test` | yes |  | yes | **ON** | **ON** |
-| `--configure --build` | yes | yes |  | OFF | OFF |
-| `--configure --build --test` | yes | yes | yes | **ON** | **ON** |
-| `--all` | yes | yes | yes | **ON** | **ON** |
-| `--python` | yes | yes |  | **ON** | OFF |
-| `--build --python` |  | yes |  | **ON** (cache) | (cache) |
-| `--clean` | (deletes the build dir, then exits) | | | | |
-
-`--python` can be added to any of the above to flip
-`OVR_BUILD_PYTHON_BINDINGS=ON` at configure time. Note that the cmake
-option only takes effect when configure runs; if you only do `--build`
-the script reuses whatever was in the cmake cache from the previous
-configure.
-
-The script never mutates your environment for you:
-
-- If `--test`/`--all` is requested but `pytest` isn't importable, it
-  prints the exact `pip install -e .[test]` command and exits non-zero.
-  You install, then re-run the script.
-- If git submodules are uninitialised, it prints
-  `git submodule update --init --recursive` and exits.
-- It does **not** install system packages, run pip, or fetch submodules
-  silently.
-
-Environment overrides honoured by the script:
-
-| Variable | Effect |
-| --- | --- |
-| `BUILD_DIR` | Override the build directory (default: `<repo>/build`) |
-| `CMAKE_ARGS` | Extra flags appended to the cmake invocation |
-| `CTEST_ARGS` | Extra flags passed to ctest (default: `-LE gpu --output-on-failure --no-tests=error`) |
-
-## Manual cmake invocation
-
-If you'd rather drive cmake yourself, the equivalent of `--all` is:
+### Python tier (`ovrpy`) via pip / uv
 
 ```bash
-cmake -S . -B build \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DOVR_BUILD_DEVICE_OPTIX7=ON \
-  -DOVR_BUILD_DEVICE_OSPRAY=ON \
-  -DOVR_BUILD_PYTHON_BINDINGS=ON \
-  -DOVR_BUILD_TESTS=ON
-cmake --build build -j
-ctest --test-dir build --output-on-failure
+# uv
+uv sync --extra test
+uv run ovrpy-render --help
+uv run python -c "import ovrpy; print(ovrpy.vec2i())"
+
+# or plain pip
+pip install -e .[test]
+ovrpy-render --help
 ```
 
-Top-level CMake options:
-
-| Option | Default | Effect |
-| --- | --- | --- |
-| `OVR_BUILD_DEVICE_OPTIX7` | ON | Build the OptiX 7 backend (requires CUDA + OptiX SDK) |
-| `OVR_BUILD_DEVICE_OSPRAY` | ON | Build the OSPRay backend |
-| `OVR_BUILD_CUDA` | ON | Compile CUDA sources / link cudart |
-| `OVR_BUILD_OPENGL` | ON | Build the GLFW + ImGui-based `renderapp` |
-| `OVR_BUILD_APPS` | ON | Build the application executables (`renderapp`, `renderbatch`) |
-| `OVR_BUILD_PYTHON_BINDINGS` | OFF | Build the `ovrpy` pybind11 module |
-| `OVR_BUILD_USD` | OFF | Enable USDA scene loading via Pixar USD |
-| `OVR_BUILD_TESTS` | OFF | Build C++/CUDA unit tests + register Python tests |
-| `OVR_ENABLE_COVERAGE` | OFF | `--coverage -O0 -g` for GCC/Clang; adds the `coverage` custom target |
-
-External libraries you may want to point at explicitly:
+`pip install` / `uv sync` invokes the same top-level `CMakeLists.txt`
+through [scikit-build-core](https://scikit-build-core.readthedocs.io/),
+producing a self-contained wheel at `<site-packages>/ovrpy/` (renderer +
+OSPRay closure + interactive OpenGL tier all bundled). Headless / CPU-only
+users can opt out of CUDA/OptiX:
 
 ```bash
-cmake -S . -B build \
-  -DOptiX_INSTALL_DIR=<path-to-optix7-sdk> \
-  -Dospray_DIR=<path-to-ospray>/lib/cmake/ospray-x.x.0 \
-  -DTBB_DIR=<path-to-tbb>/lib/cmake/tbb \
-  -DCMAKE_PREFIX_PATH=<path-to-libtorch>     # optional
+CMAKE_ARGS="-DOVR_BUILD_CUDA=OFF -DOVR_BUILD_DEVICE_OPTIX7=OFF" uv sync --extra test
 ```
+
+ovrpy bundles its own renderer + OSPRay/imgui closure but relies on a few
+host-provided system libraries (`libcuda.so.1`, `libGL.so.1`,
+`libOpenGL.so.0`, `libX11.so.6`, `libvulkan.so.1`). If any are missing,
+`import ovrpy` raises a translated `ImportError` that names the missing
+lib and prints the exact `apt`/`dnf` install command. See
+[`DEV.md`](DEV.md#loader-error-translation) for the full table.
+
+### C++ apps via `scripts/build.sh`
+
+`--configure`, `--build`, `--test` are additive; `--all` ≡ all three.
+`--python` toggles the Python bindings on the cmake side (independent of
+the pip/uv flow above).
+
+```bash
+./scripts/build.sh                # configure + build (C++ only)
+./scripts/build.sh --python       # configure + build, with the ovrpy bindings
+./scripts/build.sh --all          # configure + build + test
+./scripts/build.sh --test         # tests only, against an existing build
+./scripts/build.sh --clean        # rm -rf the build dir, exit
+```
+
+The full phase/option matrix and manual `cmake ... && cmake --build ...`
+recipes are in [`DEV.md`](DEV.md).
 
 ## Running
 
-After a build, executables live in `build/`:
-
 ```bash
-# Interactive viewer (requires GLFW + a display)
-./build/renderapp data/configs/<scene>.json
+# C++ apps (after `./scripts/build.sh`)
+./build/renderapp data/configs/<scene>.json     # interactive viewer (needs GLFW + display)
+./build/renderbatch data/configs/<scene>.json   # offline render to PNG
 
-# Offline render
-./build/renderbatch data/configs/<scene>.json
+# Python entry point (after pip install / uv sync)
+ovrpy-render data/configs/<scene>.json -o render.png --backend ospray
 ```
 
 Scene JSON files live under `data/configs/`; see
 `data/configs/README.md` for the schema. The Python tier exposes the
 same renderer through `import ovrpy`; see `test/python/` for end-to-end
-usage examples. After `pip install -e .` (see below) you also get the
-`ovrpy-render` console script:
-
-```bash
-ovrpy-render data/configs/<scene>.json -o render.png --backend ospray
-```
-
-## Python package (`ovrpy`)
-
-The repository ships a `pyproject.toml` driven by
-[scikit-build-core](https://scikit-build-core.readthedocs.io/), so the
-pybind11 bindings can be built and installed with plain pip:
-
-```bash
-pip install -e .[test]      # editable build (recommended for dev)
-pip install .               # one-shot wheel install
-```
-
-`pip install` invokes the same `CMakeLists.txt` as the cmake-only flow,
-with `OVR_BUILD_PYTHON_BINDINGS=ON`, `OVR_BUILD_APPS=OFF`, and
-`OVR_BUILD_TESTS=OFF`. OpenGL (`OVR_BUILD_OPENGL`) stays at its default
-`ON` so interactive rendering is reachable from Python; the imgui/glad
-shared libs are bundled along with the renderer + OSPRay closure:
-
-```
-ovrpy/
-├── __init__.py                 re-exports the native module + loader-error helper
-├── _core*.so                   pybind11 extension (PYBIND11_MODULE(_core, m))
-├── render.py                   `ovrpy-render` console entry point
-├── librenderlib.so             renderer + statically-absorbed device backends
-├── librendercommon.so          common runtime
-├── libimgui.so, libglad.so     interactive (OpenGL) tier
-└── lib*.so* (OSPRay closure)   libospray, libtbb, libembree4, libopenvkl,
-                                libispcrt, libOpenImageDenoise, and OpenVKL's
-                                4/8/16-wide CPU-device modules
-```
-
-`INSTALL_RPATH=$ORIGIN` is set on every wheel-installed target, so the
-loader resolves the closure from `site-packages/ovrpy/` without any
-`LD_LIBRARY_PATH` plumbing.
-
-System libs we deliberately don't bundle (because they're owned by the
-host) — `libcuda.so.1` (NVIDIA driver, OptiX backend), `libGL.so.1` /
-`libOpenGL.so.0`, `libX11.so.6`, `libvulkan.so.1` (interactive tier).
-When any of those is missing, `import ovrpy` doesn't surface the cryptic
-`cannot open shared object file` directly; `ovrpy/__init__.py` catches
-the loader error, names the missing lib, and prints the matching
-`apt`/`dnf` install command.
-
-Pure-CPU / headless users can opt out of CUDA / OptiX at install time:
-
-```bash
-pip install . -C cmake.define.OVR_BUILD_CUDA=OFF \
-              -C cmake.define.OVR_BUILD_DEVICE_OPTIX7=OFF
-```
-
-Manylinux-tag adjustment (`auditwheel repair`) for cross-distro
-distribution is still a follow-up.
+usage examples.
 
 ## Testing
 
-OVR ships a unified test suite driven by CTest:
-
-- C++/CUDA unit tests (doctest binaries under `test/cpp/`)
-- Python binding tests (pytest under `test/python/`)
-- Rendering regression tests with PSNR + SSIM against committed PNG
-  baselines
-
-Quickest path:
-
 ```bash
-./scripts/build.sh --all     # configure + build + test
+./scripts/build.sh --all     # configure + build + run the full suite
 ./scripts/build.sh --test    # iterate on tests against an existing build
-```
 
-Or, manually — two equivalent flows depending on whether you want pip or
-cmake to drive the build (don't combine them; you'd build twice):
-
-```bash
-# (a) cmake-driven: stages ovrpy/ inside build/, ctest puts it on sys.path
-cmake -S . -B build -DOVR_BUILD_TESTS=ON -DOVR_BUILD_PYTHON_BINDINGS=ON
-cmake --build build -j
-pip install pytest pytest-xdist pytest-cov numpy pillow scikit-image  # bare deps
-ctest --test-dir build --output-on-failure -LE gpu      # CPU-only, like CI
-ctest --test-dir build --output-on-failure              # everything (needs a CUDA-visible GPU)
-
-# (b) pip-driven: scikit-build-core invokes cmake under the hood
-pip install -e .[test]                                  # builds + installs in editable mode
-pytest test/python/ -v                                  # python tier only
+# pytest only (after `pip install -e .[test]` or `uv sync --extra test`):
+uv run pytest test/python/ -v
 ```
 
 When `OVR_BUILD_TESTS=ON`, CMake hard-requires `Python3` +
 `OVR_BUILD_PYTHON_BINDINGS=ON` + an importable `pytest` and emits a
-`FATAL_ERROR` with the install command if anything is missing — there
-is no silent skip.
+`FATAL_ERROR` with the install command if anything is missing — there is
+no silent skip.
 
 See [`test/README.md`](test/README.md) for labels (`cpp` / `gpu` /
-`python` / `golden`), the golden-image baseline workflow, coverage
-reporting, and troubleshooting.
-
-## Continuous integration
-
-`.github/workflows/main.yml` runs three jobs per push / PR:
-
-| Job | Runner | What it covers |
-| --- | --- | --- |
-| `build-linux` | ubuntu-22.04 + ubuntu-24.04 (matrix) | Release build with CUDA 11.8 / 12.8 × OSPRay fetchcontent / external; runs C++ + Python tests, **excluding `gpu`-labelled tests** because GHA runners have no NVIDIA GPU |
-| `build-windows` | windows-latest | Release build with MSVC + CUDA 12.8.1; runs C++ tests excluding `gpu` |
-| `coverage-linux` | ubuntu-22.04 | Debug build with `OVR_ENABLE_COVERAGE=ON`; produces `coverage.xml` (Cobertura) and an HTML drill-down via `gcovr`, uploaded as an artifact |
-
-Because no CI runner has a GPU, the OptiX 7 backend's runtime tests run
-locally only. CI verifies the C++/binding surface and the OSPRay backend
-end-to-end.
-
-## Installing and embedding
-
-OVR uses a generic CMake variable, `OVR_INSTALL_INCLUDEDIR`, to describe
-the include root that gets encoded into installed/exported OVR interface
-targets.
-
-- When OVR is configured standalone, the top-level `CMakeLists.txt`
-  includes `GNUInstallDirs` and defaults `OVR_INSTALL_INCLUDEDIR` to
-  `${CMAKE_INSTALL_INCLUDEDIR}` (normally `include`).
-- When OVR is embedded as a subdirectory of a parent project, the parent
-  may override `OVR_INSTALL_INCLUDEDIR` before `add_subdirectory(...)`
-  if OVR's public headers should live under a package-specific subtree
-  such as `include/<package>`.
-- This variable only controls the installed/exported include interface.
-  OVR's build interface intentionally stays rooted in the OVR source
-  tree so the repository does not depend on parent-specific path
-  conventions.
-
-Example parent-project override:
-
-```cmake
-include(GNUInstallDirs)
-set(OVR_INSTALL_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}/instantvnr")
-add_subdirectory(open-volume-renderer)
-```
-
-Use plain `${CMAKE_INSTALL_INCLUDEDIR}` when you want OVR headers
-installed directly under the global include root, and override
-`OVR_INSTALL_INCLUDEDIR` only when the parent package intentionally
-nests them under its own prefix.
-
-## Roadmap / open items
-
-- Commit golden-image regression baselines for the OSPRay and OptiX
-  backends (see `test/README.md` and the `--update-baselines` workflow).
-- Per-setter render-side assertions in `test/python/test_setters.py`
-  (currently binding-level smoke only).
-- A self-hosted GPU CI matrix entry to exercise the OptiX 7 + CUDA
-  tests that are skipped on GHA runners.
-- USD/USDA loader is functional but off by default; tests cover only
-  the JSON path today.
+`python` / `golden`), the golden-image baseline workflow, coverage, and
+troubleshooting.
 
 ## License
 

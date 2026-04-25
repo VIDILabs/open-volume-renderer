@@ -1,3 +1,8 @@
+# Open Volume Renderer (OVR) - Python package metadata + scikit-build-core
+# wheel-build configuration. The actual C++/CUDA build is driven by the
+# top-level CMakeLists.txt; only the Python tier flags + wheel-bundling
+# rules live here. End-user install instructions: README.md. Full wheel-
+# build internals (component scoping, RPATH, loader-error helper): DEV.md.
 [build-system]
 requires = ["scikit-build-core>=0.10", "pybind11>=2.13"]
 build-backend = "scikit_build_core.build"
