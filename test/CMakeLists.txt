@@ -15,7 +15,7 @@
 # Hard requirements when OVR_BUILD_TESTS=ON:                                #
 #   * Python 3 interpreter                                                  #
 #   * `pytest` importable from that interpreter                             #
-#   * OVR_BUILD_PYTHON_BINDINGS=ON and the `ovrpy` target                   #
+#   * OVR_BUILD_PYTHON_BINDINGS=ON and the `_core` (ovrpy._core) target     #
 #                                                                           #
 # Any of these missing is a configure-time error. The previous AUTO mode   #
 # silently skipped python_tests when pytest wasn't installed, which made   #
@@ -45,9 +45,8 @@ endif()
 
 # Probe for pytest at configure time. We deliberately make this a hard
 # error rather than auto-installing: configure-time package installs are
-# surprising, and the right answer (`pip install -r test/requirements.txt`)
-# is something the developer's environment manager (venv, conda, system)
-# should handle.
+# surprising, and the right answer (`pip install -e .[test]`) is something
+# the developer's environment manager (venv, conda, system) should handle.
 execute_process(
   COMMAND ${Python3_EXECUTABLE} -c "import pytest"
   RESULT_VARIABLE _ovr_pytest_rc
@@ -58,8 +57,7 @@ if(NOT _ovr_pytest_rc EQUAL 0)
     "OVR tests require pytest, but `import pytest` failed with "
     "${Python3_EXECUTABLE}.\n"
     "Install the test dependencies with:\n"
-    "    ${Python3_EXECUTABLE} -m pip install -r "
-    "${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt\n"
+    "    ${Python3_EXECUTABLE} -m pip install -e \"${CMAKE_SOURCE_DIR}\"[test]\n"
     "...then re-run cmake. (Use a virtualenv if your system Python is "
     "managed.)")
 endif()
@@ -84,11 +82,11 @@ add_subdirectory(cpp)
 
 # ---------------------------------------------------------------- pytest
 # python_tests is unconditionally registered: any of Python3, pytest, or
-# the ovrpy target being missing is caught above as a FATAL_ERROR.
-if(NOT TARGET ovrpy)
+# the _core target being missing is caught above as a FATAL_ERROR.
+if(NOT TARGET _core)
   message(FATAL_ERROR
-    "OVR tests expected the `ovrpy` pybind11 target to exist by the time "
-    "test/CMakeLists.txt runs, but it doesn't. Check that "
+    "OVR tests expected the `_core` pybind11 target (ovrpy._core) to exist "
+    "by the time test/CMakeLists.txt runs, but it doesn't. Check that "
     "OVR_BUILD_PYTHON_BINDINGS=ON and that python/CMakeLists.txt was "
     "added to the build.")
 endif()
@@ -107,6 +105,10 @@ if(OVR_ENABLE_COVERAGE)
   )
 endif()
 
+# `_core` is staged into <build>/ovrpy/ alongside the pure-Python package
+# files (see python/CMakeLists.txt), so putting <build> on sys.path makes
+# `import ovrpy` resolve. conftest.py treats OVR_BUILD_DIR as the parent of
+# the `ovrpy/` package directory.
 add_test(
   NAME python_tests
   COMMAND ${Python3_EXECUTABLE} -m pytest ${_pytest_args}
@@ -116,5 +118,5 @@ set_tests_properties(python_tests PROPERTIES
   LABELS "python"
   FIXTURES_REQUIRED synthetic_fixtures
   ENVIRONMENT
-    "OVR_BUILD_DIR=$<TARGET_FILE_DIR:ovrpy>;OVR_TEST_FIXTURES=${OVR_TEST_FIXTURES_DIR};OVR_TEST_GENERATED=${OVR_TEST_GENERATED_DIR}"
+    "OVR_BUILD_DIR=${CMAKE_BINARY_DIR};OVR_TEST_FIXTURES=${OVR_TEST_FIXTURES_DIR};OVR_TEST_GENERATED=${OVR_TEST_GENERATED_DIR}"
 )

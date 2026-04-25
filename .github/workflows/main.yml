@@ -96,7 +96,7 @@ jobs:
       - name: Install Python test dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r test/requirements.txt
+          python -m pip install pytest pytest-xdist pytest-cov numpy pillow scikit-image
 
       - name: Configure
         shell: bash
@@ -261,7 +261,7 @@ jobs:
       - name: Install Python test deps + coverage tooling
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r test/requirements.txt gcovr
+          python -m pip install pytest pytest-xdist pytest-cov numpy pillow scikit-image gcovr
 
       - name: Configure with coverage
         run: |

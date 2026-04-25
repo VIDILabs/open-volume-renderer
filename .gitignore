@@ -46,3 +46,11 @@ projects/
 CLAUDE.md
 
 __pycache__/
+
+# Python packaging artefacts (pyproject.toml + scikit-build-core)
+dist/
+*.egg-info/
+python/*.egg-info/
+.eggs/
+
+uv.lock

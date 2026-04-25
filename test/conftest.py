@@ -16,9 +16,14 @@ Exposes:
 
 Environment variables honoured:
 
-* ``OVR_BUILD_DIR``    - directory containing the compiled ``ovrpy`` module.
+* ``OVR_BUILD_DIR``    - parent directory of the staged ``ovrpy/`` package
+                         (``<build>/ovrpy/{__init__.py,_core*.so,...}``).
                          Prepended to ``sys.path`` before ``import ovrpy``.
-                         Defaults to ``<repo>/build`` (for dev-machine use).
+                         Defaults to ``<repo>/build`` for dev-machine use; the
+                         cmake-driven flow stages the package there. Once
+                         ``pip install -e .`` is run, the package is on
+                         sys.path through site-packages and this hook is a
+                         harmless no-op.
 * ``OVR_TEST_FIXTURES``- root of committed fixtures (``test/fixtures``).
 * ``OVR_TEST_GENERATED`` - path to CMake-generated fixtures.
 """
@@ -34,6 +39,8 @@ import pytest
 
 # --------------------------------------------------------------------------
 # sys.path plumbing: make `import ovrpy` work from an arbitrary build tree.
+# We add the *parent* of the staged `ovrpy/` package to sys.path. With
+# `pip install -e .` this is redundant but harmless.
 # --------------------------------------------------------------------------
 _TEST_DIR = Path(__file__).resolve().parent
 _REPO_ROOT = _TEST_DIR.parent

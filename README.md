@@ -26,10 +26,13 @@ OVR is a CUDA + OSPRay volume rendering framework. It ships:
 │   ├── devices/optix7/     OptiX 7 backend
 │   ├── devices/ospray/     OSPRay backend
 │   └── serializer/         scene loaders (DiVA/VIDi JSON, optional USDA)
-├── python/                 pybind11 bindings → ovrpy module
+├── python/                 pybind11 binding source + `ovrpy` Python package
+│   ├── python.cpp          PYBIND11_MODULE(_core, m)
+│   └── ovrpy/              re-exports `_core` as `import ovrpy`
 ├── test/                   doctest + pytest test suite (see test/README.md)
 ├── gdt/                    vendored math header library
 ├── projects/               sample integrations
+├── pyproject.toml          scikit-build-core driver for `pip install`
 ├── scripts/build.sh        convenience configure/build/test driver
 ├── cmake/                  CMake configure modules
 ├── extern/                 vendored / FetchContent dependency wrappers
@@ -53,7 +56,7 @@ Optional, gated by build-time flags:
 | OptiX 7 SDK | `OVR_BUILD_DEVICE_OPTIX7=ON` (default) | Set `OptiX_INSTALL_DIR=<path>`; download from <https://developer.nvidia.com/optix> |
 | OSPRay + TBB | `OVR_BUILD_DEVICE_OSPRAY=ON` (default) | Auto-fetched via FetchContent by default; supply your own with `-Dospray_DIR=...` |
 | OpenGL + GLFW | `OVR_BUILD_OPENGL=ON` (default) | Required for `renderapp`; on Debian/Ubuntu: `sudo apt install libglfw3-dev xorg-dev libtbb-dev` |
-| Python 3 + pytest | `OVR_BUILD_TESTS=ON` and/or `OVR_BUILD_PYTHON_BINDINGS=ON` | `pip install -r test/requirements.txt` |
+| Python 3 + pytest | `OVR_BUILD_TESTS=ON` and/or `OVR_BUILD_PYTHON_BINDINGS=ON` | `pip install -e .[test]` (or, for CI without the build step: `pip install pytest pytest-xdist pytest-cov numpy pillow scikit-image`) |
 | Pixar USD | `OVR_BUILD_USD=ON` (off by default) | For USDA scene loading |
 
 Submodules are required:
@@ -115,8 +118,8 @@ configure.
 The script never mutates your environment for you:
 
 - If `--test`/`--all` is requested but `pytest` isn't importable, it
-  prints the exact `pip install -r test/requirements.txt` command and
-  exits non-zero. You install, then re-run the script.
+  prints the exact `pip install -e .[test]` command and exits non-zero.
+  You install, then re-run the script.
 - If git submodules are uninitialised, it prints
   `git submodule update --init --recursive` and exits.
 - It does **not** install system packages, run pip, or fetch submodules
@@ -184,7 +187,64 @@ After a build, executables live in `build/`:
 Scene JSON files live under `data/configs/`; see
 `data/configs/README.md` for the schema. The Python tier exposes the
 same renderer through `import ovrpy`; see `test/python/` for end-to-end
-usage examples.
+usage examples. After `pip install -e .` (see below) you also get the
+`ovrpy-render` console script:
+
+```bash
+ovrpy-render data/configs/<scene>.json -o render.png --backend ospray
+```
+
+## Python package (`ovrpy`)
+
+The repository ships a `pyproject.toml` driven by
+[scikit-build-core](https://scikit-build-core.readthedocs.io/), so the
+pybind11 bindings can be built and installed with plain pip:
+
+```bash
+pip install -e .[test]      # editable build (recommended for dev)
+pip install .               # one-shot wheel install
+```
+
+`pip install` invokes the same `CMakeLists.txt` as the cmake-only flow,
+with `OVR_BUILD_PYTHON_BINDINGS=ON`, `OVR_BUILD_APPS=OFF`, and
+`OVR_BUILD_TESTS=OFF`. OpenGL (`OVR_BUILD_OPENGL`) stays at its default
+`ON` so interactive rendering is reachable from Python; the imgui/glad
+shared libs are bundled along with the renderer + OSPRay closure:
+
+```
+ovrpy/
+├── __init__.py                 re-exports the native module + loader-error helper
+├── _core*.so                   pybind11 extension (PYBIND11_MODULE(_core, m))
+├── render.py                   `ovrpy-render` console entry point
+├── librenderlib.so             renderer + statically-absorbed device backends
+├── librendercommon.so          common runtime
+├── libimgui.so, libglad.so     interactive (OpenGL) tier
+└── lib*.so* (OSPRay closure)   libospray, libtbb, libembree4, libopenvkl,
+                                libispcrt, libOpenImageDenoise, and OpenVKL's
+                                4/8/16-wide CPU-device modules
+```
+
+`INSTALL_RPATH=$ORIGIN` is set on every wheel-installed target, so the
+loader resolves the closure from `site-packages/ovrpy/` without any
+`LD_LIBRARY_PATH` plumbing.
+
+System libs we deliberately don't bundle (because they're owned by the
+host) — `libcuda.so.1` (NVIDIA driver, OptiX backend), `libGL.so.1` /
+`libOpenGL.so.0`, `libX11.so.6`, `libvulkan.so.1` (interactive tier).
+When any of those is missing, `import ovrpy` doesn't surface the cryptic
+`cannot open shared object file` directly; `ovrpy/__init__.py` catches
+the loader error, names the missing lib, and prints the matching
+`apt`/`dnf` install command.
+
+Pure-CPU / headless users can opt out of CUDA / OptiX at install time:
+
+```bash
+pip install . -C cmake.define.OVR_BUILD_CUDA=OFF \
+              -C cmake.define.OVR_BUILD_DEVICE_OPTIX7=OFF
+```
+
+Manylinux-tag adjustment (`auditwheel repair`) for cross-distro
+distribution is still a follow-up.
 
 ## Testing
 
@@ -202,14 +262,20 @@ Quickest path:
 ./scripts/build.sh --test    # iterate on tests against an existing build
 ```
 
-Or, manually:
+Or, manually — two equivalent flows depending on whether you want pip or
+cmake to drive the build (don't combine them; you'd build twice):
 
 ```bash
+# (a) cmake-driven: stages ovrpy/ inside build/, ctest puts it on sys.path
 cmake -S . -B build -DOVR_BUILD_TESTS=ON -DOVR_BUILD_PYTHON_BINDINGS=ON
 cmake --build build -j
-pip install -r test/requirements.txt        # one-time, in a venv if your system Python is managed
+pip install pytest pytest-xdist pytest-cov numpy pillow scikit-image  # bare deps
 ctest --test-dir build --output-on-failure -LE gpu      # CPU-only, like CI
 ctest --test-dir build --output-on-failure              # everything (needs a CUDA-visible GPU)
+
+# (b) pip-driven: scikit-build-core invokes cmake under the hood
+pip install -e .[test]                                  # builds + installs in editable mode
+pytest test/python/ -v                                  # python tier only
 ```
 
 When `OVR_BUILD_TESTS=ON`, CMake hard-requires `Python3` +

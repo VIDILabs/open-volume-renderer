@@ -1,34 +1,21 @@
-#!/usr/bin/env python3
-"""Render an OVR scene JSON to a PNG image."""
+"""Render an OVR scene JSON to a PNG image.
+
+Exposed as the ``ovrpy-render`` console script via ``pyproject.toml``.
+"""
 from __future__ import annotations
 
 import argparse
-import os
-import sys
 from pathlib import Path
 
 import numpy as np
 
-
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[1]
-
-
-def _add_ovrpy_paths(build_dir: Path) -> None:
-    candidates = (
-        build_dir,
-        build_dir / "python",
-        _repo_root() / "build",
-        _repo_root() / "build" / "python",
-    )
-    for path in candidates:
-        if path.exists() and str(path) not in sys.path:
-            sys.path.insert(0, str(path))
+import ovrpy
 
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Render a scene file with ovrpy and write a PNG."
+        prog="ovrpy-render",
+        description="Render a scene file with ovrpy and write a PNG.",
     )
     parser.add_argument("scene", type=Path, help="Path to a scene JSON/USD file.")
     parser.add_argument(
@@ -64,33 +51,18 @@ def _parse_args() -> argparse.Namespace:
         action="store_true",
         help="Enable path tracing instead of ray marching.",
     )
-    parser.add_argument(
-        "--build-dir",
-        type=Path,
-        default=Path(os.environ.get("OVR_BUILD_DIR", _repo_root() / "build")),
-        help="Directory containing the built ovrpy module.",
-    )
     return parser.parse_args()
 
 
 def main() -> int:
     args = _parse_args()
-    _add_ovrpy_paths(args.build_dir)
-
-    try:
-        import ovrpy
-    except Exception as exc:
-        raise SystemExit(
-            f"Could not import ovrpy. Build the Python bindings first or pass "
-            f"--build-dir/OVR_BUILD_DIR. Import error: {exc}"
-        ) from exc
 
     try:
         from PIL import Image
     except Exception as exc:
         raise SystemExit(
-            "Pillow is required to write PNG output. Install test dependencies "
-            "with: python -m pip install -r test/requirements.txt"
+            "Pillow is required to write PNG output. Install ovrpy with the "
+            "default dependency set: pip install -e ."
         ) from exc
 
     scene = ovrpy.create_scene(str(args.scene))

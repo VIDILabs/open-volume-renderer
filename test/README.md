@@ -12,12 +12,17 @@ is a hard `FATAL_ERROR` (no silent skips):
 
 * a Python 3 interpreter (`find_package(Python3 ... REQUIRED)`)
 * `pytest` importable from that interpreter (probed via `python3 -c "import pytest"`)
-* `OVR_BUILD_PYTHON_BINDINGS=ON` and the `ovrpy` target
+* `OVR_BUILD_PYTHON_BINDINGS=ON` and the `_core` (a.k.a. `ovrpy._core`) target
 
-Install the Python deps once before configuring:
+Install the Python deps once before configuring. Either path works:
 
 ```bash
-python3 -m pip install -r test/requirements.txt
+# (a) editable install of the ovrpy package; also pulls test extras
+python3 -m pip install -e .[test]
+
+# (b) bare deps only (skips the scikit-build-core build step; useful in
+#     CI where cmake is invoked separately)
+python3 -m pip install pytest pytest-xdist pytest-cov numpy pillow scikit-image
 ```
 
 (Use a virtualenv if your system Python is managed; on Debian/Ubuntu
@@ -62,7 +67,7 @@ test/
 ├── CMakeLists.txt               # wires C++ tests + pytest into CTest
 ├── conftest.py                  # shared pytest fixtures
 ├── pytest.ini                   # pytest config + marker registry
-├── requirements.txt             # pip deps for python tests
+├── ../pyproject.toml            # pip deps live under [project.optional-dependencies] test
 ├── generate_synthetic_volume.cmake  # generates a 32^3 volume fixture
 ├── fixtures/
 │   ├── test_scene.json          # original DiVA scene (needs external data)
@@ -183,9 +188,13 @@ Python suite picks up by default through the `scene_path` fixture.
 ## Troubleshooting
 
 * **`ModuleNotFoundError: No module named 'ovrpy'`**  
-  Your build dir is not on `sys.path`. Either:
-    * Run tests via `ctest` (CTest sets `OVR_BUILD_DIR` automatically), or
+  Either the build dir is not on `sys.path` or you haven't installed the
+  package. Pick one:
+    * Run tests via `ctest` (CTest sets `OVR_BUILD_DIR` to the build dir,
+      and the staged `<build>/ovrpy/` package lives directly under it).
     * Export `OVR_BUILD_DIR=<path-to-build>` before invoking pytest.
+    * Run `pip install -e .` from the repo root so `ovrpy` lands in
+      site-packages.
 
 * **`ImportError: libospray...so`**  
   Load the runtime env first:  `source scripts/run.sh`.

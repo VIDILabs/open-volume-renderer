@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <cmath>
 
-PYBIND11_MODULE(ovrpy, m)
+PYBIND11_MODULE(_core, m)
 {
 /*
  * Math

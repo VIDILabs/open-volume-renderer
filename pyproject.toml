@@ -1,0 +1,67 @@
+[build-system]
+requires = ["scikit-build-core>=0.10", "pybind11>=2.13"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "ovrpy"
+version = "0.1.0"
+description = "Open Volume Renderer (OVR) - CUDA + OSPRay volume rendering bindings"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.24",
+    "pillow>=10",
+]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: C++",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Topic :: Multimedia :: Graphics :: 3D Rendering",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8",
+    "pytest-xdist>=3",
+    "pytest-cov>=4",
+    "numpy>=1.24",
+    "pillow>=10",
+    "scikit-image>=0.21",
+]
+
+[project.scripts]
+ovrpy-render = "ovrpy.render:main"
+
+[project.urls]
+Homepage = "https://github.com/wilsonCernWq/open-volume-renderer"
+
+# ---------------------------------------------------------------------------
+# scikit-build-core configuration
+#
+# `pip install .` (or `pip install -e .`) drives the existing top-level
+# CMakeLists.txt with the wheel-targeted flags: bindings on, apps off,
+# tests off. OpenGL stays on so interactive rendering is reachable from
+# Python; the matching imgui/glad shared libs are bundled into the wheel
+# (see python/CMakeLists.txt). The `scripts/build.sh` cmake-only flow is
+# unaffected and continues to share the same `build/` layout.
+# ---------------------------------------------------------------------------
+[tool.scikit-build]
+cmake.version    = ">=3.18"
+cmake.source-dir = "."
+cmake.build-type = "Release"
+build-dir        = "build/skbuild/{wheel_tag}"
+wheel.packages   = ["python/ovrpy"]
+wheel.install-dir = "ovrpy"
+# Restrict what ends up in the wheel to OUR install rules (renderlib,
+# rendercommon, _core, imgui, glad, OSPRay closure). Without this scope,
+# FetchContent-pulled deps (glfw3, glad's own install rules, OSPRay's
+# cmake config) would leak their files into the wheel and the install
+# step would fail trying to rewrite RPATHs on third-party binaries.
+install.components = ["ovrwheel"]
+
+[tool.scikit-build.cmake.define]
+OVR_BUILD_PYTHON_BINDINGS = "ON"
+OVR_BUILD_APPS            = "OFF"
+OVR_BUILD_TESTS           = "OFF"

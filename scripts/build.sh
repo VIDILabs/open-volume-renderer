@@ -112,7 +112,7 @@ require_pytest() {
 
   warn "pytest is not importable via $PY (required by --test/--all)."
   echo  "       Install the test dependencies manually, then re-run this script:"
-  echo  "           $PY -m pip install -r $SOURCE_DIR/test/requirements.txt"
+  echo  "           $PY -m pip install -e \"$SOURCE_DIR\"[test]"
   echo  "       (use a virtualenv if your system Python is externally managed)"
   die   "pytest unavailable; install manually and retry."
 }
