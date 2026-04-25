@@ -51,10 +51,7 @@ def test_stats_has_correct_length(initialized_renderer, fbsize):
     path-tracing modes; in plain ray marching every entry's pixel_index
     stays 0. Only the array *length* is a stable cross-backend invariant.
     """
-    initialized_renderer.render()
-    initialized_renderer.swap()
-    fb = ovrpy.FrameBufferData()
-    initialized_renderer.mapframe(fb)
+    fb = ovrpy.render_to_framebuffer(initialized_renderer)
     stats = fb.stats()
     assert len(stats) == fbsize.x * fbsize.y
 
@@ -71,14 +68,7 @@ def test_postrender_rgba_is_mostly_finite(initialized_renderer, fbsize):
     optix7.
     """
     initialized_renderer.set_sample_per_pixel(4)
-    initialized_renderer.commit()
-    initialized_renderer.render()
-    initialized_renderer.swap()
-    fb = ovrpy.FrameBufferData()
-    initialized_renderer.mapframe(fb)
-    # .copy() detaches the array from the CrossDeviceBuffer that fb owns,
-    # so we don't blow up on later GC.
-    rgba = np.asarray(fb.rgba(), dtype=np.float32).copy().reshape(fbsize.y, fbsize.x, 4)
+    rgba = ovrpy.render_to_image(initialized_renderer, fbsize, scrub=False)
     n_total = rgba.size
     n_bad = int((~np.isfinite(rgba)).sum())
     assert n_bad / n_total < 0.01, (
@@ -101,12 +91,7 @@ def test_postrender_frame_has_content(initialized_renderer, fbsize):
     """
     initialized_renderer.set_sample_per_pixel(4)
     initialized_renderer.set_path_tracing(0)
-    initialized_renderer.commit()
-    initialized_renderer.render()
-    initialized_renderer.swap()
-    fb = ovrpy.FrameBufferData()
-    initialized_renderer.mapframe(fb)
-    rgba = np.asarray(fb.rgba(), dtype=np.float32).copy()
+    rgba = ovrpy.render_to_image(initialized_renderer, scrub=False)
     rgba = np.nan_to_num(rgba, nan=0.0, posinf=0.0, neginf=0.0)
     rgb = rgba.reshape(-1, 4)[:, :3]
     rgb_mean = float(rgb.mean())
@@ -128,10 +113,7 @@ def test_mapframe_grad_is_available_or_raises_cleanly(initialized_renderer, fbsi
       * ospray doesn't populate grad at all and raises RuntimeError
     Either outcome is acceptable; a partial buffer is not.
     """
-    initialized_renderer.render()
-    initialized_renderer.swap()
-    fb = ovrpy.FrameBufferData()
-    initialized_renderer.mapframe(fb)
+    fb = ovrpy.render_to_framebuffer(initialized_renderer)
     try:
         grad = np.asarray(fb.grad(), dtype=np.float32).copy()
     except RuntimeError:
@@ -145,10 +127,7 @@ def test_mapframe_grad_is_available_or_raises_cleanly(initialized_renderer, fbsi
 
 
 def test_stats_as_memoryview_is_readable(initialized_renderer):
-    initialized_renderer.render()
-    initialized_renderer.swap()
-    fb = ovrpy.FrameBufferData()
-    initialized_renderer.mapframe(fb)
+    fb = ovrpy.render_to_framebuffer(initialized_renderer)
     mv = fb.stats_as_memoryview()
     assert mv is not None
     assert mv.nbytes > 0

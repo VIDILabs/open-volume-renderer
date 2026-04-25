@@ -10,26 +10,10 @@ single renderer.
 """
 from __future__ import annotations
 
-import gc
-
 import numpy as np
 import pytest
 
 import ovrpy
-
-
-def _render(renderer) -> np.ndarray:
-    renderer.commit()
-    renderer.render()
-    renderer.swap()
-    fb = ovrpy.FrameBufferData()
-    renderer.mapframe(fb)
-    # .copy() makes the returned array independent of the buffer owned by
-    # the CrossDeviceBuffer that `fb` holds; otherwise the array aliases
-    # backend memory and a later renderer teardown corrupts it. nan_to_num
-    # scrubs the known optix7 boundary-pixel NaNs.
-    rgba = np.asarray(fb.rgba(), dtype=np.float32).copy()
-    return np.nan_to_num(rgba, nan=0.0, posinf=1.0, neginf=0.0)
 
 
 def test_camera_setters_equivalent(renderer, scene, fbsize, test_density_scale):
@@ -50,10 +34,10 @@ def test_camera_setters_equivalent(renderer, scene, fbsize, test_density_scale):
     cam = ovrpy.Camera()
     cam.eye = eye; cam.at = at; cam.up = up
     renderer.set_camera(cam)
-    rgba_a = _render(renderer)
+    rgba_a = ovrpy.render_to_image(renderer)
 
     renderer.set_camera_vectors(eye, at, up)
-    rgba_b = _render(renderer)
+    rgba_b = ovrpy.render_to_image(renderer)
 
     # Both frames must actually contain content; without this the test
     # passes vacuously when a backend produces all-zero frames. An
@@ -94,15 +78,7 @@ def test_camera_move_changes_image(renderer, scene, fbsize, test_density_scale):
     renderer.set_sample_per_pixel(4)
     renderer.set_path_tracing(0)
     renderer.set_volume_density_scale(test_density_scale)
-    renderer.commit()
-    renderer.render()
-    renderer.swap()
-    fb = ovrpy.FrameBufferData()
-    renderer.mapframe(fb)
-    baseline = np.nan_to_num(
-        np.asarray(fb.rgba(), dtype=np.float32).copy(),
-        nan=0.0, posinf=1.0, neginf=0.0,
-    )
+    baseline = ovrpy.render_to_image(renderer)
 
     # True right-vector offset in the camera's local frame:
     #   right = normalize(cross(up, forward)),
@@ -127,14 +103,7 @@ def test_camera_move_changes_image(renderer, scene, fbsize, test_density_scale):
         at,
         up,
     )
-    renderer.commit()
-    renderer.render()
-    renderer.swap()
-    renderer.mapframe(fb)
-    moved = np.nan_to_num(
-        np.asarray(fb.rgba(), dtype=np.float32).copy(),
-        nan=0.0, posinf=1.0, neginf=0.0,
-    )
+    moved = ovrpy.render_to_image(renderer)
 
     # The baseline must contain content. An all-zero baseline is a
     # renderer regression, not a "skip" condition:

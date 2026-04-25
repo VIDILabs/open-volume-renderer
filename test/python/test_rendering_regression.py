@@ -41,32 +41,22 @@ TOLERANCES = {
 # Helpers
 # --------------------------------------------------------------------------
 def _render_deterministic(backend: str, scene, fbsize, density_scale: float) -> np.ndarray:
-    r = ovrpy.create_renderer(backend)
-    r.set_fbsize(fbsize)
-    r.init([], scene, scene.camera)
     # Ray marching is dramatically more stable than path tracing for
     # regression purposes and doesn't need a seeded RNG.
-    r.set_path_tracing(0)
     # Several samples per pixel both reduces noise and, on optix7, gets us
     # past a one-ray-per-pixel empty-frame corner case.
-    r.set_sample_per_pixel(4)
-    r.set_frame_accumulation(False)
-    r.set_volume_sampling_rate(1.0)
-    # See conftest._OVR_TEST_DENSITY_SCALE for why this is >1.0.
-    r.set_volume_density_scale(density_scale)
-    r.commit()
-    r.render()
-    r.swap()
-    fb = ovrpy.FrameBufferData()
-    r.mapframe(fb)
-    rgba = np.asarray(fb.rgba(), dtype=np.float32).copy().reshape(fbsize.y, fbsize.x, 4)
-    # Scrub any NaN/Inf pixels (see test_framebuffer.py for context) so the
-    # downstream PNG cast doesn't blow up.
-    rgba = np.nan_to_num(rgba, nan=0.0, posinf=1.0, neginf=0.0)
-    # Clip to [0, 1] for 8-bit PNG storage - anything outside is HDR glow
-    # we don't care about at this stage.
-    rgba = np.clip(rgba, 0.0, 1.0)
-    return rgba
+    # See conftest._OVR_TEST_DENSITY_SCALE for why density is >1.0.
+    return ovrpy.render_scene_to_image(
+        backend,
+        scene,
+        fbsize,
+        path_tracing=False,
+        sample_per_pixel=4,
+        frame_accumulation=False,
+        volume_sampling_rate=1.0,
+        volume_density_scale=density_scale,
+        clip=True,
+    )
 
 
 def _to_png_bytes(rgba: np.ndarray) -> bytes:
@@ -177,16 +167,13 @@ def test_render_with_high_spp_path_tracing_is_mostly_finite(backend, scene, fbsi
     """Sanity: even with path tracing + many samples the output stays
     mostly finite. Not a regression against a baseline - path tracing is
     stochastic. Tolerate <= 1% NaN/Inf pixels (known optix7 quirk)."""
-    r = ovrpy.create_renderer(backend)
-    r.set_fbsize(fbsize)
-    r.init([], scene, scene.camera)
-    r.set_path_tracing(1)
-    r.set_sample_per_pixel(16)
-    r.commit()
-    r.render()
-    r.swap()
-    fb = ovrpy.FrameBufferData()
-    r.mapframe(fb)
-    rgba = np.asarray(fb.rgba(), dtype=np.float32).copy()
+    rgba = ovrpy.render_scene_to_image(
+        backend,
+        scene,
+        fbsize,
+        path_tracing=True,
+        sample_per_pixel=16,
+        scrub=False,
+    )
     n_bad = int((~np.isfinite(rgba)).sum())
     assert n_bad / rgba.size < 0.01, f"{n_bad} non-finite pixels"

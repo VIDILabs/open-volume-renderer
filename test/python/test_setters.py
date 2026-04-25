@@ -79,11 +79,6 @@ def test_render_after_setters_produces_nonzero_frame(initialized_renderer, fbsiz
 
     initialized_renderer.set_sample_per_pixel(4)
     initialized_renderer.set_path_tracing(0)   # ray marching - deterministic-ish
-    initialized_renderer.commit()
-    initialized_renderer.render()
-    initialized_renderer.swap()
-    fb = ovrpy.FrameBufferData()
-    initialized_renderer.mapframe(fb)
-    rgba = np.asarray(fb.rgba(), dtype=np.float32).copy()
+    rgba = ovrpy.render_to_image(initialized_renderer, scrub=False)
     n_bad = int((~np.isfinite(rgba)).sum())
     assert n_bad / rgba.size < 0.01, f"{n_bad} non-finite pixels"
