@@ -101,6 +101,11 @@ jobs:
       - name: Configure
         shell: bash
         run: |
+          # OVR_BUILD_TESTS=ON now hard-requires Python3 + pytest + ovrpy at
+          # configure time. The "Install Python test dependencies" step
+          # above is what satisfies the pytest probe; if pytest isn't
+          # importable when cmake runs, configure exits non-zero with a
+          # clear install instruction.
           CMAKE_ARGS=(
             -DCMAKE_BUILD_TYPE="${CONFIG}"
             -DOVR_BUILD_DEVICE_OPTIX7=ON
@@ -108,7 +113,6 @@ jobs:
             -DCMAKE_CUDA_ARCHITECTURES="${{ matrix.arch }}"
             -DOVR_BUILD_TESTS=ON
             -DOVR_BUILD_PYTHON_BINDINGS=ON
-            -DOVR_PYTHON_TESTS=ON
           )
 
           if [[ "${{ matrix.ospray_mode }}" == "external" ]]; then
@@ -125,13 +129,19 @@ jobs:
         run: |
           # GitHub Actions runners don't have an NVIDIA GPU, so we exclude
           # the `gpu` label. Python rendering regression tests still run but
-          # will skip cleanly for backends that need a GPU (optix7).
+          # will skip cleanly for backends that need a GPU (optix7) -
+          # conftest.py's pytest_collection_modifyitems also auto-skips
+          # everything if `import ovrpy` fails, so a missing dynamic library
+          # surfaces as skips rather than errors.
           ctest --test-dir "${BUILD_DIR}" --output-on-failure -LE gpu \
                 --no-tests=error -E "python_tests"
-          # Python tests are run separately so that a pytest failure doesn't
-          # get swallowed by a missing dynamic library on the runner.
+          # Python tests are run separately so a pytest failure isn't
+          # interleaved with C++ test output. Failures here MUST fail the
+          # job - swallowing them with `|| echo ...` previously made the
+          # entire Python tier advisory and let golden-image regressions
+          # ship unnoticed.
           ctest --test-dir "${BUILD_DIR}" --output-on-failure -R python_tests \
-                --no-tests=ignore || echo "python_tests: see logs above"
+                --no-tests=error
 
       # - name: Upload rendering diff artifacts on failure
       #   if: failure()
@@ -259,7 +269,6 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug \
             -DOVR_BUILD_TESTS=ON \
             -DOVR_BUILD_PYTHON_BINDINGS=ON \
-            -DOVR_PYTHON_TESTS=ON \
             -DOVR_ENABLE_COVERAGE=ON \
             -DOVR_BUILD_DEVICE_OPTIX7=OFF \
             -DOVR_BUILD_DEVICE_OSPRAY=ON \

@@ -84,6 +84,41 @@ def test_postrender_rgba_is_mostly_finite(initialized_renderer, fbsize):
     )
 
 
+def test_postrender_frame_has_content(initialized_renderer, fbsize):
+    """Anchor invariant: at the canonical test density-scale, every
+    backend must render a non-trivial frame.
+
+    Several other tests (e.g. test_camera.test_camera_setters_equivalent,
+    test_camera.test_camera_move_changes_image) used to ``pytest.skip``
+    when the renderer produced an all-zero frame, which silently masked
+    real renderer regressions. They now ``pytest.fail`` on all-zero
+    instead, but only this test pins the global "renderer must produce
+    visible output" invariant. If this test fails on a backend, every
+    downstream "produces different output" test on that backend is
+    expected to fail too - investigate the backend, not the consumers.
+    """
+    initialized_renderer.set_sample_per_pixel(4)
+    initialized_renderer.set_path_tracing(0)
+    initialized_renderer.commit()
+    initialized_renderer.render()
+    fb = ovrpy.FrameBufferData()
+    initialized_renderer.mapframe(fb)
+    rgba = np.asarray(fb.rgba(), dtype=np.float32).copy()
+    rgba = np.nan_to_num(rgba, nan=0.0, posinf=0.0, neginf=0.0)
+    rgb = rgba.reshape(-1, 4)[:, :3]
+    rgb_mean = float(rgb.mean())
+    # The synthetic Gaussian volume + 3-stop colormap should produce a
+    # frame with mean RGB clearly above zero. Threshold is generous to
+    # accommodate backend-specific tonemapping; the contract is "frames
+    # are not silently empty".
+    assert rgb_mean > 1e-3, (
+        f"mean RGB = {rgb_mean:.3e}; renderer produced an effectively "
+        "all-zero frame at the canonical test density scale. Either the "
+        "scene fixture, the density-scale constant, or the backend has "
+        "regressed."
+    )
+
+
 def test_mapframe_grad_is_available_or_raises_cleanly(initialized_renderer, fbsize):
     """Gradient buffer semantics vary by backend:
       * optix7 populates a vec3f-per-pixel grad buffer

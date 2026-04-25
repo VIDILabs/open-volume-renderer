@@ -51,7 +51,7 @@ def test_background_setters_while_rendering(initialized_renderer, fbsize):
 
 
 @pytest.mark.slow
-def test_final_frame_is_deterministic(backend, scene, fbsize):
+def test_final_frame_is_deterministic(backend, scene, fbsize, test_density_scale):
     """Running render() after explicitly pinning every setter should
     produce a bit-identical frame compared to a second run with the same
     settings on a fresh renderer instance."""
@@ -63,7 +63,7 @@ def test_final_frame_is_deterministic(backend, scene, fbsize):
         r.set_path_tracing(0)      # deterministic ray marcher
         r.set_frame_accumulation(False)
         r.set_volume_sampling_rate(1.0)
-        r.set_volume_density_scale(50.0)
+        r.set_volume_density_scale(test_density_scale)
         r.commit()
         r.render()
         fb = ovrpy.FrameBufferData()

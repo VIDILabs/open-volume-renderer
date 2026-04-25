@@ -40,7 +40,7 @@ TOLERANCES = {
 # --------------------------------------------------------------------------
 # Helpers
 # --------------------------------------------------------------------------
-def _render_deterministic(backend: str, scene, fbsize) -> np.ndarray:
+def _render_deterministic(backend: str, scene, fbsize, density_scale: float) -> np.ndarray:
     r = ovrpy.create_renderer(backend)
     r.set_fbsize(fbsize)
     r.init([], scene, scene.camera)
@@ -52,8 +52,8 @@ def _render_deterministic(backend: str, scene, fbsize) -> np.ndarray:
     r.set_sample_per_pixel(4)
     r.set_frame_accumulation(False)
     r.set_volume_sampling_rate(1.0)
-    # See conftest.initialized_renderer for why this is >1.0.
-    r.set_volume_density_scale(50.0)
+    # See conftest._OVR_TEST_DENSITY_SCALE for why this is >1.0.
+    r.set_volume_density_scale(density_scale)
     r.commit()
     r.render()
     fb = ovrpy.FrameBufferData()
@@ -109,21 +109,39 @@ def test_render_matches_baseline(backend: str,
                                  fbsize,
                                  fixtures_dir: Path,
                                  update_baselines: bool,
+                                 test_density_scale: float,
                                  tmp_path: Path):
-    rgba = _render_deterministic(backend, scene, fbsize)
+    rgba = _render_deterministic(backend, scene, fbsize, test_density_scale)
 
     golden_dir = fixtures_dir / "golden" / backend
-    golden_dir.mkdir(parents=True, exist_ok=True)
     golden_path = golden_dir / "synthetic_scene.png"
 
-    if update_baselines or not golden_path.exists():
+    # `--update-baselines` is the *only* path that writes a fresh PNG and
+    # short-circuits with skip. Everything else - including a missing
+    # baseline - is treated as a hard regression so CI can't pass with no
+    # actual comparison happening. To bootstrap a new backend, the developer
+    # runs once with `--update-baselines` and commits the resulting PNG.
+    #
+    # The mkdir lives inside the update-baselines branch so a normal test
+    # run never modifies the source tree (the directory already exists for
+    # the canonical backends thanks to the committed .gitkeep files; we
+    # only create it when the user has explicitly opted into writing).
+    if update_baselines:
         from PIL import Image
+        golden_dir.mkdir(parents=True, exist_ok=True)
         u8 = (rgba * 255.0 + 0.5).astype(np.uint8)
         Image.fromarray(u8, mode="RGBA").save(golden_path)
         pytest.skip(
-            f"baseline {'overwritten' if update_baselines else 'missing'}; "
-            f"wrote {golden_path}. Re-run without --update-baselines to "
-            "enforce the regression."
+            f"baseline overwritten; wrote {golden_path}. Re-run without "
+            "--update-baselines to enforce the regression."
+        )
+
+    if not golden_path.exists():
+        pytest.fail(
+            f"Golden baseline missing: {golden_path}\n"
+            "  - Generate it on a reference machine with:\n"
+            "      pytest test/python/test_rendering_regression.py --update-baselines\n"
+            f"  - Then `git add` the resulting PNG and commit so CI can compare."
         )
 
     baseline = _load_png(golden_path)

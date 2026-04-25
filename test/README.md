@@ -5,31 +5,55 @@ tests (doctest), Python binding tests (pytest), and rendering regression
 tests (golden-image PSNR + SSIM). Everything is driven through **CTest**
 so a single command runs the lot.
 
+## Requirements
+
+`OVR_BUILD_TESTS=ON` enforces these at configure time — any missing piece
+is a hard `FATAL_ERROR` (no silent skips):
+
+* a Python 3 interpreter (`find_package(Python3 ... REQUIRED)`)
+* `pytest` importable from that interpreter (probed via `python3 -c "import pytest"`)
+* `OVR_BUILD_PYTHON_BINDINGS=ON` and the `ovrpy` target
+
+Install the Python deps once before configuring:
+
+```bash
+python3 -m pip install -r test/requirements.txt
+```
+
+(Use a virtualenv if your system Python is managed; on Debian/Ubuntu
+`pip install` may otherwise refuse with PEP 668.)
+
 ## Quick start
 
 ```bash
-# 1. Configure with tests enabled
+# 1. Configure with tests enabled (requires the deps above)
 cmake -S . -B build -DOVR_BUILD_TESTS=ON -DOVR_BUILD_PYTHON_BINDINGS=ON
 
 # 2. Build (doctest is fetched by FetchContent during this step)
 cmake --build build -j
 
-# 3. Install Python test deps (first time only)
-pip install -r test/requirements.txt
-
-# 4. Run the whole suite
+# 3. Run the whole suite
 ctest --test-dir build --output-on-failure
 
-# 4b. CPU-only run (skip GPU-gated tests)
+# 3b. CPU-only run (skip GPU-gated tests)
 ctest --test-dir build --output-on-failure -LE gpu
 ```
 
-Or, from the top-level helper script:
+Or, from the top-level helper script. The script never installs anything
+on your behalf: when `--test` / `--all` is used and `pytest` isn't
+importable, it prints the exact `pip install` command and exits so you
+can run it yourself (in a venv, conda env, or with whatever package
+manager fits your setup).
 
 ```bash
 ./scripts/build.sh --all     # configure + build + test
 ./scripts/build.sh --test    # test only (assumes build is up to date)
 ```
+
+Same applies to git submodules: the script checks `git submodule status`
+and exits with the manual `git submodule update --init --recursive`
+command if anything is uninitialised, rather than fetching submodules
+behind your back.
 
 ## What's in the box
 
@@ -67,22 +91,6 @@ test/
     ├── test_threading.py
     └── test_rendering_regression.py
 ```
-
-## Controlling the `python_tests` CTest entry
-
-CMake probes for `import pytest` at configure time and auto-skips the
-`python_tests` registration when it's missing. Override with
-`-DOVR_PYTHON_TESTS=<AUTO|ON|OFF>`:
-
-| Value      | Behaviour                                                  |
-| ---------- | ---------------------------------------------------------- |
-| `AUTO` (default) | probe; register iff pytest is importable             |
-| `ON`       | always register; ctest will surface the import error       |
-| `OFF`      | never register                                             |
-
-Use `ON` when the test deps are installed *after* configure (e.g. CI
-installs `test/requirements.txt` in a later step), or when you want
-ctest to fail loudly instead of silently skipping.
 
 ## CTest labels
 

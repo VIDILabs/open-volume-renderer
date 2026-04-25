@@ -77,8 +77,15 @@ function(ovr_add_cpp_test NAME)
   # PRE_TEST discovery mode defers running the binary until `ctest` time,
   # which matters for GPU-labelled binaries that may otherwise fail to
   # enumerate on a GPU-less build host.
+  #
+  # TEST_PREFIX is required so each registered CTest name starts with
+  # "<binary>." (e.g. "test_serializer_json.create_json_scene: ..."). Other
+  # CMake glue (test/cpp/gpu_fixture_attach.cmake.in) attaches per-binary
+  # FIXTURES_REQUIRED by matching this prefix; without it the regex never
+  # fires and the fixture dependency silently never attaches.
   doctest_discover_tests(${NAME}
     ADD_LABELS 1
+    TEST_PREFIX "${NAME}."
     PROPERTIES LABELS "${_labels}"
     DISCOVERY_MODE PRE_TEST
   )
