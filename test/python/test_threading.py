@@ -36,6 +36,7 @@ def test_background_setters_while_rendering(initialized_renderer, fbsize):
         for _ in range(25):
             initialized_renderer.commit()
             initialized_renderer.render()
+            initialized_renderer.swap()
             fb = ovrpy.FrameBufferData()
             initialized_renderer.mapframe(fb)
             rgba = np.asarray(fb.rgba(), dtype=np.float32).copy()
@@ -66,6 +67,7 @@ def test_final_frame_is_deterministic(backend, scene, fbsize, test_density_scale
         r.set_volume_density_scale(test_density_scale)
         r.commit()
         r.render()
+        r.swap()
         fb = ovrpy.FrameBufferData()
         r.mapframe(fb)
         rgba = np.asarray(fb.rgba(), dtype=np.float32).copy()

@@ -81,6 +81,7 @@ def test_render_after_setters_produces_nonzero_frame(initialized_renderer, fbsiz
     initialized_renderer.set_path_tracing(0)   # ray marching - deterministic-ish
     initialized_renderer.commit()
     initialized_renderer.render()
+    initialized_renderer.swap()
     fb = ovrpy.FrameBufferData()
     initialized_renderer.mapframe(fb)
     rgba = np.asarray(fb.rgba(), dtype=np.float32).copy()

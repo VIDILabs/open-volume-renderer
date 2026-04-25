@@ -21,6 +21,7 @@ import ovrpy
 def _render(renderer) -> np.ndarray:
     renderer.commit()
     renderer.render()
+    renderer.swap()
     fb = ovrpy.FrameBufferData()
     renderer.mapframe(fb)
     # .copy() makes the returned array independent of the buffer owned by
@@ -95,6 +96,7 @@ def test_camera_move_changes_image(renderer, scene, fbsize, test_density_scale):
     renderer.set_volume_density_scale(test_density_scale)
     renderer.commit()
     renderer.render()
+    renderer.swap()
     fb = ovrpy.FrameBufferData()
     renderer.mapframe(fb)
     baseline = np.nan_to_num(
@@ -127,6 +129,7 @@ def test_camera_move_changes_image(renderer, scene, fbsize, test_density_scale):
     )
     renderer.commit()
     renderer.render()
+    renderer.swap()
     renderer.mapframe(fb)
     moved = np.nan_to_num(
         np.asarray(fb.rgba(), dtype=np.float32).copy(),

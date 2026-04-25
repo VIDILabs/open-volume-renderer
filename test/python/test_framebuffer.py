@@ -52,6 +52,7 @@ def test_stats_has_correct_length(initialized_renderer, fbsize):
     stays 0. Only the array *length* is a stable cross-backend invariant.
     """
     initialized_renderer.render()
+    initialized_renderer.swap()
     fb = ovrpy.FrameBufferData()
     initialized_renderer.mapframe(fb)
     stats = fb.stats()
@@ -72,6 +73,7 @@ def test_postrender_rgba_is_mostly_finite(initialized_renderer, fbsize):
     initialized_renderer.set_sample_per_pixel(4)
     initialized_renderer.commit()
     initialized_renderer.render()
+    initialized_renderer.swap()
     fb = ovrpy.FrameBufferData()
     initialized_renderer.mapframe(fb)
     # .copy() detaches the array from the CrossDeviceBuffer that fb owns,
@@ -101,6 +103,7 @@ def test_postrender_frame_has_content(initialized_renderer, fbsize):
     initialized_renderer.set_path_tracing(0)
     initialized_renderer.commit()
     initialized_renderer.render()
+    initialized_renderer.swap()
     fb = ovrpy.FrameBufferData()
     initialized_renderer.mapframe(fb)
     rgba = np.asarray(fb.rgba(), dtype=np.float32).copy()
@@ -126,6 +129,7 @@ def test_mapframe_grad_is_available_or_raises_cleanly(initialized_renderer, fbsi
     Either outcome is acceptable; a partial buffer is not.
     """
     initialized_renderer.render()
+    initialized_renderer.swap()
     fb = ovrpy.FrameBufferData()
     initialized_renderer.mapframe(fb)
     try:
@@ -142,6 +146,7 @@ def test_mapframe_grad_is_available_or_raises_cleanly(initialized_renderer, fbsi
 
 def test_stats_as_memoryview_is_readable(initialized_renderer):
     initialized_renderer.render()
+    initialized_renderer.swap()
     fb = ovrpy.FrameBufferData()
     initialized_renderer.mapframe(fb)
     mv = fb.stats_as_memoryview()
