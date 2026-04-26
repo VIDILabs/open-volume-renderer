@@ -67,7 +67,7 @@ behind your back.
 ## What's in the box
 
 ```
-test/
+tests/
 ├── CMakeLists.txt               # wires C++ tests + pytest into CTest
 ├── conftest.py                  # shared pytest fixtures
 ├── ../pyproject.toml            # pytest config + marker registry under [tool.pytest.ini_options]
@@ -142,7 +142,7 @@ pytest -m "not slow"       # skip the expensive path-tracing tests
 pytest -m golden           # only the rendering regression tests
 ```
 
-Nothing is skipped automatically — running `pytest test/python/` with
+Nothing is skipped automatically — running `pytest tests/python/` with
 no `-m` filter attempts every variant and any missing/broken hardware
 surfaces as a real failure.
 
@@ -154,8 +154,8 @@ compare a freshly-rendered image against a committed baseline.
 * **First time on a new backend or after an intentional render change:**
 
   ```bash
-  pytest test/python/test_rendering_regression.py --update-baselines
-  git add test/fixtures/golden/<backend>/*.png
+  pytest tests/python/test_rendering_regression.py --update-baselines
+  git add tests/fixtures/golden/<backend>/*.png
   git commit -m "Regenerate rendering baselines"
   ```
 
@@ -169,7 +169,7 @@ compare a freshly-rendered image against a committed baseline.
 
 ## CUDA / GPU gating
 
-The C++/CUDA tests (`test/cpp/`) and the Python tests (`test/python/`)
+The C++/CUDA tests (`tests/cpp/`) and the Python tests (`tests/python/`)
 gate GPU dependence differently:
 
 * **C++ tier (CTest)**: doctest binaries labelled `gpu` declare a
@@ -208,8 +208,8 @@ cmake --build build --target coverage
 Because the committed `test_scene.json` references an absolute data path
 that only exists on the original author's machine, we also generate a
 self-contained 32³ gaussian blob as part of the build
-(`test/generate_synthetic_volume.cmake`). It ends up at
-`build/test/generated_fixtures/synthetic_scene.json` and is what the
+(`tests/generate_synthetic_volume.cmake`). It ends up at
+`build/tests/generated_fixtures/synthetic_scene.json` and is what the
 Python suite picks up by default through the `scene_path` fixture.
 
 ## Troubleshooting

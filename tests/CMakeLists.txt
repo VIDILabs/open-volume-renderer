@@ -2,8 +2,8 @@
 # OVR test-suite top-level CMakeLists.                                      #
 # ------------------------------------------------------------------------ #
 # Registers:                                                                #
-#   * C++ / CUDA doctest binaries (via test/cpp/)                           #
-#   * A `python_tests` CTest test that invokes pytest in test/python/       #
+#   * C++ / CUDA doctest binaries (via tests/cpp/)                          #
+#   * A `python_tests` CTest test that invokes pytest in tests/python/      #
 #   * A CTest fixture that generates synthetic volume data on demand        #
 #                                                                           #
 # Tests are sliced by label:                                                #
@@ -86,7 +86,7 @@ add_subdirectory(cpp)
 if(NOT TARGET _core)
   message(FATAL_ERROR
     "OVR tests expected the `_core` pybind11 target (ovrpy._core) to exist "
-    "by the time test/CMakeLists.txt runs, but it doesn't. Check that "
+    "by the time tests/CMakeLists.txt runs, but it doesn't. Check that "
     "OVR_BUILD_PYTHON_BINDINGS=ON and that python/CMakeLists.txt was "
     "added to the build.")
 endif()

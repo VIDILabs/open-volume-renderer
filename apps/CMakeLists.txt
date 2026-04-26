@@ -3,16 +3,14 @@
 # ======================================================================== #
 
 add_executable(renderbatch main_batch.cpp)
-target_link_libraries(renderbatch PUBLIC renderlib)
+# `glfwapp_headers` is the header-only INTERFACE target that exposes
+# `<glfwapp/camera_frame.h>` (a pure CameraFrame struct, no OpenGL deps).
+target_link_libraries(renderbatch PUBLIC renderlib glfwapp_headers)
 
 # the default rendering application
 if(OVR_BUILD_OPENGL)
   add_executable(renderapp main_app.cpp)
-  target_link_libraries(renderapp 
-  PUBLIC 
-    renderlib 
-    glfwApp
-  )
+  target_link_libraries(renderapp PUBLIC renderlib glfwapp)
 endif()
 
 # Wheel-bundling: when the Python bindings are built (the pip / uv flow),

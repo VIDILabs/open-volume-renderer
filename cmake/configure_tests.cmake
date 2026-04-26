@@ -3,7 +3,7 @@
 #                                                                           #
 # Fetches doctest at configure time (no extra submodule), exposes           #
 # `doctest_discover_tests` (from doctest's own cmake/ dir), and provides    #
-# the `ovr_add_cpp_test()` helper used by test/cpp/CMakeLists.txt.          #
+# the `ovr_add_cpp_test()` helper used by tests/cpp/CMakeLists.txt.         #
 #                                                                           #
 # GPU-labelled tests are gated via CTest fixtures so they auto-skip on      #
 # machines without an NVIDIA GPU (see the `gpu_probe` executable below).    #
@@ -56,9 +56,9 @@ function(ovr_add_cpp_test NAME)
   target_compile_definitions(${NAME} PRIVATE ${_T_DEFS})
   target_compile_features(${NAME} PRIVATE cxx_std_17)
 
-  # Keep test binaries grouped under <build>/test/ for easy discovery.
+  # Keep test binaries grouped under <build>/tests/ for easy discovery.
   set_target_properties(${NAME} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests"
   )
 
   # ----- Windows DLL staging -----------------------------------------------
@@ -67,7 +67,7 @@ function(ovr_add_cpp_test NAME)
   #
   # On Windows the SHARED outputs (renderlib.dll, rendercommon.dll, glad.dll
   # built here + the OSPRay/TBB closure pulled in by find_package) all land
-  # in <build>/<config>/ while these exes land in <build>/test/<config>/.
+  # in <build>/<config>/ while these exes land in <build>/tests/<config>/.
   # Windows' loader searches the directory of the running exe first; that
   # directory has none of those DLLs, so doctest_discover_tests's spawn of
   # the freshly-built exe at PostBuildEvent time fails with 0xc0000135
@@ -110,7 +110,7 @@ function(ovr_add_cpp_test NAME)
   #
   # TEST_PREFIX is required so each registered CTest name starts with
   # "<binary>." (e.g. "test_serializer_json.create_json_scene: ..."). Other
-  # CMake glue (test/cpp/gpu_fixture_attach.cmake.in) attaches per-binary
+  # CMake glue (tests/cpp/gpu_fixture_attach.cmake.in) attaches per-binary
   # FIXTURES_REQUIRED by matching this prefix; without it the regex never
   # fires and the fixture dependency silently never attaches.
   doctest_discover_tests(${NAME}
@@ -140,7 +140,7 @@ function(ovr_setup_gpu_probe)
     return()
   endif()
 
-  set(_probe_src "${CMAKE_BINARY_DIR}/test/gpu_probe.cpp")
+  set(_probe_src "${CMAKE_BINARY_DIR}/tests/gpu_probe.cpp")
   file(WRITE "${_probe_src}" [=[
 // Auto-generated: exits 0 if at least one CUDA device is present.
 #include <cuda_runtime.h>
@@ -160,7 +160,7 @@ int main() {
   add_executable(gpu_probe "${_probe_src}")
   target_link_libraries(gpu_probe PRIVATE CUDA::cudart_static)
   set_target_properties(gpu_probe PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests"
   )
 
   # Mirror the DLL-staging the cpp tests get (see ovr_add_cpp_test). Today

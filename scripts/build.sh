@@ -141,7 +141,7 @@ check_prereqs() {
 # DO_TEST=true so plain configure/build flows (e.g. CI image without
 # pytest, or a developer who only wants the renderer libraries) don't
 # fail on missing test deps. The matching CMake hard-error in
-# test/CMakeLists.txt only fires when -DOVR_BUILD_TESTS=ON, which we
+# tests/CMakeLists.txt only fires when -DOVR_BUILD_TESTS=ON, which we
 # also gate on DO_TEST below.
 check_test_prereqs() {
   info "Checking test prerequisites (Python + pytest)..."
@@ -196,7 +196,7 @@ configure() {
   #     a C++-only build that doesn't need a Python interpreter at all.
   #
   #   * OVR_BUILD_TESTS — opt-in via --test/--all. Otherwise off, so the
-  #     cmake-side hard-require for pytest in test/CMakeLists.txt only
+  #     cmake-side hard-require for pytest in tests/CMakeLists.txt only
   #     fires when the user actually wants tests. Users who want tests
   #     configured but not run this invocation can always pass
   #     `CMAKE_ARGS="-DOVR_BUILD_TESTS=ON"` explicitly - in that case

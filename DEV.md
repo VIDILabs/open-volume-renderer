@@ -240,8 +240,8 @@ CI exercises the C++/binding surface and the OSPRay backend end-to-end.
 ## Roadmap / open items
 
 - Commit golden-image regression baselines for the OSPRay and OptiX
-  backends (see `test/README.md` and the `--update-baselines` workflow).
-- Per-setter render-side assertions in `test/python/test_setters.py`
+  backends (see `tests/README.md` and the `--update-baselines` workflow).
+- Per-setter render-side assertions in `tests/python/test_setters.py`
   (currently binding-level smoke only).
 - A self-hosted GPU CI matrix entry to exercise the OptiX 7 + CUDA tests
   that are skipped on GHA runners.

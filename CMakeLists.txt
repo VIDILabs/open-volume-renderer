@@ -102,6 +102,17 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/extern/bin2c EXCLUDE_FROM_ALL)
 include(${CMAKE_CURRENT_LIST_DIR}/extern/bin2c/target_add_embeded_shaders.cmake)
 
 ###############################################################################
+# GLFW app shim (extern/glfwapp/)
+#
+# Always processed so the header-only `glfwapp_headers` INTERFACE target
+# is available to consumers like renderbatch (which only needs the
+# CameraFrame struct in <glfwapp/camera_frame.h>). The full `glfwapp`
+# static lib is gated on OVR_BUILD_OPENGL inside the subdir's
+# CMakeLists.txt.
+###############################################################################
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/extern/glfwapp EXCLUDE_FROM_ALL)
+
+###############################################################################
 # Transfer Function Module
 #
 # Submodule at extern/tfnmodule/ ships its own CMakeLists.txt that defines
@@ -143,5 +154,5 @@ endif()
 
 if(OVR_BUILD_TESTS)
   include(configure_tests)
-  add_subdirectory(test)
+  add_subdirectory(tests)
 endif()

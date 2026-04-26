@@ -1,7 +1,7 @@
 // ======================================================================== //
 // Unit tests for the JSON serializer. Uses the generated synthetic scene  //
-// fixture (see test/generate_synthetic_volume.cmake) so the test is      //
-// hermetic and does not depend on an out-of-tree data file.              //
+// fixture (see tests/generate_fixtures.py) so the test is hermetic and    //
+// does not depend on an out-of-tree data file.                            //
 // ======================================================================== //
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN

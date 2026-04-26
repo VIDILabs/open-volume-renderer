@@ -41,7 +41,7 @@ if(GCOVR_BIN)
       -r ${CMAKE_SOURCE_DIR}
       --exclude ${CMAKE_BINARY_DIR}
       --exclude ${CMAKE_SOURCE_DIR}/extern
-      --exclude ${CMAKE_SOURCE_DIR}/test
+      --exclude ${CMAKE_SOURCE_DIR}/tests
       # nvcc's device-link step generates an ephemeral
       # /tmp/tmpxft_*_cmake_device_link.reg.c that's deleted before gcovr
       # runs. Without this flag, gcovr aborts on those .gcda files; with

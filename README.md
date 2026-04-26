@@ -20,7 +20,7 @@ OVR is a CUDA + OSPRay volume rendering framework. It ships:
 
 For build-system internals, packaging, CI, and contributor notes see
 [`DEV.md`](DEV.md). Test infrastructure (markers, golden-image workflow,
-coverage) is documented in [`test/README.md`](test/README.md).
+coverage) is documented in [`tests/README.md`](tests/README.md).
 
 ## Repository layout
 
@@ -34,7 +34,7 @@ coverage) is documented in [`test/README.md`](test/README.md).
 ├── python/                 pybind11 binding source + `ovrpy` Python package
 │   ├── python.cpp          PYBIND11_MODULE(_core, m)
 │   └── ovrpy/              re-exports `_core` as `import ovrpy`
-├── test/                   doctest + pytest test suite (see test/README.md)
+├── tests/                  doctest + pytest test suite (see tests/README.md)
 ├── pyproject.toml          scikit-build-core driver for `pip install`
 ├── scripts/build.sh        configure/build/test driver for the cmake flow
 ├── cmake/                  CMake configure modules
@@ -145,7 +145,7 @@ renderbatch data/configs/<scene>.json    # offline render to PNG
 
 Scene JSON files live under `data/configs/`; see
 `data/configs/README.md` for the schema. The Python tier exposes the
-same renderer through `import ovrpy`; see `test/python/` for end-to-end
+same renderer through `import ovrpy`; see `tests/python/` for end-to-end
 usage examples.
 
 ## Testing
@@ -155,7 +155,7 @@ usage examples.
 ./scripts/build.sh --test    # iterate on tests against an existing build
 
 # pytest only (after `pip install -e .[test]` or `uv sync --extra test`):
-uv run pytest test/python/ -v
+uv run pytest tests/python/ -v
 ```
 
 When `OVR_BUILD_TESTS=ON`, CMake hard-requires `Python3` +
@@ -163,7 +163,7 @@ When `OVR_BUILD_TESTS=ON`, CMake hard-requires `Python3` +
 `FATAL_ERROR` with the install command if anything is missing — there is
 no silent skip.
 
-See [`test/README.md`](test/README.md) for labels (`cpp` / `gpu` /
+See [`tests/README.md`](tests/README.md) for labels (`cpp` / `gpu` /
 `python` / `golden`), the golden-image baseline workflow, coverage, and
 troubleshooting.
 

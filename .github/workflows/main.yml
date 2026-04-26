@@ -139,13 +139,13 @@ jobs:
         shell: bash
         # `-m "not gpu"` deselects the `[optix7]` parametrize variants
         # (tagged via `pytest.param("optix7", marks=pytest.mark.gpu)` in
-        # test/conftest.py). Failures here MUST fail the job - swallowing
+        # tests/conftest.py). Failures here MUST fail the job - swallowing
         # them with `|| echo ...` previously made the entire Python tier
         # advisory and let golden-image regressions ship unnoticed.
         run: |
           OVR_BUILD_DIR="${PWD}/${BUILD_DIR}" \
-          OVR_TEST_FIXTURES="${PWD}/test/fixtures" \
-          python -m pytest test/python/ -m "not gpu" -v --color=yes
+          OVR_TEST_FIXTURES="${PWD}/tests/fixtures" \
+          python -m pytest tests/python/ -m "not gpu" -v --color=yes
 
   build-windows:
     name: windows (CUDA ${{ matrix.cuda_version }})
@@ -222,7 +222,7 @@ jobs:
       - name: Run CTest (C++ tier, CPU only)
         shell: pwsh
         # OVR_BUILD_TESTS=ON requires OVR_BUILD_PYTHON_BINDINGS=ON (per
-        # test/CMakeLists.txt's hard coupling), which is why we configure
+        # tests/CMakeLists.txt's hard coupling), which is why we configure
         # with bindings enabled even though we don't run the Python tier
         # here. The pytest tier on Windows needs additional plumbing for
         # the MSVC multi-config build layout (`_core.pyd` lands under

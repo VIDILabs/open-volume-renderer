@@ -77,12 +77,12 @@ OVR_BUILD_APPS            = "ON"
 OVR_BUILD_TESTS           = "OFF"
 
 # ---------------------------------------------------------------------------
-# pytest config. Lives here (rather than test/pytest.ini) so the markers
+# pytest config. Lives here (rather than tests/pytest.ini) so the markers
 # below are registered regardless of which directory pytest is invoked
-# from; the cwd-relative discovery of `test/pytest.ini` was fragile.
+# from; the cwd-relative discovery of `tests/pytest.ini` was fragile.
 # ---------------------------------------------------------------------------
 [tool.pytest.ini_options]
-testpaths = ["test/python"]
+testpaths = ["tests/python"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]

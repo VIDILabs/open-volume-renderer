@@ -1,7 +1,7 @@
 """Rendering regression: render our synthetic scene and compare against
 a committed golden PNG using PSNR + SSIM.
 
-Baselines live under ``test/fixtures/golden/<backend>/<scene>.png``.
+Baselines live under ``tests/fixtures/golden/<backend>/<scene>.png``.
 On first run (or when baselines are deliberately refreshed) pass
 ``--update-baselines`` to pytest to write the PNG instead of asserting.
 
@@ -131,7 +131,7 @@ def test_render_matches_baseline(backend: str,
         pytest.fail(
             f"Golden baseline missing: {golden_path}\n"
             "  - Generate it on a reference machine with:\n"
-            "      pytest test/python/test_rendering_regression.py --update-baselines\n"
+            "      pytest tests/python/test_rendering_regression.py --update-baselines\n"
             f"  - Then `git add` the resulting PNG and commit so CI can compare."
         )
 

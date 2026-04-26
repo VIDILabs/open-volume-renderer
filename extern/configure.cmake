@@ -71,7 +71,7 @@
 
 #   # for building render apps
 #   add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glfwapp EXCLUDE_FROM_ALL)
-#   list(APPEND GFX_LIBRARIES glfwApp)
+#   list(APPEND GFX_LIBRARIES glfwapp)
 
 # endif()
 

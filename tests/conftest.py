@@ -24,7 +24,7 @@ Environment variables honoured:
                          ``pip install -e .`` is run, the package is on
                          sys.path through site-packages and this hook is a
                          harmless no-op.
-* ``OVR_TEST_FIXTURES``- root of committed fixtures (``test/fixtures``).
+* ``OVR_TEST_FIXTURES``- root of committed fixtures (``tests/fixtures``).
 * ``OVR_TEST_GENERATED`` - path to CMake-generated fixtures.
 """
 from __future__ import annotations
@@ -114,7 +114,7 @@ def generated_dir(tmp_path_factory) -> Path:
 
 
 def _generate_synthetic_fixture(out: Path) -> None:
-    """Invoke test/generate_fixtures.py directly (as a library)."""
+    """Invoke tests/generate_fixtures.py directly (as a library)."""
     import importlib.util
     script = _TEST_DIR / "generate_fixtures.py"
     spec = importlib.util.spec_from_file_location("ovr_gen_fixtures", script)

@@ -10,7 +10,7 @@ The script is idempotent: it rewrites the same files each invocation
 without touching anything else, so re-running it in-place is safe.
 
 Called from:
-    * CMake / CTest fixture (see test/CMakeLists.txt)
+    * CMake / CTest fixture (see tests/CMakeLists.txt)
     * pytest conftest.py as a fallback when CMake hasn't generated it yet
 """
 from __future__ import annotations

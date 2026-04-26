@@ -2,7 +2,7 @@
 // GPU-gated tests for ovr::CrossDeviceBuffer - verify the host <-> CUDA //
 // round-trips preserve byte content. These tests run under the CTest   //
 // `gpu` label and are automatically skipped on hostless runners via the //
-// `gpu_available` fixture wired in by test/cpp/gpu_fixture_attach.cmake.//
+// `gpu_available` fixture wired in by tests/cpp/gpu_fixture_attach.cmake.//
 // ======================================================================== //
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
