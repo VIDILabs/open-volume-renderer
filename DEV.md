@@ -15,6 +15,7 @@ the README.
 | `OVR_BUILD_APPS` | ON | Application executables (`renderapp`, `renderbatch`) |
 | `OVR_BUILD_PYTHON_BINDINGS` | OFF | The `ovrpy` pybind11 module |
 | `OVR_BUILD_USD` | OFF | USDA scene loading via Pixar USD |
+| `OVR_BUILD_TINYGLTF` | OFF | Fetch tinygltf v2.5.0 via FetchContent and expose it as the `tinygltf` INTERFACE target (no consumer wired in by default) |
 | `OVR_BUILD_TESTS` | OFF | C++/CUDA unit tests + register Python tests |
 | `OVR_ENABLE_COVERAGE` | OFF | `--coverage -O0 -g` for GCC/Clang; adds the `coverage` target |
 
