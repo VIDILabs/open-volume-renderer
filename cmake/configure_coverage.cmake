@@ -42,6 +42,12 @@ if(GCOVR_BIN)
       --exclude ${CMAKE_BINARY_DIR}
       --exclude ${CMAKE_SOURCE_DIR}/extern
       --exclude ${CMAKE_SOURCE_DIR}/test
+      # nvcc's device-link step generates an ephemeral
+      # /tmp/tmpxft_*_cmake_device_link.reg.c that's deleted before gcovr
+      # runs. Without this flag, gcovr aborts on those .gcda files; with
+      # it, gcovr just warns and skips them (what we want - the
+      # device-link stub has no user-meaningful coverage anyway).
+      --gcov-ignore-errors=source_not_found
       --xml ${CMAKE_BINARY_DIR}/coverage/coverage.xml
       --html-details ${CMAKE_BINARY_DIR}/coverage/index.html
     USES_TERMINAL
