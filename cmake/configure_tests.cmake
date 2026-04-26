@@ -61,6 +61,36 @@ function(ovr_add_cpp_test NAME)
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test"
   )
 
+  # ----- Windows DLL staging -----------------------------------------------
+  # On POSIX the test exes resolve their dependent shared libs via RPATH /
+  # the build's flat <build>/ layout, so this is a no-op there.
+  #
+  # On Windows the SHARED outputs (renderlib.dll, rendercommon.dll, glad.dll
+  # built here + the OSPRay/TBB closure pulled in by find_package) all land
+  # in <build>/<config>/ while these exes land in <build>/test/<config>/.
+  # Windows' loader searches the directory of the running exe first; that
+  # directory has none of those DLLs, so doctest_discover_tests's spawn of
+  # the freshly-built exe at PostBuildEvent time fails with 0xc0000135
+  # (STATUS_DLL_NOT_FOUND) before main() runs - empty stdout, build fails.
+  # ctest-time invocations would hit the same wall.
+  #
+  # Stage the full runtime closure next to each test exe. CMake's
+  # TARGET_RUNTIME_DLLS (3.21+) walks IMPORTED_LOCATION on every linked
+  # imported / built SHARED target and gives us the closure, including
+  # OSPRay's transitive load-by-name modules where the upstream config
+  # exposes them. The $<IF> wraps the empty case (e.g. gpu_probe links only
+  # cudart_static) so cmake -E doesn't trip on a zero-source copy.
+  if(WIN32 AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.21")
+    add_custom_command(TARGET ${NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E
+              "$<IF:$<BOOL:$<TARGET_RUNTIME_DLLS:${NAME}>>,copy_if_different,true>"
+              "$<TARGET_RUNTIME_DLLS:${NAME}>"
+              "$<TARGET_FILE_DIR:${NAME}>"
+      COMMAND_EXPAND_LISTS
+      VERBATIM
+    )
+  endif()
+
   # Inherit coverage flags if enabled
   if(OVR_ENABLE_COVERAGE)
     ovr_apply_coverage_flags(${NAME})
@@ -132,6 +162,20 @@ int main() {
   set_target_properties(gpu_probe PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test"
   )
+
+  # Mirror the DLL-staging the cpp tests get (see ovr_add_cpp_test). Today
+  # gpu_probe only links cudart_static so the closure is empty, but a future
+  # tweak that pulls in a SHARED dep would otherwise break the same way.
+  if(WIN32 AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.21")
+    add_custom_command(TARGET gpu_probe POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E
+              "$<IF:$<BOOL:$<TARGET_RUNTIME_DLLS:gpu_probe>>,copy_if_different,true>"
+              "$<TARGET_RUNTIME_DLLS:gpu_probe>"
+              "$<TARGET_FILE_DIR:gpu_probe>"
+      COMMAND_EXPAND_LISTS
+      VERBATIM
+    )
+  endif()
 
   add_test(NAME gpu_probe COMMAND gpu_probe)
   set_tests_properties(gpu_probe PROPERTIES
