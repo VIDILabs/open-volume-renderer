@@ -13,6 +13,7 @@
 #include <atomic>
 #include <chrono>
 #include <thread>
+#include <vector>
 
 using vidi::TransactionalValue;
 
@@ -72,6 +73,7 @@ TEST_CASE("TransactionalValue: two-thread producer/consumer is race-free") {
 
   constexpr int kIter = 10'000;
   std::atomic<bool> stop{false};
+  std::atomic<bool> invalid_seen{false};
   std::atomic<int>  last_seen{-1};
 
   std::thread producer([&] {
@@ -88,9 +90,9 @@ TEST_CASE("TransactionalValue: two-thread producer/consumer is race-free") {
     while (!stop.load(std::memory_order_acquire)) {
       if (tv.update()) {
         int v = tv.ref();
-        // Must always see a value that was produced (never uninitialized).
-        CHECK(v >= 0);
-        CHECK(v < kIter);
+        if (v < 0 || v >= kIter) {
+          invalid_seen.store(true, std::memory_order_relaxed);
+        }
         last_seen.store(v, std::memory_order_relaxed);
       }
     }
@@ -103,10 +105,10 @@ TEST_CASE("TransactionalValue: two-thread producer/consumer is race-free") {
   producer.join();
   consumer.join();
 
-  // The consumer eventually observed *something* and the last produced value
-  // was kIter-1. We don't require the consumer to catch every value (the
-  // whole point of TransactionalValue is that it coalesces), but after the
-  // final drain the stored value must be <= kIter-1.
+  // Keep doctest assertions on the main thread; some doctest versions are not
+  // safe to report CHECK failures from worker threads on Windows.
+  CHECK_FALSE(invalid_seen.load(std::memory_order_relaxed));
+  CHECK(last_seen.load() >= 0);
   CHECK(last_seen.load() <= kIter - 1);
 }
 
