@@ -137,5 +137,11 @@ int main() {
   set_tests_properties(gpu_probe PROPERTIES
     FIXTURES_SETUP gpu_available
     LABELS "gpu_probe"
+    # Treat exit code 1 ("no CUDA device on this host") as Skipped, not
+    # Failed. The fixture is still marked unavailable so dependent gpu-
+    # labelled tests auto-skip - the only difference is that ctest itself
+    # no longer returns non-zero on GPU-less hosts (CI runners, coverage
+    # jobs that build with OptiX on but have no driver, ...).
+    SKIP_RETURN_CODE 1
   )
 endfunction()

@@ -112,6 +112,7 @@ jobs:
             -DOVR_BUILD_DEVICE_OSPRAY=ON
             -DOVR_BUILD_TESTS=ON
             -DOVR_BUILD_PYTHON_BINDINGS=ON
+            -DCMAKE_CUDA_ARCHITECTURES="${CUDAARCHS}"
           )
 
           if [[ "${{ matrix.ospray_mode }}" == "external" ]]; then
@@ -196,9 +197,9 @@ jobs:
             "-DCMAKE_BUILD_TYPE=$env:CONFIG",
             "-DOVR_BUILD_DEVICE_OPTIX7=ON",
             "-DOVR_BUILD_DEVICE_OSPRAY=ON",
-            "-DCMAKE_CUDA_ARCHITECTURES=${{ matrix.arch }}",
             "-DTBB_DIR=$env:TBB_DIR",
-            "-DOVR_BUILD_TESTS=ON"
+            "-DOVR_BUILD_TESTS=ON",
+            "-DCMAKE_CUDA_ARCHITECTURES=${env:CUDAARCHS}"
           )
           cmake @cmakeArgs
 
@@ -262,7 +263,7 @@ jobs:
             -DOVR_ENABLE_COVERAGE=ON \
             -DOVR_BUILD_DEVICE_OPTIX7=ON \
             -DOVR_BUILD_DEVICE_OSPRAY=ON \
-            -DCMAKE_CUDA_ARCHITECTURES=86
+            -DCMAKE_CUDA_ARCHITECTURES="${CUDAARCHS}"
 
       - name: Build
         run: cmake --build "${BUILD_DIR}" --target all --verbose -j"$(nproc)"
