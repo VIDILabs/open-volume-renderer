@@ -1,18 +1,37 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 include_guard(GLOBAL)
 
-# Reuse PYTHON_EXECUTABLE set by parent project; only detect if not yet set.
-if(NOT PYTHON_EXECUTABLE)
-execute_process(
-  COMMAND "which" "python" OUTPUT_VARIABLE PYTHON_EXECUTABLE
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+# ---------------------------------------------------------------------------
+# Locate Python (interpreter + Development.Module headers/libs for pybind11).
+#
+# We delegate to CMake's `FindPython3` rather than shelling out to `which
+# python`. The legacy shim returned a Git-Bash-style POSIX path on Windows
+# GHA runners (e.g. `/c/hostedtoolcache/.../python` with no `.exe`), which
+# pybind11's bundled `FindPythonLibsNew.cmake` then failed to invoke
+# (`Python config failure`). FindPython3 uses each platform's native
+# discovery (py launcher / registry / venv / PATH) and returns a path the
+# rest of the build can actually exec.
+#
+# Resolution order:
+#   1. -DPYTHON_EXECUTABLE=<path> (or a parent project setting it before
+#      add_subdirectory) is honoured by seeding Python3_EXECUTABLE.
+#   2. Otherwise FindPython3 picks the active interpreter (venv, etc.).
+#
+# `Development.Module` (CMake 3.18+) is the minimal dev component needed
+# to compile a Python extension; we don't link against libpython itself.
+# ---------------------------------------------------------------------------
+if(PYTHON_EXECUTABLE AND NOT Python3_EXECUTABLE)
+  set(Python3_EXECUTABLE "${PYTHON_EXECUTABLE}" CACHE FILEPATH
+      "Python interpreter used by OVR (seeded from PYTHON_EXECUTABLE)" FORCE)
 endif()
-if("${PYTHON_EXECUTABLE}" STREQUAL "")
-message(FATAL_ERROR "Python not found — pass -DPYTHON_EXECUTABLE=<path> or activate a venv")
-else()
+
+find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
+
+# Mirror back into PYTHON_EXECUTABLE so the legacy variable name still
+# works for downstream consumers (incl. the torch ABI probe below).
+set(PYTHON_EXECUTABLE "${Python3_EXECUTABLE}" CACHE FILEPATH
+    "Python interpreter used by OVR" FORCE)
 message(STATUS "PYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}")
-endif()
 
 # _GLIBCXX_USE_CXX11_ABI policy
 # -------------------------------------------------------------------------
@@ -92,6 +111,13 @@ endif()
 # ------------------------------------------------------------------
 # import pybind11
 # ------------------------------------------------------------------
+# Tell pybind11 to use CMake's modern FindPython (which we just ran via
+# FindPython3) instead of its bundled `FindPythonLibsNew.cmake`. Without
+# this, pybind11 re-discovers Python through the legacy path and on
+# Windows trips over `PYTHON_EXECUTABLE` paths that don't have `.exe`.
+set(PYBIND11_FINDPYTHON ON CACHE BOOL
+    "pybind11: use CMake's FindPython instead of FindPythonLibsNew" FORCE)
+
 include(FetchContent)
 FetchContent_Declare(pybind11
     GIT_REPOSITORY  https://github.com/pybind/pybind11.git

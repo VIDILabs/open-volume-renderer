@@ -73,6 +73,11 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/gdt)
 # Other Libraries
 include(configure_oneapi)
 include(dep_opengl)
+include(dep_json)
+include(dep_stb)
+include(dep_tinyexr)
+include(dep_tinyobj)
+include(dep_tinygltf)
 include(dep_usd)
 find_package(Threads REQUIRED)
 # find_package(OpenMP REQUIRED)
@@ -97,16 +102,45 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/extern/bin2c EXCLUDE_FROM_ALL)
 include(${CMAKE_CURRENT_LIST_DIR}/extern/bin2c/target_add_embeded_shaders.cmake)
 
 ###############################################################################
-# Transfer Function Module  
+# GLFW app shim (extern/glfwapp/)
+#
+# Always processed so the header-only `glfwapp_headers` INTERFACE target
+# is available to consumers like renderbatch (which only needs the
+# CameraFrame struct in <glfwapp/camera_frame.h>). The full `glfwapp`
+# static lib is gated on OVR_BUILD_OPENGL inside the subdir's
+# CMakeLists.txt.
 ###############################################################################
-set(TFNMODULE_INCLUDE ${CMAKE_CURRENT_LIST_DIR}/extern/tfn/colormaps)
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/extern/tfn/colormaps)
-add_library(tfnmodule STATIC ${embedded_colormap})
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/extern/glfwapp EXCLUDE_FROM_ALL)
+
+###############################################################################
+# Transfer Function Module
+#
+# Submodule at extern/tfnmodule/ ships its own CMakeLists.txt that defines
+# the `tfnmodule` target (colormap sources + INTERFACE include of the
+# colormaps dir). We extend its public include path with the submodule
+# root so consumers can `#include "tfn/core.h"` etc. - what previously
+# came from the broader `extern/` include shim.
+###############################################################################
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/extern/tfnmodule)
 target_include_directories(tfnmodule PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/extern/tfn/colormaps>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/extern/tfnmodule>
 )
-if (UNIX)
-  set_target_properties(tfnmodule PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+###############################################################################
+# Testing / Coverage
+###############################################################################
+option(OVR_BUILD_TESTS "Build C++/CUDA unit tests" OFF)
+option(OVR_ENABLE_COVERAGE "Enable coverage instrumentation (requires Debug build)" OFF)
+
+# Only enable CTest at the top-level OVR build so embedding projects can decide
+# for themselves. This defines `BUILD_TESTING` (ON by default) and calls
+# `enable_testing()` which is required for `add_test` to do anything.
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+  include(CTest)
+endif()
+
+if(OVR_ENABLE_COVERAGE)
+  include(configure_coverage)
 endif()
 
 add_subdirectory(ovr)
@@ -116,4 +150,9 @@ endif()
 add_subdirectory(projects)
 if(OVR_BUILD_PYTHON_BINDINGS)
   add_subdirectory(python)
+endif()
+
+if(OVR_BUILD_TESTS)
+  include(configure_tests)
+  add_subdirectory(tests)
 endif()

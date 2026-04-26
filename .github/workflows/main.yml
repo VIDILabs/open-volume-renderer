@@ -3,6 +3,10 @@ name: CI
 env:
   DEBIAN_FRONTEND: noninteractive
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  # `CUDAARCHS` initialises CMAKE_CUDA_ARCHITECTURES on first configure
+  # (CMake >= 3.20). Single source of truth for SM target across all jobs;
+  # change here to retarget the whole workflow.
+  CUDAARCHS: "86"
 
 on:
   push:
@@ -24,19 +28,15 @@ jobs:
         include:
           - cuda_version: "11.8.0"
             ubuntu_version: "22.04"
-            arch: "86"
             ospray_mode: fetchcontent
           - cuda_version: "11.8.0"
             ubuntu_version: "22.04"
-            arch: "86"
             ospray_mode: external
           - cuda_version: "12.8.1"
             ubuntu_version: "24.04"
-            arch: "86"
             ospray_mode: fetchcontent
           - cuda_version: "12.8.1"
             ubuntu_version: "24.04"
-            arch: "86"
             ospray_mode: external
     env:
       BUILD_DIR: build
@@ -88,14 +88,31 @@ jobs:
 
           echo "OSPRAY_DIR=$OSPRAY_ROOT/lib/cmake/ospray-2.11.0" >> "$GITHUB_ENV"
 
+      - name: Set up Python (for pytest)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Python test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest pytest-xdist pytest-cov numpy pillow scikit-image
+
       - name: Configure
         shell: bash
+        # OVR_BUILD_TESTS=ON now hard-requires Python3 + pytest + ovrpy at
+        # configure time. The "Install Python test dependencies" step
+        # above is what satisfies the pytest probe; if pytest isn't
+        # importable when cmake runs, configure exits non-zero with a
+        # clear install instruction.
         run: |
           CMAKE_ARGS=(
             -DCMAKE_BUILD_TYPE="${CONFIG}"
             -DOVR_BUILD_DEVICE_OPTIX7=ON
             -DOVR_BUILD_DEVICE_OSPRAY=ON
-            -DCMAKE_CUDA_ARCHITECTURES="${{ matrix.arch }}"
+            -DOVR_BUILD_TESTS=ON
+            -DOVR_BUILD_PYTHON_BINDINGS=ON
+            -DCMAKE_CUDA_ARCHITECTURES="${CUDAARCHS}"
           )
 
           if [[ "${{ matrix.ospray_mode }}" == "external" ]]; then
@@ -107,6 +124,29 @@ jobs:
       - name: Build
         run: cmake --build "${BUILD_DIR}" --target all --verbose -j"$(nproc)"
 
+      - name: Run CTest (C++ tier, CPU only)
+        shell: bash
+        # GHA runners have no NVIDIA GPU. The `gpu` CTest label excludes
+        # C++/CUDA tests that require a device. We also skip the
+        # `python_tests` entry here so its output isn't interleaved with
+        # C++ output and so we can drive pytest with the `gpu` marker
+        # filter directly in the next step.
+        run: |
+          ctest --test-dir "${BUILD_DIR}" --output-on-failure -LE gpu \
+                --no-tests=error -E "python_tests"
+
+      - name: Run pytest (Python tier, CPU only)
+        shell: bash
+        # `-m "not gpu"` deselects the `[optix7]` parametrize variants
+        # (tagged via `pytest.param("optix7", marks=pytest.mark.gpu)` in
+        # tests/conftest.py). Failures here MUST fail the job - swallowing
+        # them with `|| echo ...` previously made the entire Python tier
+        # advisory and let golden-image regressions ship unnoticed.
+        run: |
+          OVR_BUILD_DIR="${PWD}/${BUILD_DIR}" \
+          OVR_TEST_FIXTURES="${PWD}/tests/fixtures" \
+          python -m pytest tests/python/ -m "not gpu" -v --color=yes
+
   build-windows:
     name: windows (CUDA ${{ matrix.cuda_version }})
     runs-on: windows-latest
@@ -115,7 +155,6 @@ jobs:
       matrix:
         include:
           - cuda_version: "12.8.1"
-            arch: "86"
     env:
       BUILD_DIR: build
       CONFIG: Release
@@ -149,6 +188,17 @@ jobs:
           cuda: ${{ matrix.cuda_version }}
           method: network
 
+      - name: Set up Python (for pytest + ovrpy bindings)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Python test dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest pytest-xdist pytest-cov numpy pillow scikit-image
+
       - name: Configure
         shell: pwsh
         run: |
@@ -158,11 +208,105 @@ jobs:
             "-DCMAKE_BUILD_TYPE=$env:CONFIG",
             "-DOVR_BUILD_DEVICE_OPTIX7=ON",
             "-DOVR_BUILD_DEVICE_OSPRAY=ON",
-            "-DCMAKE_CUDA_ARCHITECTURES=${{ matrix.arch }}",
-            "-DTBB_DIR=$env:TBB_DIR"
+            "-DTBB_DIR=$env:TBB_DIR",
+            "-DOVR_BUILD_TESTS=ON",
+            "-DOVR_BUILD_PYTHON_BINDINGS=ON",
+            "-DCMAKE_CUDA_ARCHITECTURES=${env:CUDAARCHS}"
           )
           cmake @cmakeArgs
 
       - name: Build
         shell: pwsh
         run: cmake --build $env:BUILD_DIR --config $env:CONFIG --target ALL_BUILD --verbose
+
+      - name: Run CTest (C++ tier, CPU only)
+        shell: pwsh
+        # OVR_BUILD_TESTS=ON requires OVR_BUILD_PYTHON_BINDINGS=ON (per
+        # tests/CMakeLists.txt's hard coupling), which is why we configure
+        # with bindings enabled even though we don't run the Python tier
+        # here. The pytest tier on Windows needs additional plumbing for
+        # the MSVC multi-config build layout (`_core.pyd` lands under
+        # build/ovrpy/$<CONFIG>/ rather than build/ovrpy/) - tracked as a
+        # follow-up; skipping `python_tests` keeps this job green.
+        run: ctest --test-dir $env:BUILD_DIR -C $env:CONFIG --output-on-failure -LE gpu --no-tests=error -E "python_tests"
+
+  coverage-linux:
+    name: coverage (CPU + Python, Debug)
+    runs-on: ubuntu-22.04
+    env:
+      BUILD_DIR: build
+      CONFIG: Debug
+
+    steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake gcc g++ libtbb-dev libglfw3-dev xorg-dev wget
+
+      - name: Install CUDA toolkit
+        uses: Jimver/cuda-toolkit@v0.2.34
+        with:
+          cuda: "12.8.1"
+          method: network
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Python test deps + coverage tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest pytest-xdist pytest-cov numpy pillow scikit-image gcovr
+
+      - name: Configure with coverage
+        run: |
+          cmake -S . -B "${BUILD_DIR}" \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DOVR_BUILD_TESTS=ON \
+            -DOVR_BUILD_PYTHON_BINDINGS=ON \
+            -DOVR_ENABLE_COVERAGE=ON \
+            -DOVR_BUILD_DEVICE_OPTIX7=ON \
+            -DOVR_BUILD_DEVICE_OSPRAY=ON \
+            -DCMAKE_CUDA_ARCHITECTURES="${CUDAARCHS}"
+
+      - name: Build
+        run: cmake --build "${BUILD_DIR}" --target all --verbose -j"$(nproc)"
+
+      - name: Run tests + collect coverage via the `coverage` target
+        env:
+          # GHA runners have no GPU. C++ side: gpu-labelled tests already
+          # auto-skip via the `gpu_available` CTest fixture (gpu_probe
+          # exits non-zero when cudaGetDeviceCount() <= 0). Python side:
+          # pytest doesn't auto-skip - we deselect the `[optix7]`
+          # parametrize variants explicitly via PYTEST_ADDOPTS, which
+          # pytest splices in front of its own argv.
+          PYTEST_ADDOPTS: -m "not gpu"
+        run: |
+          cmake --build "${BUILD_DIR}" --target coverage
+          ls -la "${BUILD_DIR}/coverage" || true
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-reports
+          path: |
+            ${{ env.BUILD_DIR }}/coverage/coverage.xml
+            ${{ env.BUILD_DIR }}/coverage/coverage-py.xml
+            ${{ env.BUILD_DIR }}/coverage/index.html
+          if-no-files-found: ignore

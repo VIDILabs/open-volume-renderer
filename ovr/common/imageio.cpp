@@ -1,16 +1,14 @@
 #include "imageio.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-// #include <3rdparty/stb_image.h>
 #define STBI_MSC_SECURE_CRT
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-// #include <3rdparty/stb_image_write.h>
-#include <stbi/stb_image.h>
-#include <stbi/stb_image_write.h>
+#include <stb_image.h>
+#include <stb_image_write.h>
 
+#if defined(OVR_BUILD_TINYEXR)
 #define TINYEXR_IMPLEMENTATION
-// #include <3rdparty/tinyexr/tinyexr.h>
-#include <tinyexr/tinyexr.h>
+#include <tinyexr.h>
 
 void
 save_exr(const float* data, int width, int height, int nChannels, int channelStride, const char* outfilename)
@@ -100,6 +98,7 @@ load_exr(float** data, int* width, int* height, const char* filename)
     }
   }
 }
+#endif // OVR_BUILD_TINYEXR
 
 std::shared_ptr<uint32_t>
 image_to_rgba8(const uint8_t* input, int width, int height, int ch, int ch_stride, bool flip_vertical)
@@ -268,8 +267,15 @@ save_image(std::string filename, const T* pixels, int width, int height, int cha
 {
   std::string ext = filename.substr(filename.find_last_of(".") + 1);
   if (ext == "exr") {
+#if defined(OVR_BUILD_TINYEXR)
     auto data = image_to_rgba32f(pixels, width, height, channel, channel_stride, true);
     save_exr(data.get(), width, height, 4, 4, filename.c_str());
+#else
+    throw std::runtime_error(
+      "EXR I/O requested for '" + filename +
+      "' but this build was configured with OVR_BUILD_TINYEXR=OFF. "
+      "Reconfigure with -DOVR_BUILD_TINYEXR=ON or pick a different output extension (png/jpg).");
+#endif
   }
   else {
     stbi_flip_vertically_on_write(true);
@@ -319,5 +325,3 @@ save_image(std::string filename, const vec4f* pixels /* RGBA32F*/, int width, in
 }
 
 } // namespace ovr
-
-#include "tinyexr/miniz.c"

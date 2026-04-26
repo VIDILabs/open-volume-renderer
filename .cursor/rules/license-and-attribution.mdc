@@ -1,0 +1,48 @@
+---
+description: License and citation hygiene for OVR and its submodules
+alwaysApply: true
+---
+
+# License and Attribution Hygiene
+
+## Verify attribution before writing
+
+License boilerplate is reusable; attribution is not. When copying or templating
+`LICENSE` / `CITATION.cff`, always audit the destination project's authorship
+before writing:
+
+1. Inspect the destination's source headers / README / git remote.
+2. Replace any copied trailing `Copyright YYYY <Name>` line with the
+   destination project's actual copyright holder.
+3. If there is any ambiguity, ask the user. Do not guess or preserve a copied
+   name "just in case".
+
+```bash
+# BAD - copies parent attribution into a submodule
+cp LICENSE extern/tfnmodule/LICENSE
+
+# GOOD - copy boilerplate only, then rewrite the trailing copyright line
+# after checking the destination project's own files.
+```
+
+## When asked to write CITATION.cff
+
+- Use author names from the destination project's source headers, README, or
+  existing citation metadata.
+- Do not add institutions, affiliations, addresses, or co-authors unless the
+  user asks or the project already declares them.
+- Do not infer ownership from adjacent repositories or old copied license text.
+
+## Submodules are not parent-repo files
+
+Submodule checkouts (`extern/<name>/`, `github-actions/`) are independent git
+repos. Files added there are working-tree changes inside the submodule, not
+normal parent-repo files. When editing a submodule, surface the two-step commit
+flow:
+
+```bash
+cd extern/<sub> && git add ... && git commit && git push
+cd ../..        && git add extern/<sub> && git commit  # bump pointer
+```
+
+The parent will show the submodule as dirty until both steps complete.

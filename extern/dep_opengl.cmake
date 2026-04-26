@@ -33,8 +33,11 @@ if(OVR_BUILD_OPENGL)
   include(dep_imgui)
   list(APPEND GFX_LIBRARIES imgui)
 
-  # for building render apps
-  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glfwapp EXCLUDE_FROM_ALL)
-  list(APPEND GFX_LIBRARIES glfwApp)
+  # NOTE: `glfwapp` is intentionally NOT in GFX_LIBRARIES. It's a
+  # higher-level wrapper that *consumes* GFX_LIBRARIES; including it
+  # here would create a self-referencing list (glfwapp links
+  # ${GFX_LIBRARIES} which contains glfwapp) and force `imgui PRIVATE
+  # ${GFX_LIBRARIES}` to link its own consumer. Apps that want the
+  # full shim should link `glfwapp` directly (see apps/CMakeLists.txt).
 
 endif()
