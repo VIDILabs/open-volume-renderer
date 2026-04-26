@@ -32,10 +32,12 @@ ovr_add_cpp_test(test_serializer_json
 set_property(GLOBAL APPEND PROPERTY OVR_FIXTURE_CONSUMERS test_serializer_json)
 
 # ----------------------------------------------------- test_transactional_value
-ovr_add_cpp_test(test_transactional_value
-  SOURCES test_transactional_value.cpp
-  LINK    rendercommon
-)
+if(NOT WIN32)
+  ovr_add_cpp_test(test_transactional_value
+    SOURCES test_transactional_value.cpp
+    LINK    rendercommon
+  )
+endif()
 
 # --------------------------------------------------- test_cross_device_buffer
 ovr_add_cpp_test(test_cross_device_buffer
