@@ -123,15 +123,27 @@ ctest -R python_tests     # just the Python suite
 
 ## Python-specific markers
 
-`pytest` markers for finer control:
+The pytest suite is sliced by hardware tier and by cost. Markers are
+registered in `pytest.ini` and `--strict-markers` is on, so typos error
+out instead of silently selecting nothing.
+
+| Marker | Applied to | Use |
+| --- | --- | --- |
+| `gpu` | `[optix7]` parametrize variants (via `pytest.param("optix7", marks=...)` in `conftest.py`) | `pytest -m "not gpu"` to skip GPU-bound tests on a CPU-only host |
+| `cpu` | `[ospray]` parametrize variants | `pytest -m "not cpu"` to run only the GPU tier |
+| `slow` | path-tracing tests (`@pytest.mark.slow`) | `pytest -m "not slow"` for a fast inner loop |
+| `golden` | rendering regression tests | `pytest -m golden` to run only the baseline checks |
 
 ```bash
-# Skip the expensive path-tracing tests
-pytest -m "not slow"
-
-# Only the rendering regression tests
-pytest -m golden
+pytest -m "not gpu"        # CPU-only run (matches `ctest -LE gpu`)
+pytest -m "not cpu"        # GPU-only run
+pytest -m "not slow"       # skip the expensive path-tracing tests
+pytest -m golden           # only the rendering regression tests
 ```
+
+Nothing is skipped automatically — running `pytest test/python/` with
+no `-m` filter attempts every variant and any missing/broken hardware
+surfaces as a real failure.
 
 ## Golden-image regression workflow
 
@@ -156,10 +168,20 @@ compare a freshly-rendered image against a committed baseline.
 
 ## CUDA / GPU gating
 
-CUDA-labelled tests use a CTest fixture called `gpu_available` that is
-set up by a tiny `gpu_probe` executable (generated at build time) which
-exits non-zero when `cudaGetDeviceCount() <= 0`. Tests are then skipped
-automatically on GPU-less hosts — no manual flag needed.
+The C++/CUDA tests (`test/cpp/`) and the Python tests (`test/python/`)
+gate GPU dependence differently:
+
+* **C++ tier (CTest)**: doctest binaries labelled `gpu` declare a
+  `FIXTURES_REQUIRED gpu_available` dependency. The `gpu_available`
+  fixture is set up by a small `gpu_probe` executable (built when
+  `OVR_BUILD_TESTS=ON` and CUDA is enabled) that exits non-zero when
+  `cudaGetDeviceCount() <= 0`. CTest then auto-skips dependent tests on
+  GPU-less hosts — no manual flag needed. `ctest -LE gpu` is also
+  available as an explicit opt-out.
+* **Python tier (pytest)**: nothing auto-skips. The `[optix7]`
+  parametrize variants are tagged with the `gpu` marker (see the table
+  above); the user opts out explicitly with `pytest -m "not gpu"` (or
+  `ctest -LE gpu`, which is what the CI uses).
 
 ## Coverage
 

@@ -172,6 +172,11 @@ def _probe_backend(name: str) -> tuple[bool, str | None]:
     ``ovrpy.create_renderer`` raises on an unknown or missing backend. This
     replaces the previous file-existence check against ``libdevice_*.a``,
     which broke under shared-library builds and on Windows.
+
+    NOTE: this is a *build-time* probe only - we deliberately do not poke
+    the CUDA driver here. Tests must run unless the user explicitly asks
+    them not to (via the `gpu` marker, see below). Silent auto-skips on
+    GPU-less hosts hide real failures.
     """
     if ovrpy is None:
         return False, "ovrpy not importable"
@@ -195,12 +200,24 @@ def available_backends() -> list[str]:
     return out
 
 
-_ALL_BACKENDS = ("optix7", "ospray")
+# Each backend variant carries a hardware-tier marker so the user (or
+# CTest) can explicitly slice the suite:
+#     pytest -m "not gpu"          # CPU-only
+#     pytest -m "not cpu"          # GPU-only
+#     pytest -m gpu                # OptiX 7 only
+#     pytest -m cpu                # OSPRay only
+#     ctest -LE gpu                # CTest equivalent of "not gpu"
+# We do not auto-skip; running the full suite without flags must still
+# attempt every variant so missing/broken hardware surfaces as a failure.
+_ALL_BACKENDS = (
+    pytest.param("optix7", marks=pytest.mark.gpu),
+    pytest.param("ospray", marks=pytest.mark.cpu),
+)
 
 
 @pytest.fixture(params=_ALL_BACKENDS)
 def backend(request) -> str:
-    """Parametrized backend. Skips when the backend isn't buildable."""
+    """Parametrized backend. Skips only when the backend can't construct."""
     name: str = request.param
     ok, reason = _probe_backend(name)
     if not ok:
