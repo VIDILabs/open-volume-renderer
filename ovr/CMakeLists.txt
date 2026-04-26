@@ -44,6 +44,7 @@ add_library(rendercommon SHARED
 target_link_libraries(rendercommon PRIVATE
   $<BUILD_INTERFACE:gdt>
   $<BUILD_INTERFACE:tfnmodule>
+  $<BUILD_INTERFACE:tinyexr>
   $<BUILD_INTERFACE:TBB::tbb>
   $<BUILD_INTERFACE:Threads::Threads>
   $<BUILD_INTERFACE:${CMAKE_DL_LIBS}>

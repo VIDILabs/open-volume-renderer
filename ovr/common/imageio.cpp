@@ -9,8 +9,7 @@
 #include <stbi/stb_image_write.h>
 
 #define TINYEXR_IMPLEMENTATION
-// #include <3rdparty/tinyexr/tinyexr.h>
-#include <tinyexr/tinyexr.h>
+#include <tinyexr.h>
 
 void
 save_exr(const float* data, int width, int height, int nChannels, int channelStride, const char* outfilename)
@@ -319,5 +318,3 @@ save_image(std::string filename, const vec4f* pixels /* RGBA32F*/, int width, in
 }
 
 } // namespace ovr
-
-#include "tinyexr/miniz.c"
