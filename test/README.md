@@ -70,7 +70,7 @@ behind your back.
 test/
 ├── CMakeLists.txt               # wires C++ tests + pytest into CTest
 ├── conftest.py                  # shared pytest fixtures
-├── pytest.ini                   # pytest config + marker registry
+├── ../pyproject.toml            # pytest config + marker registry under [tool.pytest.ini_options]
 ├── ../pyproject.toml            # pip deps live under [project.optional-dependencies] test
 ├── generate_synthetic_volume.cmake  # generates a 32^3 volume fixture
 ├── fixtures/
@@ -124,7 +124,8 @@ ctest -R python_tests     # just the Python suite
 ## Python-specific markers
 
 The pytest suite is sliced by hardware tier and by cost. Markers are
-registered in `pytest.ini` and `--strict-markers` is on, so typos error
+registered in `pyproject.toml` (`[tool.pytest.ini_options]`) and
+`--strict-markers` is on, so typos error
 out instead of silently selecting nothing.
 
 | Marker | Applied to | Use |

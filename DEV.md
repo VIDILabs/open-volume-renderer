@@ -108,13 +108,26 @@ ovrpy/
 ├── __init__.py                 re-exports the native module + loader-error helper
 ├── _core*.so                   pybind11 extension (PYBIND11_MODULE(_core, m))
 ├── render.py                   `ovrpy-render` console entry point
+├── _apps.py                    os.execv shims for the bundled C++ binaries
 ├── librenderlib.so             renderer + statically-absorbed device backends
 ├── librendercommon.so          common runtime
 ├── libimgui.so, libglad.so     interactive (OpenGL) tier
-└── lib*.so* (OSPRay closure)   libospray, libtbb, libembree4, libopenvkl,
-                                libispcrt, libOpenImageDenoise, plus
-                                OpenVKL's 4/8/16-wide CPU-device modules
+├── lib*.so* (OSPRay closure)   libospray, libtbb, libembree4, libopenvkl,
+│                               libispcrt, libOpenImageDenoise, plus
+│                               OpenVKL's 4/8/16-wide CPU-device modules
+└── bin/
+    ├── renderapp               interactive viewer  (RUNPATH=$ORIGIN/..)
+    └── renderbatch             offline render-to-PNG (RUNPATH=$ORIGIN/..)
 ```
+
+The C++ apps live in `bin/` rather than directly in the package root so
+their `INSTALL_RPATH=$ORIGIN/..` resolves the renderer + OSPRay closure
+without colliding with the wheel's pure-Python layout. They're surfaced
+on the user's `$PATH` via `[project.scripts]` entries in `pyproject.toml`
+that point at thin shims in `python/ovrpy/_apps.py`; each shim
+`os.execv`s the matching bundled binary, side-stepping the
+Python-version-specific RPATH path that would otherwise be needed to
+ship them in `<env>/bin/` directly.
 
 ### Component scoping
 

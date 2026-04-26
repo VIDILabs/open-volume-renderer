@@ -38,6 +38,11 @@ test = [
 
 [project.scripts]
 ovrpy-render = "ovrpy.render:main"
+# C++ apps bundled inside <wheel>/ovrpy/bin/ and re-exposed via thin
+# Python entry-point shims (see python/ovrpy/_apps.py) so they land on
+# $PATH after `pip install` without needing absolute-path RPATHs.
+renderapp    = "ovrpy._apps:renderapp"
+renderbatch  = "ovrpy._apps:renderbatch"
 
 [project.urls]
 Homepage = "https://github.com/wilsonCernWq/open-volume-renderer"
@@ -53,7 +58,7 @@ Homepage = "https://github.com/wilsonCernWq/open-volume-renderer"
 # unaffected and continues to share the same `build/` layout.
 # ---------------------------------------------------------------------------
 [tool.scikit-build]
-cmake.version    = ">=3.18"
+cmake.version    = ">=3.24"
 cmake.source-dir = "."
 cmake.build-type = "Release"
 build-dir        = "build/skbuild/{wheel_tag}"
@@ -68,5 +73,36 @@ install.components = ["ovrwheel"]
 
 [tool.scikit-build.cmake.define]
 OVR_BUILD_PYTHON_BINDINGS = "ON"
-OVR_BUILD_APPS            = "OFF"
+OVR_BUILD_APPS            = "ON"
 OVR_BUILD_TESTS           = "OFF"
+
+# ---------------------------------------------------------------------------
+# pytest config. Lives here (rather than test/pytest.ini) so the markers
+# below are registered regardless of which directory pytest is invoked
+# from; the cwd-relative discovery of `test/pytest.ini` was fragile.
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["test/python"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+markers = [
+    "gpu: backend variant runs on the GPU (optix7); skip with `pytest -m \"not gpu\"`",
+    "cpu: backend variant runs on the CPU (ospray); skip with `pytest -m \"not cpu\"`",
+    "slow: test renders many samples; skip for a fast CI loop",
+    "golden: rendering regression against committed baseline PNG",
+]
+
+addopts = [
+    "--strict-markers",
+    "-ra",
+    # Use Python's stdlib traceback instead of pytest's source-parsing one.
+    # pytest's default `--tb=long` calls ast.parse() on the failing source,
+    # and any Python garbage collection that runs during that parse ends up
+    # executing C-extension destructors (OSPRay/OptiX/CUDA buffers); a
+    # double-free or late CUDA context teardown inside one of those can
+    # segfault the whole interpreter. --tb=native sidesteps it by formatting
+    # tracebacks without re-parsing source code.
+    "--tb=native",
+]

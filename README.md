@@ -125,13 +125,22 @@ recipes are in [`DEV.md`](DEV.md).
 
 ## Running
 
-```bash
-# C++ apps (after `./scripts/build.sh`)
-./build/renderapp data/configs/<scene>.json     # interactive viewer (needs GLFW + display)
-./build/renderbatch data/configs/<scene>.json   # offline render to PNG
+After `pip install -e .` / `uv sync`, three console scripts land on
+`$PATH` — `ovrpy-render` is a Python entry point; `renderapp` and
+`renderbatch` are the bundled C++ apps wrapped by tiny entry-point
+shims (`python/ovrpy/_apps.py`) so they resolve their RPATH cleanly.
 
-# Python entry point (after pip install / uv sync)
+```bash
+# Python entry point
 ovrpy-render data/configs/<scene>.json -o render.png --backend ospray
+
+# C++ apps (same binaries as the cmake-only flow, but on $PATH)
+renderapp   data/configs/<scene>.json    # interactive viewer (needs GLFW + display)
+renderbatch data/configs/<scene>.json    # offline render to PNG
+
+# Same C++ apps from a cmake-only build (no pip install needed)
+./build/renderapp   data/configs/<scene>.json
+./build/renderbatch data/configs/<scene>.json
 ```
 
 Scene JSON files live under `data/configs/`; see
