@@ -3,4 +3,4 @@
 	url = https://github.com/wilsonCernWq/github-workflow-collections.git
 [submodule "extern/tfnmodule"]
 	path = extern/tfnmodule
-	url = git@github.com:wilsonCernWq/TransferFunctionModule.git
+	url = https://github.com/wilsonCernWq/TransferFunctionModule.git
