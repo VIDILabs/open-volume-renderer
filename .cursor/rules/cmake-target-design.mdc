@@ -1,0 +1,71 @@
+---
+description: CMake target-based design conventions for OVR (no catchall include paths, no self-referencing link lists)
+globs: **/CMakeLists.txt,**/*.cmake
+alwaysApply: false
+---
+
+# CMake target-based design
+
+OVR's build is target-driven: every dependency should expose a CMake target
+that carries its own include directories, compile definitions, sources, and
+link dependencies. Avoid broad include shims such as `${repo}/extern`.
+
+## No catchall `extern/` include paths
+
+```cmake
+# BAD - sweeping include path that resolves <X/Y.h> to whatever happens to
+# live under extern/X/. Order-dependent, fragile when deps overlap (e.g.
+# both tinygltf and stb bundle stb_image.h).
+target_include_directories(rendercommon PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../extern>
+)
+
+# GOOD - each external dep owns its include path on its own target.
+# Consumers link the target; the include path propagates.
+target_link_libraries(rendercommon
+  PUBLIC tfnmodule           # carries <tfn/X.h>
+  PRIVATE stb tinyexr        # carry <stb_image.h>, <tinyexr.h>
+)
+```
+
+## Header layout mirrors include style
+
+When a local helper target is consumed via `<libname/X.h>`, mirror that in the
+filesystem so the target's own dir is the include root. Avoid `..` traversal in
+INTERFACE include directories.
+
+```
+extern/glfwapp/
+├── CMakeLists.txt              ← exposes ${CMAKE_CURRENT_LIST_DIR} as PUBLIC include
+└── glfwapp/                    ← matches the include prefix
+    ├── GLFWApp.h
+    └── camera_frame.h
+```
+
+## Don't put a target in a list it itself consumes
+
+```cmake
+# BAD - glfwApp PUBLIC-links ${GFX_LIBRARIES}, which contains glfwApp.
+# Self-referencing list, also forces imgui (also in GFX_LIBRARIES) to link
+# its own consumer.
+list(APPEND GFX_LIBRARIES glfwApp)
+target_link_libraries(glfwApp PUBLIC ${GFX_LIBRARIES})
+
+# GOOD - GFX_LIBRARIES is the lower-level set (gl, glfw, glad, imgui).
+# glfwApp consumes them; consumers of glfwApp link glfwApp directly.
+```
+
+## Namespace-scope FetchContent'd deps when they bundle conflicting headers
+
+If an upstream bundles private copies of headers we also provide independently
+(e.g. tinygltf bundles `stb_image.h` and `json.hpp`), do not expose the
+upstream root directly. Mirror it under `build/<dep>_compat/<dep>/` and expose
+only `build/<dep>_compat/`. Consumers then include `<dep/header.h>` while the
+upstream's quote-includes still resolve to its private bundled copies.
+
+## Use `SKIP_RETURN_CODE` for feature-probe fixtures
+
+CTest fixture-setup tests that may legitimately fail on hosts lacking a feature
+(e.g. `gpu_probe` on a no-GPU CI runner) should set `SKIP_RETURN_CODE` so the
+probe reports Skipped, not Failed. Dependent tests still skip through
+`FIXTURES_REQUIRED`; `ctest` itself stays green on expected no-feature hosts.

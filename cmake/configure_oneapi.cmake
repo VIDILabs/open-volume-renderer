@@ -44,6 +44,29 @@ if(OVR_BUILD_OSPRAY)
   if(NOT TARGET ospray::ospray)
     message(FATAL_ERROR "ospray not found")
   endif()
+  if(WIN32)
+    get_target_property(_ovr_ospray_dll ospray::ospray IMPORTED_LOCATION_RELEASE)
+    if(NOT _ovr_ospray_dll)
+      get_target_property(_ovr_ospray_dll ospray::ospray IMPORTED_LOCATION)
+    endif()
+    if(_ovr_ospray_dll)
+      get_filename_component(_ovr_ospray_bin_dir "${_ovr_ospray_dll}" DIRECTORY)
+    elseif(DEFINED ospray_DIR)
+      get_filename_component(_ovr_ospray_prefix "${ospray_DIR}/../../.." ABSOLUTE)
+      set(_ovr_ospray_bin_dir "${_ovr_ospray_prefix}/bin")
+    endif()
+
+    if(_ovr_ospray_bin_dir AND IS_DIRECTORY "${_ovr_ospray_bin_dir}")
+      file(GLOB _ovr_ospray_runtime_dlls CONFIGURE_DEPENDS
+        "${_ovr_ospray_bin_dir}/*.dll"
+      )
+      if(_ovr_ospray_runtime_dlls)
+        set_property(GLOBAL APPEND PROPERTY OVR_EXTRA_RUNTIME_DLLS
+          ${_ovr_ospray_runtime_dlls}
+        )
+      endif()
+    endif()
+  endif()
 endif()
 
 if(OVR_BUILD_OPENVKL)

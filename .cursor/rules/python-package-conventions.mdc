@@ -1,0 +1,59 @@
+---
+description: Conventions for the ovrpy Python package + scikit-build-core wheel
+globs: pyproject.toml,python/**,test/conftest.py,test/python/**
+alwaysApply: false
+---
+
+# ovrpy Python Package Conventions
+
+## Skipping is opt-in, never automatic
+
+`pytest test/python/` runs every parametrized variant by default - including
+the `[optix7]` (`gpu`) ones. A failing variant on a host lacking the hardware is
+a real signal, not an automatic skip.
+
+The user opts out explicitly:
+
+```bash
+pytest -m "not gpu"   # CPU-only
+pytest -m "not cpu"   # GPU-only
+ctest -LE gpu          # ctest equivalent
+```
+
+Do not add `libcuda.so.1` probing or any other "auto-skip the GPU tier on a
+GPU-less host" logic to the Python `_probe_backend`. The construct-time probe
+(`ovrpy.create_renderer(name)`) is the only acceptable automatic skip trigger,
+because it indicates a backend was not built / cannot construct, not that the
+host lacks runtime hardware.
+
+## pytest config lives in `pyproject.toml`
+
+Keep `[tool.pytest.ini_options]` in the repo-root `pyproject.toml`, not in
+`test/pytest.ini`. pytest finds the root config from any cwd in the tree; a
+`test/`-local config can be missed and cause `PytestUnknownMarkWarning` instead
+of `--strict-markers` enforcement.
+
+## Wheel install component is `ovrwheel`
+
+All `install(...)` rules that should ship in the pip/uv-built wheel must attach
+`COMPONENT ovrwheel`. `pyproject.toml` sets
+`install.components = ["ovrwheel"]` so third-party FetchContent install
+rules (glfw3, glad, ospray cmake configs) don't leak into the wheel.
+
+## Wheel binaries: bundle inside `<wheel>/ovrpy/` with `INSTALL_RPATH=$ORIGIN`
+
+`_core.so` plus the renderer/OSPRay/imgui closure live next to the package
+init. C++ apps go in `<wheel>/ovrpy/bin/` with `INSTALL_RPATH=$ORIGIN/..` and
+are surfaced on `$PATH` via Python entry-point shims in `python/ovrpy/_apps.py`
+(`os.execv` the bundled binary).
+
+Anchor shim lookups on `Path(_core.__file__).parent`, not
+`Path(__file__).parent`: editable installs resolve `_apps.py` to the source
+tree, while `_core.__file__` points at the real install location.
+
+## Loader-error helper translates missing system libs
+
+`python/ovrpy/__init__.py:_translate_loader_error` catches the dynamic linker's
+`lib<X>.so: cannot open shared object file` error and rewrites it with the
+missing system lib plus `apt`/`dnf` install hints. Extend `_SYSTEM_LIB_HINTS`
+when adding runtime deps that we deliberately don't bundle.

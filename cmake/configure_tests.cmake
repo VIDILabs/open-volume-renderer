@@ -74,12 +74,14 @@ function(ovr_add_cpp_test NAME)
   # (STATUS_DLL_NOT_FOUND) before main() runs - empty stdout, build fails.
   # ctest-time invocations would hit the same wall.
   #
-  # Stage the full runtime closure next to each test exe. CMake's
-  # TARGET_RUNTIME_DLLS (3.21+) walks IMPORTED_LOCATION on every linked
-  # imported / built SHARED target and gives us the closure, including
-  # OSPRay's transitive load-by-name modules where the upstream config
-  # exposes them. The $<IF> wraps the empty case (e.g. gpu_probe links only
-  # cudart_static) so cmake -E doesn't trip on a zero-source copy.
+  # Stage the runtime closure next to each test exe. CMake's
+  # TARGET_RUNTIME_DLLS (3.21+) walks IMPORTED_LOCATION on linked imported /
+  # built SHARED targets. Some binary packages, notably OSPRay, also require
+  # sibling DLLs that are loaded by name and are not always represented in the
+  # imported target graph, so configure_oneapi.cmake records those explicitly
+  # in OVR_EXTRA_RUNTIME_DLLS. The $<IF> wraps the empty TARGET_RUNTIME_DLLS
+  # case (e.g. gpu_probe links only cudart_static) so cmake -E doesn't trip on
+  # a zero-source copy.
   if(WIN32 AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.21")
     add_custom_command(TARGET ${NAME} POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E
@@ -89,6 +91,17 @@ function(ovr_add_cpp_test NAME)
       COMMAND_EXPAND_LISTS
       VERBATIM
     )
+    get_property(_ovr_extra_runtime_dlls GLOBAL PROPERTY OVR_EXTRA_RUNTIME_DLLS)
+    if(_ovr_extra_runtime_dlls)
+      list(REMOVE_DUPLICATES _ovr_extra_runtime_dlls)
+      add_custom_command(TARGET ${NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${_ovr_extra_runtime_dlls}
+                "$<TARGET_FILE_DIR:${NAME}>"
+        COMMAND_EXPAND_LISTS
+        VERBATIM
+      )
+    endif()
   endif()
 
   # Inherit coverage flags if enabled
@@ -104,21 +117,34 @@ function(ovr_add_cpp_test NAME)
     list(APPEND _labels ${_T_LABELS})
   endif()
 
-  # PRE_TEST discovery mode defers running the binary until `ctest` time,
-  # which matters for GPU-labelled binaries that may otherwise fail to
-  # enumerate on a GPU-less build host.
-  #
-  # TEST_PREFIX is required so each registered CTest name starts with
-  # "<binary>." (e.g. "test_serializer_json.create_json_scene: ..."). Other
-  # CMake glue (tests/cpp/gpu_fixture_attach.cmake.in) attaches per-binary
-  # FIXTURES_REQUIRED by matching this prefix; without it the regex never
-  # fires and the fixture dependency silently never attaches.
-  doctest_discover_tests(${NAME}
-    ADD_LABELS 1
-    TEST_PREFIX "${NAME}."
-    PROPERTIES LABELS "${_labels}"
-    DISCOVERY_MODE PRE_TEST
-  )
+  # On Windows, do not use doctest_discover_tests. The doctest module bundled
+  # with v2.4.11 always executes the test binary as a POST_BUILD step to
+  # enumerate test cases; its DISCOVERY_MODE PRE_TEST option is not supported
+  # in that version. That makes the build itself fail with MSB3073 when the
+  # Windows loader cannot resolve a runtime DLL before main() starts. Register
+  # one CTest entry per executable on Windows instead. This preserves coverage
+  # and CI signal while keeping DLL-load failures in the test phase, after all
+  # runtime staging has completed.
+  if(WIN32)
+    add_test(NAME ${NAME}
+      COMMAND "$<TARGET_FILE:${NAME}>"
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    )
+    set_tests_properties(${NAME} PROPERTIES
+      LABELS "${_labels}"
+    )
+  else()
+    # TEST_PREFIX is required so each registered CTest name starts with
+    # "<binary>." (e.g. "test_serializer_json.create_json_scene: ..."). Other
+    # CMake glue (tests/cpp/gpu_fixture_attach.cmake.in) attaches per-binary
+    # FIXTURES_REQUIRED by matching this prefix; without it the regex never
+    # fires and the fixture dependency silently never attaches.
+    doctest_discover_tests(${NAME}
+      ADD_LABELS 1
+      TEST_PREFIX "${NAME}."
+      PROPERTIES LABELS "${_labels}"
+    )
+  endif()
 
   # Tie GPU tests to the gpu_probe fixture (defined once below) so CTest
   # auto-skips them when no CUDA device is available.
