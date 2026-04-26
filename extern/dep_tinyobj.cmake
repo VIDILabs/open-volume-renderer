@@ -18,15 +18,19 @@
 # to match the timeframe of the previously checked-in copy. Upstream:
 # https://github.com/tinyobjloader/tinyobjloader
 #
-# Gated by `OVR_BUILD_TINYOBJ` (default OFF) - currently no OVR target
-# links against this, so the fetch is opt-in. Flip it ON when you want
-# `target_link_libraries(my_target PRIVATE tinyobj)` to make
-# `#include "tiny_obj_loader.h"` available.
+# Gated by `OVR_BUILD_TINYOBJ`. Consumers do
+# `target_link_libraries(my_target PRIVATE tinyobj)` and
+# `#include <tinyobj/tiny_obj_loader.h>`.
+#
+# tinyobj doesn't bundle any third-party deps (no stb / json), so the
+# `tinyobj/` subdir scoping here is purely for symmetry with
+# `dep_tinygltf` - a defensive pattern that keeps each FetchContent
+# target isolated to its own namespaced include prefix.
 #
 # Bypasses upstream's CMakeLists.txt (which builds example/test
 # executables) by populating the source dir directly and exposing it as
 # a header-only INTERFACE target.
-option(OVR_BUILD_TINYOBJ "Fetch tinyobjloader via FetchContent and expose it as the `tinyobj` INTERFACE target" OFF)
+option(OVR_BUILD_TINYOBJ "Fetch tinyobjloader via FetchContent and expose it as the `tinyobj` INTERFACE target" ON)
 
 if(OVR_BUILD_TINYOBJ)
   include(FetchContent)
@@ -41,8 +45,15 @@ if(OVR_BUILD_TINYOBJ)
     FetchContent_Populate(tinyobj)
   endif()
 
+  set(_OVR_TINYOBJ_COMPAT_DIR "${CMAKE_BINARY_DIR}/tinyobj_compat")
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+      "${tinyobj_SOURCE_DIR}"
+      "${_OVR_TINYOBJ_COMPAT_DIR}/tinyobj"
+  )
+
   add_library(tinyobj INTERFACE)
   target_include_directories(tinyobj INTERFACE
-    $<BUILD_INTERFACE:${tinyobj_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${_OVR_TINYOBJ_COMPAT_DIR}>
   )
 endif()

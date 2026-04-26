@@ -72,11 +72,12 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/gdt)
 
 # Other Libraries
 include(configure_oneapi)
-include(dep_json)
-include(dep_tinyexr)
-include(dep_tinygltf)
-include(dep_tinyobj)
 include(dep_opengl)
+include(dep_json)
+include(dep_stb)
+include(dep_tinyexr)
+include(dep_tinyobj)
+include(dep_tinygltf)
 include(dep_usd)
 find_package(Threads REQUIRED)
 # find_package(OpenMP REQUIRED)
@@ -101,17 +102,18 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/extern/bin2c EXCLUDE_FROM_ALL)
 include(${CMAKE_CURRENT_LIST_DIR}/extern/bin2c/target_add_embeded_shaders.cmake)
 
 ###############################################################################
-# Transfer Function Module  
+# Transfer Function Module
+#
+# Submodule at extern/tfnmodule/ ships its own CMakeLists.txt that defines
+# the `tfnmodule` target (colormap sources + INTERFACE include of the
+# colormaps dir). We extend its public include path with the submodule
+# root so consumers can `#include "tfn/core.h"` etc. - what previously
+# came from the broader `extern/` include shim.
 ###############################################################################
-set(TFNMODULE_INCLUDE ${CMAKE_CURRENT_LIST_DIR}/extern/tfn/colormaps)
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/extern/tfn/colormaps)
-add_library(tfnmodule STATIC ${embedded_colormap})
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/extern/tfnmodule)
 target_include_directories(tfnmodule PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/extern/tfn/colormaps>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/extern/tfnmodule>
 )
-if (UNIX)
-  set_target_properties(tfnmodule PROPERTIES POSITION_INDEPENDENT_CODE ON)
-endif()
 
 ###############################################################################
 # Testing / Coverage

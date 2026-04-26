@@ -41,14 +41,33 @@ add_library(rendercommon SHARED
   scene.cpp
   scene.h
 )
-target_link_libraries(rendercommon PRIVATE
-  $<BUILD_INTERFACE:gdt>
+target_link_libraries(rendercommon
+PUBLIC
+  # tfnmodule's PUBLIC includes (colormap dir + submodule root for
+  # `<tfn/X.h>`) need to reach renderlib's serializer_json.cpp, so the
+  # link must be PUBLIC. Other deps below are implementation details
+  # internal to rendercommon.
   $<BUILD_INTERFACE:tfnmodule>
-  $<BUILD_INTERFACE:tinyexr>
+PRIVATE
+  $<BUILD_INTERFACE:gdt>
+  $<BUILD_INTERFACE:stb>
+  $<$<BOOL:${OVR_BUILD_TINYEXR}>:$<BUILD_INTERFACE:tinyexr>>
+  $<$<BOOL:${OVR_BUILD_TINYOBJ}>:$<BUILD_INTERFACE:tinyobj>>
+  $<$<BOOL:${OVR_BUILD_TINYGLTF}>:$<BUILD_INTERFACE:tinygltf>>
   $<BUILD_INTERFACE:TBB::tbb>
   $<BUILD_INTERFACE:Threads::Threads>
   $<BUILD_INTERFACE:${CMAKE_DL_LIBS}>
 )
+# Gate the EXR code path in `common/imageio.cpp` so a build with
+# OVR_BUILD_TINYEXR=OFF doesn't reference tinyexr symbols.
+target_compile_definitions(rendercommon PRIVATE $<$<BOOL:${OVR_BUILD_TINYEXR}>:OVR_BUILD_TINYEXR=1>)
+# Gate the OBJ code path in `common/imageio.cpp` so a build with
+# OVR_BUILD_TINYOBJ=OFF doesn't reference tinyobj symbols.
+target_compile_definitions(rendercommon PRIVATE $<$<BOOL:${OVR_BUILD_TINYOBJ}>:OVR_BUILD_TINYOBJ=1>)
+# Gate the GLTF code path in `common/imageio.cpp` so a build with
+# OVR_BUILD_TINYGLTF=OFF doesn't reference tinygltf symbols.
+target_compile_definitions(rendercommon PRIVATE $<$<BOOL:${OVR_BUILD_TINYGLTF}>:OVR_BUILD_TINYGLTF=1>)
+
 target_include_directories(rendercommon
 PUBLIC
   # Keep OVR's build interface rooted in this repository; installed include
@@ -56,7 +75,6 @@ PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../gdt>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../extern>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/common>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common/cuda>

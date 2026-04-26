@@ -18,16 +18,26 @@
 # match the version that was previously checked in. Upstream:
 # https://github.com/syoyo/tinygltf
 #
-# Gated by `OVR_BUILD_TINYGLTF` (default OFF) - currently no OVR target
-# links against this, so the fetch is opt-in. Flip it ON when you want
-# `target_link_libraries(my_target PRIVATE tinygltf)` to make
-# `#include "tiny_gltf.h"` available.
+# Gated by `OVR_BUILD_TINYGLTF`. Consumers do
+# `target_link_libraries(my_target PRIVATE tinygltf)` and
+# `#include <tinygltf/tiny_gltf.h>`.
 #
-# We deliberately bypass tinygltf's own CMakeLists.txt (via the bare
+# Note the namespaced include path: tinygltf bundles its own copies of
+# `stb_image.h`, `stb_image_write.h`, and `json.hpp` at the upstream
+# repo root. Putting that root on the consumer's include path directly
+# would shadow our own `dep_stb` / `dep_json` (or vice versa) depending
+# on `target_link_libraries` order - subtle and fragile. We sidestep it
+# by mirroring the upstream tree into `build/tinygltf_compat/tinygltf/`
+# and only exposing the parent on the include path. tinygltf's internal
+# quote-includes (`#include "stb_image.h"`) still resolve to its private
+# bundled copies because quote-include search starts from the file's
+# own dir.
+#
+# We bypass tinygltf's own CMakeLists.txt (via the bare
 # FetchContent_Populate path rather than _MakeAvailable) because that
 # upstream CMakeLists builds a loader_example executable and emits install
 # rules - both unwanted noise for our build/wheel.
-option(OVR_BUILD_TINYGLTF "Fetch tinygltf via FetchContent and expose it as the `tinygltf` INTERFACE target" OFF)
+option(OVR_BUILD_TINYGLTF "Fetch tinygltf via FetchContent and expose it as the `tinygltf` INTERFACE target" ON)
 
 if(OVR_BUILD_TINYGLTF)
   include(FetchContent)
@@ -42,8 +52,15 @@ if(OVR_BUILD_TINYGLTF)
     FetchContent_Populate(tinygltf)
   endif()
 
+  set(_OVR_TINYGLTF_COMPAT_DIR "${CMAKE_BINARY_DIR}/tinygltf_compat")
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+      "${tinygltf_SOURCE_DIR}"
+      "${_OVR_TINYGLTF_COMPAT_DIR}/tinygltf"
+  )
+
   add_library(tinygltf INTERFACE)
   target_include_directories(tinygltf INTERFACE
-    $<BUILD_INTERFACE:${tinygltf_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${_OVR_TINYGLTF_COMPAT_DIR}>
   )
 endif()
