@@ -72,6 +72,7 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/gdt)
 
 # Other Libraries
 include(configure_oneapi)
+include(dep_json)
 include(dep_opengl)
 include(dep_usd)
 find_package(Threads REQUIRED)

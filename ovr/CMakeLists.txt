@@ -118,6 +118,7 @@ add_library(renderlib SHARED
 target_link_libraries(renderlib 
 PUBLIC 
   rendercommon
+  nlohmann_json::nlohmann_json
 PRIVATE
   $<$<BOOL:${OVR_BUILD_DEVICE_OPTIX7}>:OptiX::optix7>
 )
